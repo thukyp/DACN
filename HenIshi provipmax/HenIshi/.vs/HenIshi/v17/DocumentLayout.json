@@ -1,0 +1,603 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "D:\\HenIshi\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{66C6088B-9A55-4CEF-86B6-A2528E14B2E2}|HenIshi\\Hahana.csproj|d:\\henishi\\henishi\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{66C6088B-9A55-4CEF-86B6-A2528E14B2E2}|HenIshi\\Hahana.csproj|solutionrelative:henishi\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{66C6088B-9A55-4CEF-86B6-A2528E14B2E2}|HenIshi\\Hahana.csproj|d:\\henishi\\henishi\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{66C6088B-9A55-4CEF-86B6-A2528E14B2E2}|HenIshi\\Hahana.csproj|solutionrelative:henishi\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{66C6088B-9A55-4CEF-86B6-A2528E14B2E2}|HenIshi\\Hahana.csproj|d:\\henishi\\henishi\\views\\_viewstart.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{66C6088B-9A55-4CEF-86B6-A2528E14B2E2}|HenIshi\\Hahana.csproj|solutionrelative:henishi\\views\\_viewstart.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{66C6088B-9A55-4CEF-86B6-A2528E14B2E2}|HenIshi\\Hahana.csproj|d:\\henishi\\henishi\\views\\_viewimports.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{66C6088B-9A55-4CEF-86B6-A2528E14B2E2}|HenIshi\\Hahana.csproj|solutionrelative:henishi\\views\\_viewimports.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{66C6088B-9A55-4CEF-86B6-A2528E14B2E2}|HenIshi\\Hahana.csproj|d:\\henishi\\henishi\\views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{66C6088B-9A55-4CEF-86B6-A2528E14B2E2}|HenIshi\\Hahana.csproj|solutionrelative:henishi\\views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{66C6088B-9A55-4CEF-86B6-A2528E14B2E2}|HenIshi\\Hahana.csproj|d:\\henishi\\henishi\\views\\shared\\_validationscriptspartial.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{66C6088B-9A55-4CEF-86B6-A2528E14B2E2}|HenIshi\\Hahana.csproj|solutionrelative:henishi\\views\\shared\\_validationscriptspartial.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{66C6088B-9A55-4CEF-86B6-A2528E14B2E2}|HenIshi\\Hahana.csproj|d:\\henishi\\henishi\\views\\shared\\error.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{66C6088B-9A55-4CEF-86B6-A2528E14B2E2}|HenIshi\\Hahana.csproj|solutionrelative:henishi\\views\\shared\\error.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{66C6088B-9A55-4CEF-86B6-A2528E14B2E2}|HenIshi\\Hahana.csproj|d:\\henishi\\henishi\\views\\home\\bocrangsu.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{66C6088B-9A55-4CEF-86B6-A2528E14B2E2}|HenIshi\\Hahana.csproj|solutionrelative:henishi\\views\\home\\bocrangsu.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{66C6088B-9A55-4CEF-86B6-A2528E14B2E2}|HenIshi\\Hahana.csproj|d:\\henishi\\henishi\\models\\errorviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{66C6088B-9A55-4CEF-86B6-A2528E14B2E2}|HenIshi\\Hahana.csproj|solutionrelative:henishi\\models\\errorviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{66C6088B-9A55-4CEF-86B6-A2528E14B2E2}|HenIshi\\Hahana.csproj|d:\\henishi\\henishi\\views\\home\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{66C6088B-9A55-4CEF-86B6-A2528E14B2E2}|HenIshi\\Hahana.csproj|solutionrelative:henishi\\views\\home\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{66C6088B-9A55-4CEF-86B6-A2528E14B2E2}|HenIshi\\Hahana.csproj|d:\\henishi\\henishi\\wwwroot\\js\\script.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{66C6088B-9A55-4CEF-86B6-A2528E14B2E2}|HenIshi\\Hahana.csproj|solutionrelative:henishi\\wwwroot\\js\\script.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{66C6088B-9A55-4CEF-86B6-A2528E14B2E2}|HenIshi\\Hahana.csproj|d:\\henishi\\henishi\\wwwroot\\js\\site.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{66C6088B-9A55-4CEF-86B6-A2528E14B2E2}|HenIshi\\Hahana.csproj|solutionrelative:henishi\\wwwroot\\js\\site.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{66C6088B-9A55-4CEF-86B6-A2528E14B2E2}|HenIshi\\Hahana.csproj|d:\\henishi\\henishi\\wwwroot\\css\\bocrangsu.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
+      "RelativeMoniker": "D:0:0:{66C6088B-9A55-4CEF-86B6-A2528E14B2E2}|HenIshi\\Hahana.csproj|solutionrelative:henishi\\wwwroot\\css\\bocrangsu.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{66C6088B-9A55-4CEF-86B6-A2528E14B2E2}|HenIshi\\Hahana.csproj|d:\\henishi\\henishi\\views\\home\\privacy.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{66C6088B-9A55-4CEF-86B6-A2528E14B2E2}|HenIshi\\Hahana.csproj|solutionrelative:henishi\\views\\home\\privacy.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{66C6088B-9A55-4CEF-86B6-A2528E14B2E2}|HenIshi\\Hahana.csproj|d:\\henishi\\henishi\\controllers\\homecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{66C6088B-9A55-4CEF-86B6-A2528E14B2E2}|HenIshi\\Hahana.csproj|solutionrelative:henishi\\controllers\\homecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{66C6088B-9A55-4CEF-86B6-A2528E14B2E2}|HenIshi\\Hahana.csproj|d:\\henishi\\henishi\\views\\home\\taytrang.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{66C6088B-9A55-4CEF-86B6-A2528E14B2E2}|HenIshi\\Hahana.csproj|solutionrelative:henishi\\views\\home\\taytrang.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{66C6088B-9A55-4CEF-86B6-A2528E14B2E2}|HenIshi\\Hahana.csproj|d:\\henishi\\henishi\\wwwroot\\css\\taytrang.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
+      "RelativeMoniker": "D:0:0:{66C6088B-9A55-4CEF-86B6-A2528E14B2E2}|HenIshi\\Hahana.csproj|solutionrelative:henishi\\wwwroot\\css\\taytrang.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{66C6088B-9A55-4CEF-86B6-A2528E14B2E2}|HenIshi\\Hahana.csproj|d:\\henishi\\henishi\\wwwroot\\css\\matdansu.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
+      "RelativeMoniker": "D:0:0:{66C6088B-9A55-4CEF-86B6-A2528E14B2E2}|HenIshi\\Hahana.csproj|solutionrelative:henishi\\wwwroot\\css\\matdansu.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{66C6088B-9A55-4CEF-86B6-A2528E14B2E2}|HenIshi\\Hahana.csproj|d:\\henishi\\henishi\\wwwroot\\css\\hahana.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
+      "RelativeMoniker": "D:0:0:{66C6088B-9A55-4CEF-86B6-A2528E14B2E2}|HenIshi\\Hahana.csproj|solutionrelative:henishi\\wwwroot\\css\\hahana.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{66C6088B-9A55-4CEF-86B6-A2528E14B2E2}|HenIshi\\Hahana.csproj|d:\\henishi\\henishi\\views\\home\\niengrang.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{66C6088B-9A55-4CEF-86B6-A2528E14B2E2}|HenIshi\\Hahana.csproj|solutionrelative:henishi\\views\\home\\niengrang.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{66C6088B-9A55-4CEF-86B6-A2528E14B2E2}|HenIshi\\Hahana.csproj|d:\\henishi\\henishi\\views\\home\\matdansu.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{66C6088B-9A55-4CEF-86B6-A2528E14B2E2}|HenIshi\\Hahana.csproj|solutionrelative:henishi\\views\\home\\matdansu.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{66C6088B-9A55-4CEF-86B6-A2528E14B2E2}|HenIshi\\Hahana.csproj|d:\\henishi\\henishi\\views\\home\\login.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{66C6088B-9A55-4CEF-86B6-A2528E14B2E2}|HenIshi\\Hahana.csproj|solutionrelative:henishi\\views\\home\\login.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{66C6088B-9A55-4CEF-86B6-A2528E14B2E2}|HenIshi\\Hahana.csproj|d:\\henishi\\henishi\\views\\home\\loading.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{66C6088B-9A55-4CEF-86B6-A2528E14B2E2}|HenIshi\\Hahana.csproj|solutionrelative:henishi\\views\\home\\loading.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{66C6088B-9A55-4CEF-86B6-A2528E14B2E2}|HenIshi\\Hahana.csproj|d:\\henishi\\henishi\\views\\home\\introduce.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{66C6088B-9A55-4CEF-86B6-A2528E14B2E2}|HenIshi\\Hahana.csproj|solutionrelative:henishi\\views\\home\\introduce.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{66C6088B-9A55-4CEF-86B6-A2528E14B2E2}|HenIshi\\Hahana.csproj|d:\\henishi\\henishi\\views\\home\\contact.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{66C6088B-9A55-4CEF-86B6-A2528E14B2E2}|HenIshi\\Hahana.csproj|solutionrelative:henishi\\views\\home\\contact.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{66C6088B-9A55-4CEF-86B6-A2528E14B2E2}|HenIshi\\Hahana.csproj|d:\\henishi\\henishi\\views\\home\\cayghepimpact.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{66C6088B-9A55-4CEF-86B6-A2528E14B2E2}|HenIshi\\Hahana.csproj|solutionrelative:henishi\\views\\home\\cayghepimpact.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{66C6088B-9A55-4CEF-86B6-A2528E14B2E2}|HenIshi\\Hahana.csproj|d:\\henishi\\henishi\\wwwroot\\css\\introduce.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
+      "RelativeMoniker": "D:0:0:{66C6088B-9A55-4CEF-86B6-A2528E14B2E2}|HenIshi\\Hahana.csproj|solutionrelative:henishi\\wwwroot\\css\\introduce.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{66C6088B-9A55-4CEF-86B6-A2528E14B2E2}|HenIshi\\Hahana.csproj|d:\\henishi\\henishi\\wwwroot\\css\\contact.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
+      "RelativeMoniker": "D:0:0:{66C6088B-9A55-4CEF-86B6-A2528E14B2E2}|HenIshi\\Hahana.csproj|solutionrelative:henishi\\wwwroot\\css\\contact.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{66C6088B-9A55-4CEF-86B6-A2528E14B2E2}|HenIshi\\Hahana.csproj|d:\\henishi\\henishi\\wwwroot\\css\\niengrang.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
+      "RelativeMoniker": "D:0:0:{66C6088B-9A55-4CEF-86B6-A2528E14B2E2}|HenIshi\\Hahana.csproj|solutionrelative:henishi\\wwwroot\\css\\niengrang.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{66C6088B-9A55-4CEF-86B6-A2528E14B2E2}|HenIshi\\Hahana.csproj|d:\\henishi\\henishi\\wwwroot\\css\\cayghepimpact.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
+      "RelativeMoniker": "D:0:0:{66C6088B-9A55-4CEF-86B6-A2528E14B2E2}|HenIshi\\Hahana.csproj|solutionrelative:henishi\\wwwroot\\css\\cayghepimpact.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{66C6088B-9A55-4CEF-86B6-A2528E14B2E2}|HenIshi\\Hahana.csproj|d:\\henishi\\henishi\\wwwroot\\css\\login.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
+      "RelativeMoniker": "D:0:0:{66C6088B-9A55-4CEF-86B6-A2528E14B2E2}|HenIshi\\Hahana.csproj|solutionrelative:henishi\\wwwroot\\css\\login.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{66C6088B-9A55-4CEF-86B6-A2528E14B2E2}|HenIshi\\Hahana.csproj|d:\\henishi\\henishi\\wwwroot\\css\\site.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
+      "RelativeMoniker": "D:0:0:{66C6088B-9A55-4CEF-86B6-A2528E14B2E2}|HenIshi\\Hahana.csproj|solutionrelative:henishi\\wwwroot\\css\\site.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\hoa23\\Downloads\\shoplite-html-template-free-version\\shoplite-html-template-free-version\\js\\jquery-1.11.0.min.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{66C6088B-9A55-4CEF-86B6-A2528E14B2E2}|HenIshi\\Hahana.csproj|d:\\henishi\\henishi\\wwwroot\\img\\search.png||{177559E0-D141-11D0-92DF-00A0C9138C45}",
+      "RelativeMoniker": "D:0:0:{66C6088B-9A55-4CEF-86B6-A2528E14B2E2}|HenIshi\\Hahana.csproj|solutionrelative:henishi\\wwwroot\\img\\search.png||{177559E0-D141-11D0-92DF-00A0C9138C45}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{66C6088B-9A55-4CEF-86B6-A2528E14B2E2}|HenIshi\\Hahana.csproj|d:\\henishi\\henishi\\hahana.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{66C6088B-9A55-4CEF-86B6-A2528E14B2E2}|HenIshi\\Hahana.csproj|solutionrelative:henishi\\hahana.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{66C6088B-9A55-4CEF-86B6-A2528E14B2E2}|HenIshi\\Hahana.csproj|d:\\henishi\\henishi\\properties\\launchsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{66C6088B-9A55-4CEF-86B6-A2528E14B2E2}|HenIshi\\Hahana.csproj|solutionrelative:henishi\\properties\\launchsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 29,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "Index.cshtml",
+              "DocumentMoniker": "D:\\HenIshi\\HenIshi\\Views\\Home\\Index.cshtml",
+              "RelativeDocumentMoniker": "HenIshi\\Views\\Home\\Index.cshtml",
+              "ToolTip": "D:\\HenIshi\\HenIshi\\Views\\Home\\Index.cshtml",
+              "RelativeToolTip": "HenIshi\\Views\\Home\\Index.cshtml",
+              "ViewState": "AgIAAE8BAAAAAAAAAAAIwD0AAAAcAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-02-27T11:06:35.285Z",
+              "IsPinned": true
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 18,
+              "Title": "Hahana.css",
+              "DocumentMoniker": "D:\\HenIshi\\HenIshi\\wwwroot\\css\\Hahana.css",
+              "RelativeDocumentMoniker": "HenIshi\\wwwroot\\css\\Hahana.css",
+              "ToolTip": "D:\\HenIshi\\HenIshi\\wwwroot\\css\\Hahana.css",
+              "RelativeToolTip": "HenIshi\\wwwroot\\css\\Hahana.css",
+              "ViewState": "AgIAADAAAAAAAAAAAAAewDkAAAAaAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
+              "WhenOpened": "2025-02-27T14:09:44.588Z",
+              "IsPinned": true
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 21,
+              "Title": "Login.cshtml",
+              "DocumentMoniker": "D:\\HenIshi\\HenIshi\\Views\\Home\\Login.cshtml",
+              "RelativeDocumentMoniker": "HenIshi\\Views\\Home\\Login.cshtml",
+              "ToolTip": "D:\\HenIshi\\HenIshi\\Views\\Home\\Login.cshtml",
+              "RelativeToolTip": "HenIshi\\Views\\Home\\Login.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAFkAAAAKAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-03-03T06:17:51.115Z",
+              "IsPinned": true
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 30,
+              "Title": "Login.css",
+              "DocumentMoniker": "D:\\HenIshi\\HenIshi\\wwwroot\\css\\Login.css",
+              "RelativeDocumentMoniker": "HenIshi\\wwwroot\\css\\Login.css",
+              "ToolTip": "D:\\HenIshi\\HenIshi\\wwwroot\\css\\Login.css",
+              "RelativeToolTip": "HenIshi\\wwwroot\\css\\Login.css",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAMAAAAaAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
+              "WhenOpened": "2025-03-04T06:44:46.43Z",
+              "IsPinned": true
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "_Layout.cshtml",
+              "DocumentMoniker": "D:\\HenIshi\\HenIshi\\Views\\Shared\\_Layout.cshtml",
+              "RelativeDocumentMoniker": "HenIshi\\Views\\Shared\\_Layout.cshtml",
+              "ToolTip": "D:\\HenIshi\\HenIshi\\Views\\Shared\\_Layout.cshtml",
+              "RelativeToolTip": "HenIshi\\Views\\Shared\\_Layout.cshtml",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAAAAwAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-02-27T12:04:46.493Z",
+              "IsPinned": true
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{aa2115a1-9712-457b-9047-dbb71ca2cdd2}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 16,
+              "Title": "taytrang.css",
+              "DocumentMoniker": "D:\\HenIshi\\HenIshi\\wwwroot\\css\\taytrang.css",
+              "RelativeDocumentMoniker": "HenIshi\\wwwroot\\css\\taytrang.css",
+              "ToolTip": "D:\\HenIshi\\HenIshi\\wwwroot\\css\\taytrang.css",
+              "RelativeToolTip": "HenIshi\\wwwroot\\css\\taytrang.css",
+              "ViewState": "AgIAAGkAAAAAAAAAAAAewNEBAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
+              "WhenOpened": "2025-03-22T00:19:51.381Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "taytrang.cshtml",
+              "DocumentMoniker": "D:\\HenIshi\\HenIshi\\Views\\Home\\taytrang.cshtml",
+              "RelativeDocumentMoniker": "HenIshi\\Views\\Home\\taytrang.cshtml",
+              "ToolTip": "D:\\HenIshi\\HenIshi\\Views\\Home\\taytrang.cshtml",
+              "RelativeToolTip": "HenIshi\\Views\\Home\\taytrang.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAA3AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-03-22T00:19:29.18Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 17,
+              "Title": "matdansu.css",
+              "DocumentMoniker": "D:\\HenIshi\\HenIshi\\wwwroot\\css\\matdansu.css",
+              "RelativeDocumentMoniker": "HenIshi\\wwwroot\\css\\matdansu.css",
+              "ToolTip": "D:\\HenIshi\\HenIshi\\wwwroot\\css\\matdansu.css",
+              "RelativeToolTip": "HenIshi\\wwwroot\\css\\matdansu.css",
+              "ViewState": "AgIAAAEAAAAAAAAAAAAuwIUAAAAcAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
+              "WhenOpened": "2025-03-21T23:58:38.36Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 20,
+              "Title": "matdansu.cshtml",
+              "DocumentMoniker": "D:\\HenIshi\\HenIshi\\Views\\Home\\matdansu.cshtml",
+              "RelativeDocumentMoniker": "HenIshi\\Views\\Home\\matdansu.cshtml",
+              "ToolTip": "D:\\HenIshi\\HenIshi\\Views\\Home\\matdansu.cshtml",
+              "RelativeToolTip": "HenIshi\\Views\\Home\\matdansu.cshtml",
+              "ViewState": "AgIAADAAAAAAAAAAAAAAADwAAAAcAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-03-21T23:58:07.567Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 28,
+              "Title": "niengrang.css",
+              "DocumentMoniker": "D:\\HenIshi\\HenIshi\\wwwroot\\css\\niengrang.css",
+              "RelativeDocumentMoniker": "HenIshi\\wwwroot\\css\\niengrang.css",
+              "ToolTip": "D:\\HenIshi\\HenIshi\\wwwroot\\css\\niengrang.css",
+              "RelativeToolTip": "HenIshi\\wwwroot\\css\\niengrang.css",
+              "ViewState": "AgIAAL0BAAAAAAAAAAAuwNEBAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
+              "WhenOpened": "2025-03-21T15:56:47.415Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 19,
+              "Title": "niengrang.cshtml",
+              "DocumentMoniker": "D:\\HenIshi\\HenIshi\\Views\\Home\\niengrang.cshtml",
+              "RelativeDocumentMoniker": "HenIshi\\Views\\Home\\niengrang.cshtml",
+              "ToolTip": "D:\\HenIshi\\HenIshi\\Views\\Home\\niengrang.cshtml",
+              "RelativeToolTip": "HenIshi\\Views\\Home\\niengrang.cshtml",
+              "ViewState": "AgIAAC0AAAAAAAAAAIAwwDwAAAAcAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-03-21T15:56:18.581Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 29,
+              "Title": "cayghepimpact.css",
+              "DocumentMoniker": "D:\\HenIshi\\HenIshi\\wwwroot\\css\\cayghepimpact.css",
+              "RelativeDocumentMoniker": "HenIshi\\wwwroot\\css\\cayghepimpact.css",
+              "ToolTip": "D:\\HenIshi\\HenIshi\\wwwroot\\css\\cayghepimpact.css",
+              "RelativeToolTip": "HenIshi\\wwwroot\\css\\cayghepimpact.css",
+              "ViewState": "AgIAAL0BAAAAAAAAAAAuwNEBAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
+              "WhenOpened": "2025-03-21T15:19:48.792Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 25,
+              "Title": "cayghepimpact.cshtml",
+              "DocumentMoniker": "D:\\HenIshi\\HenIshi\\Views\\Home\\cayghepimpact.cshtml",
+              "RelativeDocumentMoniker": "HenIshi\\Views\\Home\\cayghepimpact.cshtml",
+              "ToolTip": "D:\\HenIshi\\HenIshi\\Views\\Home\\cayghepimpact.cshtml",
+              "RelativeToolTip": "HenIshi\\Views\\Home\\cayghepimpact.cshtml",
+              "ViewState": "AgIAADIAAAAAAAAAAAAwwDwAAAAcAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-03-21T15:13:37.063Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "Bocrangsu.css",
+              "DocumentMoniker": "D:\\HenIshi\\HenIshi\\wwwroot\\css\\Bocrangsu.css",
+              "RelativeDocumentMoniker": "HenIshi\\wwwroot\\css\\Bocrangsu.css",
+              "ToolTip": "D:\\HenIshi\\HenIshi\\wwwroot\\css\\Bocrangsu.css",
+              "RelativeToolTip": "HenIshi\\wwwroot\\css\\Bocrangsu.css",
+              "ViewState": "AgIAAE0BAAAAAAAAAAAAALsBAAAeAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
+              "WhenOpened": "2025-03-21T14:23:40.767Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "Bocrangsu.cshtml",
+              "DocumentMoniker": "D:\\HenIshi\\HenIshi\\Views\\Home\\Bocrangsu.cshtml",
+              "RelativeDocumentMoniker": "HenIshi\\Views\\Home\\Bocrangsu.cshtml",
+              "ToolTip": "D:\\HenIshi\\HenIshi\\Views\\Home\\Bocrangsu.cshtml",
+              "RelativeToolTip": "HenIshi\\Views\\Home\\Bocrangsu.cshtml",
+              "ViewState": "AgIAANIAAAAAAAAAAAAAAL8AAAAMAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-03-21T14:08:50.601Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 27,
+              "Title": "Contact.css",
+              "DocumentMoniker": "D:\\HenIshi\\HenIshi\\wwwroot\\css\\Contact.css",
+              "RelativeDocumentMoniker": "HenIshi\\wwwroot\\css\\Contact.css",
+              "ToolTip": "D:\\HenIshi\\HenIshi\\wwwroot\\css\\Contact.css",
+              "RelativeToolTip": "HenIshi\\wwwroot\\css\\Contact.css",
+              "ViewState": "AgIAAOEAAAAAAAAAAAAuwOwAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
+              "WhenOpened": "2025-03-20T10:16:49.927Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 24,
+              "Title": "contact.cshtml",
+              "DocumentMoniker": "D:\\HenIshi\\HenIshi\\Views\\Home\\contact.cshtml",
+              "RelativeDocumentMoniker": "HenIshi\\Views\\Home\\contact.cshtml",
+              "ToolTip": "D:\\HenIshi\\HenIshi\\Views\\Home\\contact.cshtml",
+              "RelativeToolTip": "HenIshi\\Views\\Home\\contact.cshtml",
+              "ViewState": "AgIAACcAAAAAAAAAAAAAADMAAAAYAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-03-20T10:15:43.911Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 26,
+              "Title": "introduce.css",
+              "DocumentMoniker": "D:\\HenIshi\\HenIshi\\wwwroot\\css\\introduce.css",
+              "RelativeDocumentMoniker": "HenIshi\\wwwroot\\css\\introduce.css",
+              "ToolTip": "D:\\HenIshi\\HenIshi\\wwwroot\\css\\introduce.css",
+              "RelativeToolTip": "HenIshi\\wwwroot\\css\\introduce.css",
+              "ViewState": "AgIAALUAAAAAAAAAAAAAwMYAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
+              "WhenOpened": "2025-03-20T09:51:58.916Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 23,
+              "Title": "introduce.cshtml",
+              "DocumentMoniker": "D:\\HenIshi\\HenIshi\\Views\\Home\\introduce.cshtml",
+              "RelativeDocumentMoniker": "HenIshi\\Views\\Home\\introduce.cshtml",
+              "ToolTip": "D:\\HenIshi\\HenIshi\\Views\\Home\\introduce.cshtml",
+              "RelativeToolTip": "HenIshi\\Views\\Home\\introduce.cshtml",
+              "ViewState": "AgIAAC8AAAAAAAAAAAAwwDwAAAAcAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-03-20T09:32:52.229Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "script.js",
+              "DocumentMoniker": "D:\\HenIshi\\HenIshi\\wwwroot\\js\\script.js",
+              "RelativeDocumentMoniker": "HenIshi\\wwwroot\\js\\script.js",
+              "ToolTip": "D:\\HenIshi\\HenIshi\\wwwroot\\js\\script.js",
+              "RelativeToolTip": "HenIshi\\wwwroot\\js\\script.js",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2025-03-16T07:33:43.447Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 32,
+              "Title": "jquery-1.11.0.min.js",
+              "DocumentMoniker": "C:\\Users\\hoa23\\Downloads\\shoplite-html-template-free-version\\shoplite-html-template-free-version\\js\\jquery-1.11.0.min.js",
+              "ToolTip": "C:\\Users\\hoa23\\Downloads\\shoplite-html-template-free-version\\shoplite-html-template-free-version\\js\\jquery-1.11.0.min.js",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2025-03-16T07:15:35.022Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 33,
+              "Title": "search.png -  [English (United States)] - PNG [16x17, 32 bit, PNG]",
+              "DocumentMoniker": "D:\\HenIshi\\HenIshi\\wwwroot\\Img\\search.png",
+              "RelativeDocumentMoniker": "HenIshi\\wwwroot\\Img\\search.png",
+              "ToolTip": "D:\\HenIshi\\HenIshi\\wwwroot\\Img\\search.png -  [English (United States)] - PNG [16x17, 32 bit, PNG]",
+              "RelativeToolTip": "HenIshi\\wwwroot\\Img\\search.png -  [English (United States)] - PNG [16x17, 32 bit, PNG]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001533|",
+              "WhenOpened": "2025-03-07T09:01:23.844Z",
+              "EditorCaption": " -  [English (United States)] - PNG [16x17, 32 bit, PNG]"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 22,
+              "Title": "Loading.cshtml",
+              "DocumentMoniker": "D:\\HenIshi\\HenIshi\\Views\\Home\\Loading.cshtml",
+              "RelativeDocumentMoniker": "HenIshi\\Views\\Home\\Loading.cshtml",
+              "ToolTip": "D:\\HenIshi\\HenIshi\\Views\\Home\\Loading.cshtml",
+              "RelativeToolTip": "HenIshi\\Views\\Home\\Loading.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAAAnAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-03-04T02:27:47.26Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "_ViewImports.cshtml",
+              "DocumentMoniker": "D:\\HenIshi\\HenIshi\\Views\\_ViewImports.cshtml",
+              "RelativeDocumentMoniker": "HenIshi\\Views\\_ViewImports.cshtml",
+              "ToolTip": "D:\\HenIshi\\HenIshi\\Views\\_ViewImports.cshtml",
+              "RelativeToolTip": "HenIshi\\Views\\_ViewImports.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-02-28T03:56:43.68Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "Error.cshtml",
+              "DocumentMoniker": "D:\\HenIshi\\HenIshi\\Views\\Shared\\Error.cshtml",
+              "RelativeDocumentMoniker": "HenIshi\\Views\\Shared\\Error.cshtml",
+              "ToolTip": "D:\\HenIshi\\HenIshi\\Views\\Shared\\Error.cshtml",
+              "RelativeToolTip": "HenIshi\\Views\\Shared\\Error.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-02-28T03:56:41.717Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "HomeController.cs",
+              "DocumentMoniker": "D:\\HenIshi\\HenIshi\\Controllers\\HomeController.cs",
+              "RelativeDocumentMoniker": "HenIshi\\Controllers\\HomeController.cs",
+              "ToolTip": "D:\\HenIshi\\HenIshi\\Controllers\\HomeController.cs",
+              "RelativeToolTip": "HenIshi\\Controllers\\HomeController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAACgAAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-27T11:43:08.84Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 31,
+              "Title": "site.css",
+              "DocumentMoniker": "D:\\HenIshi\\HenIshi\\wwwroot\\css\\site.css",
+              "RelativeDocumentMoniker": "HenIshi\\wwwroot\\css\\site.css",
+              "ToolTip": "D:\\HenIshi\\HenIshi\\wwwroot\\css\\site.css",
+              "RelativeToolTip": "HenIshi\\wwwroot\\css\\site.css",
+              "ViewState": "AgIAAJsAAAAAAAAAAAAqwLAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
+              "WhenOpened": "2025-02-27T11:48:40.701Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "ErrorViewModel.cs",
+              "DocumentMoniker": "D:\\HenIshi\\HenIshi\\Models\\ErrorViewModel.cs",
+              "RelativeDocumentMoniker": "HenIshi\\Models\\ErrorViewModel.cs",
+              "ToolTip": "D:\\HenIshi\\HenIshi\\Models\\ErrorViewModel.cs",
+              "RelativeToolTip": "HenIshi\\Models\\ErrorViewModel.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-27T11:43:16.871Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Program.cs",
+              "DocumentMoniker": "D:\\HenIshi\\HenIshi\\Program.cs",
+              "RelativeDocumentMoniker": "HenIshi\\Program.cs",
+              "ToolTip": "D:\\HenIshi\\HenIshi\\Program.cs",
+              "RelativeToolTip": "HenIshi\\Program.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABUAAAAWAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-27T11:43:22.483Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "_ViewStart.cshtml",
+              "DocumentMoniker": "D:\\HenIshi\\HenIshi\\Views\\_ViewStart.cshtml",
+              "RelativeDocumentMoniker": "HenIshi\\Views\\_ViewStart.cshtml",
+              "ToolTip": "D:\\HenIshi\\HenIshi\\Views\\_ViewStart.cshtml",
+              "RelativeToolTip": "HenIshi\\Views\\_ViewStart.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-02-28T03:56:44.941Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "_ValidationScriptsPartial.cshtml",
+              "DocumentMoniker": "D:\\HenIshi\\HenIshi\\Views\\Shared\\_ValidationScriptsPartial.cshtml",
+              "RelativeDocumentMoniker": "HenIshi\\Views\\Shared\\_ValidationScriptsPartial.cshtml",
+              "ToolTip": "D:\\HenIshi\\HenIshi\\Views\\Shared\\_ValidationScriptsPartial.cshtml",
+              "RelativeToolTip": "HenIshi\\Views\\Shared\\_ValidationScriptsPartial.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-02-28T03:56:39.789Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "Privacy.cshtml",
+              "DocumentMoniker": "D:\\HenIshi\\HenIshi\\Views\\Home\\Privacy.cshtml",
+              "RelativeDocumentMoniker": "HenIshi\\Views\\Home\\Privacy.cshtml",
+              "ToolTip": "D:\\HenIshi\\HenIshi\\Views\\Home\\Privacy.cshtml",
+              "RelativeToolTip": "HenIshi\\Views\\Home\\Privacy.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-02-27T11:42:23.818Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "site.js",
+              "DocumentMoniker": "D:\\HenIshi\\HenIshi\\wwwroot\\js\\site.js",
+              "RelativeDocumentMoniker": "HenIshi\\wwwroot\\js\\site.js",
+              "ToolTip": "D:\\HenIshi\\HenIshi\\wwwroot\\js\\site.js",
+              "RelativeToolTip": "HenIshi\\wwwroot\\js\\site.js",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2025-02-27T11:49:14.476Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 34,
+              "Title": "Hahana.csproj",
+              "DocumentMoniker": "D:\\HenIshi\\HenIshi\\Hahana.csproj",
+              "RelativeDocumentMoniker": "HenIshi\\Hahana.csproj",
+              "ToolTip": "D:\\HenIshi\\HenIshi\\Hahana.csproj",
+              "RelativeToolTip": "HenIshi\\Hahana.csproj",
+              "ViewState": "AgIAAAQAAAAAAAAAAABBwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2025-02-27T11:49:22.121Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "D:\\HenIshi\\HenIshi\\appsettings.json",
+              "RelativeDocumentMoniker": "HenIshi\\appsettings.json",
+              "ToolTip": "D:\\HenIshi\\HenIshi\\appsettings.json",
+              "RelativeToolTip": "HenIshi\\appsettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2025-02-27T11:45:59.457Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 35,
+              "Title": "launchSettings.json",
+              "DocumentMoniker": "D:\\HenIshi\\HenIshi\\Properties\\launchSettings.json",
+              "RelativeDocumentMoniker": "HenIshi\\Properties\\launchSettings.json",
+              "ToolTip": "D:\\HenIshi\\HenIshi\\Properties\\launchSettings.json",
+              "RelativeToolTip": "HenIshi\\Properties\\launchSettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2025-02-27T11:46:07.741Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

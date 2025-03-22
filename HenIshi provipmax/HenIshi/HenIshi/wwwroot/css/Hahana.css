@@ -1,0 +1,901 @@
+﻿:root {
+    --accent-color: #717171;
+    --white-color: #fff;
+    --black-color: #272727;
+    --gray-color: #F3F3F3;
+    --gray-color-200: #E3E3E3;
+    --gray-color-300: #E0E0E0;
+    --gray-color-500: #D0D0D0;
+    --gray-color-800: #3A3A3A;
+    --light-gray-color: #D2D2D2;
+    --primary-color: #FF6543;
+    --bs-body-color: #272727;
+    --bs-secondary-color: rgba(194, 194, 194, 1);
+    --bs-secondary-rgb: 220, 220, 220;
+    --bs-primary-rgb: 255,101,67;
+    --bs-border-color: #E3E3E3;
+    --bs-dropdown-link-active-bg: #F5F5F5;
+    --light-color: #F8F8F8;
+    --light-blue-color: #EDF1F3;
+    --navbar-color-color: #131814;
+    --swiper-theme-color: #4A4A4A;
+    --swiper-pagination-color: #4A4A4A;
+    --bs-box-shadow: 0 0.2rem 0.6rem rgba(0, 0, 0, 0.08);
+    --bs-btn-font-size: 1rem;
+}
+body {
+    font-family: Arial;
+    background-color: white;
+    cursor: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewport='0 0 100 100' style='fill:black;font-size:20px;'%3E%3Ctext y='50%' x='50%' text-anchor='middle' dy='.3em'%3E💩%3C/text%3E%3C/svg%3E"), auto;
+    background-color: var(--bg);
+    overflow-x: hidden;
+}
+
+
+/*body {
+    
+    color: var(--fg);
+    
+    height: 100vh;
+    display: grid;
+    place-items: center;
+    transition: background-color var(--trans-dur), color var(--trans-dur);
+}*/
+/*gio hang*/
+.fa-brands {
+    text-decoration: none;
+    padding-inline: 1em;
+    border-radius: 2em;
+    color: black;
+    background-color: white;
+}
+    .fa-brands:hover {
+        color: deepskyblue;
+        transform: translate(2px,2px);
+    }
+    /*btn dat ngay*/
+.btn-datngay {
+    background-color: red;
+    color: white;
+    font-size: 16px;
+    text-decoration:none;
+
+}
+    .btn-datngay:hover {
+        background-color: red;
+        transform: translate(2px,2px);
+    }
+/*btn search*/
+
+.btn {
+    width:80px;
+        font-size: 16px;
+    font-weight: 100;
+    line-height: 0.6cm;
+    text-decoration: none;
+    padding-inline: 1em;
+    border: 2px solid black;
+    border-radius: 2em;
+    color: black;
+    background-color: white;
+}
+.btn:hover{
+    background-color:lightblue;
+    transform:translate(2px,2px);
+}
+
+.button-Login {
+    left: 270px;
+    font-family: Arial;
+    font-size: 16px;
+    background-color: white;
+    border: 2px solid black;
+    color: black;
+    border-radius: 40px;
+    padding: 0.4em 2.1em;
+    display: inline-block;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    transition: 0.4s transform ease-in-out,0.4s box-shadow ease-in-out;
+}
+.button-Login:hover{
+    transform: translateY(-3px);
+    box-shadow: 0 8px 12px rgba(0,0,0,0.25);
+}
+    .button-Login::before {
+        background-color: rgb(112, 200, 229);
+        border-radius: 100%;
+        width: 100%;
+        height: 200%;
+        position: absolute;
+        z-index: -1;
+        top: 100%;
+        left: 100%;
+        content: "";
+        transition: 0.4s all ease-in-out;
+    }
+.button-Login:hover::before{
+    top:-50%;
+    left:-30%;
+}
+
+/*.button-Signup {
+    
+    font-family: Arial;
+    font-size: 16px;
+    left: 270px;
+    background-color: white;
+    border: 2px solid black;
+    color: black;
+    border-radius: 40px;
+    padding: 0.4em 1.8em;
+    display: inline-block;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    transition: 0.4s transform ease-in-out,0.4s box-shadow ease-in-out;
+}
+
+    .button-Signup:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 12px rgba(0,0,0,0.25);
+    }
+
+    .button-Signup::before {
+        background-color: rgb(112, 200, 229);
+        border-radius: 100%;
+        width: 100%;
+        height: 200%;
+        position: absolute;
+        z-index: -1;
+        top: 100%;
+        left: 100%;
+        content: "";
+        transition: 0.4s all ease-in-out;
+    }
+
+    .button-Signup:hover::before {
+        top: -50%;
+        left: -30%;
+    }*/
+   /*navbar duoi top*/
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+}
+
+    .dropdown-content a {
+        color: black;
+        padding: 12px 16px;
+        text-decoration: none;
+        display: block;
+    }
+
+        .dropdown-content a:hover {
+            background-color: #f1f1f1
+        }
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+.dropdown:hover .dropbtn {
+    background-color: #3e8e41;
+}
+.navbar-bot {
+    margin-left: -160px;
+    margin-right: -125px;
+    padding: 10px;
+    
+    position: sticky;
+    top: 0px;
+    backdrop-filter: blur(45px);
+    z-index: 1000;
+}
+
+.navbar-nav { 
+    margin-top:-60px;
+    font-size: 15px;
+    font-weight: 700;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: #fff;
+    padding: 0 0px 10px 50px;
+    
+    transition: color 0.3s ease-in-out,opacity 0.3s ease-in-out;
+}
+
+.navbar-nav:has(:hover) a:not(:hover) {
+    opacity: 0.3;
+}
+
+body .header__top {
+    background-color: lightblue;
+    
+}
+
+.contact {
+    display: flex;
+    align-items: center; /* Căn giữa theo chiều dọc */
+    gap: 10px; /* Tạo khoảng cách giữa icon và nội dung */
+    margin-left: 400px; /* Đẩy phần này về bên phải */
+    position: absolute;
+    top:15px;
+}
+
+    /* Thu nhỏ icon headphone */
+    .contact .headphone img {
+        width: 50px;
+        height: auto;
+    }
+
+    /* Thiết kế chữ "Hỗ trợ đặt khám" */
+    .contact h10 {
+        font-size: 14px;
+        font-weight: bold;
+        text-decoration: none;
+        color: #333; /* Màu chữ tối hơn */
+        display:block;
+    }
+
+    /* Số điện thoại */
+    .contact p {
+        margin: 0;
+        font-size: 14px;
+        color: #666;
+    }
+
+
+.navbar-brand{
+    margin-left: 100px;
+    margin-top:-40px;
+    margin-right:-50px;
+    margin-bottom:-50px;
+}
+/*Navbar trên cùng*/
+.nav-top {
+    margin-top: 0px;
+    margin-left: -160px;
+    margin-right: -125px;
+    padding:10px;
+}
+
+.BigAss a{
+    text-decoration: none;
+    color: black;
+    font-size:14px;
+}
+
+/*logo*/
+.menu-container {
+    position: relative;
+}
+/*3 gach*/
+/*.canvas__open {
+    font-size: 30px;
+    cursor: pointer;
+    padding:0 0 0 20px;
+    height: 45px;
+    
+}
+.menu-list {
+    list-style: none;
+    
+    margin: 0;
+    background: #fff;
+    border: 1px solid #ccc;
+    position: absolute;
+    top: 40px;
+    left: 0;
+    width: 200px;
+    display: none;
+}
+
+    .menu-list li {
+        padding: 10px;
+        border-bottom: 1px solid #ddd;
+    }
+
+        .menu-list li a {
+            text-decoration: none;
+            color: #333;
+            display: block;
+        }
+
+        .menu-list li:hover {
+            background: #f4f4f4;
+        }*/
+
+
+/*3 hinh o giua*/
+
+.carousel-inner {
+    display: flex;
+    justify-content: center; /* Căn giữa ảnh trong carousel */
+
+    width: 100%;
+    height: 50vh; /* Đảm bảo carousel nằm ở giữa màn hình */
+    
+    margin-left:-30px;
+    width: 1400px;
+}
+
+.carousel-item {
+    top:-12px;
+    right: 800px;
+    width: 100%;
+    height: 110%;
+    aspect-ratio: 1/1;
+    border-radius: 10px;
+    position: relative;
+    cursor: pointer;
+    overflow: hidden;
+}
+
+    .carousel-item .carousel-img {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        height: 100%;
+        border-radius: inherit;
+            }
+
+        .carousel-item .carousel-img img {
+            
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            object-position: center; /* Hoặc 50% 90% nếu muốn */
+            border-radius: inherit;
+            max-height: 1800px;
+            max-width: 1800px;
+            transition: opacity 0.5s ease-in-out, filter 0.5s ease-in-out;
+        }
+
+.carousel-control-prev,
+.carousel-control-next {
+    transform: translateX(250px); /* Kéo nút prev vào trong */
+   
+}
+.carousel-control-next {
+    transform: translateX(-250px); /* Kéo nút next vào trong */
+}
+/*button kham benh giua trang chinh*/
+.main {
+    background: white;
+    padding: 10px;
+    border-radius: 10px;
+    max-height: 300px;
+    max-width: 300px;
+    text-align: center;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+}
+.main img{
+    margin:10px 0 0 0px;
+}
+    .main a {
+        text-decoration: none; /*Khong gach chan*/
+        color: black;
+        
+    }
+    .main h3 {
+        font-size: 16px;
+        background: white;
+        position: relative;
+        
+        height:30px;
+    }
+    .main:hover {
+        border: 3px solid lightblue;
+        
+        transform: translate(2px,2px);
+    }
+/*2 tabbar*/
+
+
+.filter__controls {
+    display: flex;
+    justify-content: center;
+    list-style: none;
+    padding: 0px;
+    margin: 20px 0;
+    
+}
+
+    .filter__controls li {
+        padding: 10px 20px 0 0;
+        cursor: pointer;
+        font-weight: bold;
+        color: gray;
+        transition: color 0.3s ease-in-out;
+    }
+
+        .filter__controls li.active {
+            color: black;
+            border-bottom: 2px solid black;
+        }
+        /*cho ban kiet*/
+.product {
+    display: none;
+    text-align: center;
+    padding: 20px;
+}
+
+    .product img {
+        width: 190px;
+        height: auto;
+        border-radius: 10px;
+    }
+
+.row .product {
+    width: 400px;
+    aspect-ratio: 1/0.7;
+    border-radius: 8px;
+    position: relative;
+    cursor: pointer;
+}
+.row .product .img-box{
+    width:100%;
+    height:100%;
+    border-radius: inherit;
+}
+.row .product .img-box img{
+    width:90%;
+    height:100%;
+    object-fit:cover;
+    object-position:50% 90%;
+    border-radius:inherit;
+    transition: 0.5s ease-in-out;
+}
+.row .product::after{
+    content:"";
+    position: absolute;
+    inset:0;
+    border: 2px solid white;
+    border-radius: inherit;
+    opacity:0;
+    transition:0.4s ease-in-out;
+}
+.row .product:hover img{
+    filter: grayscale(1) brightness(0.4);
+}
+.row .product:hover::after{
+    opacity:1;
+    inset:20px;
+}
+.content{
+    width:80%;
+    position:absolute;
+    top:50%;
+    left:50%;
+    transform:translate(-50%, -50%);
+    opacity:0;
+    color: white;
+}
+.product:hover .content{
+    opacity:0.5;
+}
+/*Danh sach su kien*/
+
+/*end-footer*/
+.end-footer .container{
+    
+   
+    margin:auto;
+    margin-bottom:-100px;
+}
+.end-footer .row{
+    display: flex;
+    flex-wrap:wrap;
+}
+.end-footer ul{
+    list-style:none;
+}
+.end-footer{
+    background-color:#24262b;
+    padding: 0 15px;
+    width:1580px;
+    margin:0 0 0 -195px;
+}
+.footer-col{
+    width:25%;
+    padding:0 15px;
+}
+.footer-col h4{
+    font-size:16px;
+    color:#ffffff;
+    text-transform: capitalize;
+    margin-bottom:30px;
+    font-weight:500;
+    position:relative;
+}
+.footer-col h4::before{
+    content:'';
+    position:absolute;
+    left:0;
+    bottom:-10px;
+    background-color:#e91e63;
+    height:2px;
+    box-sizing:border-box;
+    width:50px;
+}
+.footer-col ul li:not(:last-child){
+    margin-bottom:10px;
+}
+.footer-col ul li a{
+    font-size:16px;
+    text-transform:capitalize;
+    color:#ffffff;
+    text-decoration:none;
+    font-weight:300;
+    color:#bbbbbb;
+    display:block;
+    transition: all 0.3s ease;
+}
+.footer-col ul li a:hover{
+    color:#ffffff;
+    padding-left:8px;
+}
+    .footer-col .social-link i {
+        display: inline-block;
+        height: 40px;
+        width: 40px;
+        background-color: rgba(255,255,255,0.2);
+        margin: 0 10px 10px 0;
+        padding-left:10px;
+        line-height: 40px;
+        border-radius: 50%;
+        color: #24262b;
+        transition: all 0.5s ease;
+    }
+    .footer-col .social-link i:hover {
+        color: #24262b;
+        
+        background-color: #ffffff;
+    }
+@media(max-width: 574px){
+    .footer-col{
+        width:100%;
+        
+    }
+}
+
+/*loadding hover*/
+:root {
+    --hue: 223;
+    --bg: hsl(var(--hue),10%,90%);
+    --fg: hsl(var(--hue),10%,10%);
+    --primary: hsl(var(--hue),90%,55%);
+    --trans-dur: 0.3s;
+    font-size: calc(16px + (20 - 16) * (100vw - 320px) / (1280 - 320));
+}
+
+
+
+.preloader {
+    display: none; /* Ẩn mặc định */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.9);
+    z-index: 9999;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+}
+
+.preloader__text {
+    position: relative;
+    height: 1.5em;
+}
+
+.preloader__msg {
+    animation: msg 0.3s 13.7s linear forwards;
+    position: absolute;
+    width: 100%;
+}
+
+.preloader__msg--last {
+    animation-direction: reverse;
+    animation-delay: 14s;
+    visibility: hidden;
+}
+
+.cart {
+    display: block;
+    margin: 0 auto 1.5em auto;
+    width: 8em;
+    height: 8em;
+}
+
+.cart__lines,
+.cart__top,
+.cart__wheel1,
+.cart__wheel2,
+.cart__wheel-stroke {
+    animation: cartLines 2s ease-in-out infinite;
+}
+
+.cart__lines {
+    stroke: var(--primary);
+}
+
+.cart__top {
+    animation-name: cartTop;
+}
+
+.cart__wheel1 {
+    animation-name: cartWheel1;
+    transform: rotate(-0.25turn);
+    transform-origin: 43px 111px;
+}
+
+.cart__wheel2 {
+    animation-name: cartWheel2;
+    transform: rotate(0.25turn);
+    transform-origin: 102px 111px;
+}
+
+.cart__wheel-stroke {
+    animation-name: cartWheelStroke;
+}
+
+.cart__track {
+    stroke: hsla(var(--hue),10%,10%,0.1);
+    transition: stroke var(--trans-dur);
+}
+
+/* Dark theme */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg: hsl(var(--hue),10%,10%);
+        --fg: hsl(var(--hue),10%,90%);
+    }
+
+    .cart__track {
+        stroke: hsla(var(--hue),10%,90%,0.1);
+    }
+}
+
+/* Animations */
+@keyframes msg {
+    from {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    99.9% {
+        opacity: 0;
+        visibility: visible;
+    }
+
+    to {
+        opacity: 0;
+        visibility: hidden;
+    }
+}
+
+@keyframes cartLines {
+    from, to {
+        opacity: 0;
+    }
+
+    8%, 92% {
+        opacity: 1;
+    }
+}
+
+@keyframes cartTop {
+    from {
+        stroke-dashoffset: -338;
+    }
+
+    50% {
+        stroke-dashoffset: 0;
+    }
+
+    to {
+        stroke-dashoffset: 338;
+    }
+}
+
+@keyframes cartWheel1 {
+    from {
+        transform: rotate(-0.25turn);
+    }
+
+    to {
+        transform: rotate(2.75turn);
+    }
+}
+
+@keyframes cartWheel2 {
+    from {
+        transform: rotate(0.25turn);
+    }
+
+    to {
+        transform: rotate(3.25turn);
+    }
+}
+
+@keyframes cartWheelStroke {
+    from, to {
+        stroke-dashoffset: 81.68;
+    }
+
+    50% {
+        stroke-dashoffset: 40.84;
+    }
+}
+
+/*preloader khi moi vao*/
+.preloader-container {
+    position: fixed;
+    top: 0;
+    left: -70px;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    width: 110%;
+    height: 100vh;
+    background: var(--white-color);
+    z-index: 9999999;
+}
+
+    .preloader-container.active_new {
+        -webkit-transform: translateY(-100vh);
+        transform: translateY(-100vh);
+        -webkit-transition: ease-in-out 0.5s;
+        transition: ease-in-out 0.5s;
+        -webkit-transition-delay: 0.3s;
+        transition-delay: 0.3s;
+    }
+
+.preloader-text {
+    top: 45%;
+    font-size: 66px;
+    height: 500px;
+    position: absolute;
+    width: 90%;
+    margin: auto;
+    text-align: center;
+}
+
+.preloader-container.active_new .preloader-text {
+    display: none;
+}
+
+/* Animation for individual letters */
+.preloader-text span {
+    opacity: 0;
+    animation: topToBottom 0.6s forwards;
+    transform-origin: center;
+}
+
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes fadeInLetter {
+    0% {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes topToBottom {
+    0% {
+        transform: translateY(-100%);
+    }
+
+    100% {
+        transform: translateY(0);
+    }
+}
+
+@keyframes scaleIn {
+    0% {
+        transform: scale(0.8);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes fadeOut {
+    0% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+@keyframes expandWidth {
+    0% {
+        width: auto;
+    }
+
+    100% {
+        width: 100%;
+        letter-spacing: 20px;
+    }
+}
+
+/*chat lor*/
+.chatbox {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 300px;
+    background: #fff;
+    border: 1px solid #ddd;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    display: none;
+}
+
+.chat-header {
+    background: #004c97;
+    color: #fff;
+    padding: 10px;
+    text-align: center;
+    cursor: pointer;
+}
+
+.chat-body {
+    padding: 10px;
+    height: 300px;
+    overflow-y: auto;
+}
+
+.chat-input {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-top: 1px solid #ddd;
+}
+
+.toggle-chat {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #004c97;
+    color: #fff;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    border-radius: 5px;
+}
