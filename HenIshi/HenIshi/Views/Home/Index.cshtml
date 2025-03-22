@@ -1,0 +1,558 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link href="~/css/Hahana.css" rel="stylesheet" />
+    <link rel='stylesheet' href='https://fonts.googleapis.com/css2?family=DM+Sans&amp;display=swap'>
+     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
+    <title>Hahana
+    </title>
+</head>
+<body class="d-flex flex-column min-vh-100">
+	
+    <!-- Navbar trên cùng -->
+    <nav class="nav-top navbar-expand-sm navbar-light bg-light">
+        <div class="container-fluid">
+            
+            <div class="Big4 ms-auto justify-content-start d-flex w-80">
+                <div class="BigAss">
+                    <a href="https://www.youtube.com/watch?v=i6wU_CQUbIA">
+                        <i class="fa-brands fa-tiktok">TikTok</i>
+                    </a>
+                
+                
+                    <a href="https://www.youtube.com/watch?v=i6wU_CQUbIA">
+                        <i class="fa-brands fa-facebook">Facebook</i>
+                    </a>
+           
+             
+                    <a href="https://www.youtube.com/watch?v=i6wU_CQUbIA">
+						<i class="fa-brands fa-zalo"><img src="~/Img/icons8-zalo-50.png" width="25" height="25" /> Zalo</i>
+                        
+                    </a>
+
+
+					<a href="https://www.youtube.com/watch?v=i6wU_CQUbIA">
+						<i class="fa-brands fa-youtube">Youtube</i>
+                         
+                    </a>
+				</div>
+                <div class="collapse navbar-collapse" id="mynavbar">
+                    <!-- Search -->
+                    <button class="button-Login" type="button" onclick="delayRedirect('/home/login')">Sign In</button>
+                     <form class="d-flex ms-auto me-3">
+                        <input class="form-control me-2" type="text" placeholder="Search">
+                        <button class="btn btn-primary" type="button">Search</button>
+                    </form>
+
+                    <!-- Menu Login, Signup, Giỏ hàng -->
+					<div class="d-flex align-items-center">
+
+                        
+                        <a class="btn-datngay" href="/home/contact">
+							<button class="btn-datngay"><i class="fa-solid fa-calendar-days"></i>Đặt ngay</button>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+        </nav>
+    <!-- Thanh điều hướng thứ hai -->
+	
+
+	<nav class="navbar-bot navbar-expand-sm navbar-light bg-light">
+		
+		<div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <img src="~/Img/hahahahahahana.png" width="100" height="60" alt="Logo">
+                </a>
+            <div class="contact ">
+            <div class="headphone ">
+                <img src="~/Img/headphone.png" alt="headphone"/>
+                </div>
+				<h10>Hỗ trợ đặt khám<br><p>0337178391</p></h10>
+               
+                
+			</div>
+        </div>
+
+
+		<ul class="navbar-nav ms-auto d-flex justify-content-end w-80">
+            
+                <li class="nav-item">
+                <a class="nav-link active" href="https://localhost:7269/">Trang chủ</a>
+                </li>
+                <li class="nav-item">
+                <a class="nav-link" href="/home/introduce">Giới thiệu phòng khám</a>
+                </li>
+
+                <li class="nav-item">
+                <div class="dropdown">
+                    <a class="nav-link" href="#">Dịch vụ nha khoa</a>
+                    <div class="dropdown-content">
+			<a href="/home/bocrangsu">Bọc răng sứ</a>
+			<a href="/home/cayghepimpact">Cấy ghép implant</a>
+			<a href="/home/niengrang">Niềng răng thẩm mỹ</a>
+			<a href="/home/matdansu">Mặt dán sứ Veneer</a>
+			<a href="/home/taytrang">Tẩy trắng răng</a>
+                    </div>
+                </div>
+                
+                </li>
+                <li class="nav-item">
+                <a class="nav-link" href="/home/contact">Đặt lịch hẹn</a>
+                </li>
+                
+                
+            </ul>
+			
+        
+    </nav>
+    <div id="demo" class="carousel slide" data-bs-ride="carousel" data-bs-interval="3000">
+
+        <!-- Indicators/dots -->
+        <div class="carousel-indicators">
+            <button type="button" data-bs-target="#demo" data-bs-slide-to="0" class="active"></button>
+            <button type="button" data-bs-target="#demo" data-bs-slide-to="1"></button>
+            <button type="button" data-bs-target="#demo" data-bs-slide-to="2"></button>
+        </div>
+
+        <!-- The slideshow/carousel -->
+        <div class="carousel-inner">
+
+			<div class="carousel-item active">
+				<div class="carousel-img">
+                    <img src="https://nhakhoakim.com/wp-content/uploads/2024/05/BannerWeb-PhongTietTrung-PC-01-scaled.jpg" alt="nguoi dep choi da" class="d-block">
+				</div>
+			</div>
+            <div class="carousel-item">
+                <div class="carousel-img">
+                    <img src="https://nhakhoakim.com/wp-content/uploads/2025/02/Implant-PC.jpg" alt="nguoi dep choi da" class="d-block">
+            </div>
+            </div>
+            <div class="carousel-item">
+                    <div class="carousel-img">
+                    <img src="https://nhakhoakim.com/wp-content/uploads/2025/02/Implant-PC.jpg" alt="nguoi dep choi da" class="d-block">
+                </div>
+            </div>
+        </div>
+
+        <!-- Left and right controls/icons -->
+        <button class="carousel-control-prev" type="button" data-bs-target="#demo" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon"></span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#demo" data-bs-slide="next">
+            <span class="carousel-control-next-icon"></span>
+        </button>
+	</div>
+    <!--Style-card-->
+    <div class="row new-arrivals d-flex justify-content-center">
+        <div class="col-md-2 new-arrivals">
+            <div class="main">
+                <a href="/home/bocrangsu">
+                    <img src="~/Img/Facebook.png" width="50%" height="50%" />
+                    <h3>Bọc răng sứ</h3>
+                    </a>
+                </div>
+
+            </div>
+            <div class="col-md-2 new-arrivals">
+            <div class="main">
+                <a href="/home/cayghepimpact">
+                    <img src="~/Img/HenIshi3.png" width="50%" height="50%" />
+                    <h3>Cấy ghép implant</h3>
+                    </a>
+                </div>
+
+            </div>
+            <div class="col-md-2 new-arrivals">
+            <div class="main">
+                <a href="/home/niengrang">
+                    <img src="~/Img/HenIshi3.png" width="50%" height="50%" />
+                    <h3>Niềng răng thẩm mỹ</h3>
+                    </a>
+                </div>
+
+            </div>
+            <div class="col-md-2 new-arrivals">
+            <div class="main">
+                <a href="/home/matdansu">
+                    <img src="~/Img/HenIshi3.png" width="50%" height="50%" />
+                    <h3>Mặt dán sứ Veneer</h3>
+                    </a>
+                </div>
+
+            </div>
+        <div class="col-md-2 new-arrivals">
+            <div class="main">
+                <a href="/home/taytrang">
+                    <img src="~/Img/HenIshi3.png" width="50%" height="50%" />
+					<h3>Tẩy trắng răng thẩm mỹ</h3>
+				</a>
+                
+            </div>
+
+        </div>
+        
+            </div>
+    <div class="row new-arrivals d-flex justify-content-center">
+        <div class="col-md-6 new-arrivals">
+            <div class="Gioithieupk">
+            <h1>Ve da khoa hahana</h1>
+            <p>Là chuỗi Phòng khám Nha khoa uy tín Việt Nam với đội ngũ Bác sĩ điều trị giỏi; Chăm sóc khách tận tâm và Kết quả nụ cười đẹp. Nha Khoa Kim với 235 Bác sĩ, 251 Phụ tá tại 32 Phòng khám phủ khắp TpHCM, Hà Nội, Biên Hoà, Bình Dương, Vũng Tàu, Tiền Giang, sẵn sàng phục vụ khách hàng nhanh chóng, thuận tiện.</p>
+        </div>
+        </div>
+        <div class="col-md-6 new-arrivals">
+            <div class="Gioithieupk">
+            <img src="~/Img/HenIshi3.png" width="80%" height="80%" />
+        </div>
+        </div>
+            </div>
+    
+
+        <div class="container">
+            <ul class="filter__controls">
+                <li class="active" data-filter="latest-products">Bán chạy nhất</li>
+                <li data-filter="new-arrivals">Mới nhất</li>
+
+            </ul>
+
+            <div class="row latest-products justify-content-center">
+                <!-- Bán chạy nhất -->
+                <div class="col-md-3 product latest-products">
+                    <div class="img-box">
+                        <img src="https://th.bing.com/th/id/R.d92af5d4351492ccea4e7442f8c02a3f?rik=dRUm0BxhJCwikw&pid=ImgRaw&r=0"
+                             alt="Bán chạy 1">
+                    </div>
+                    <div class="content">
+                        <p>Bán chạy 1</p>
+                    </div>
+
+                </div>
+                <div class="col-md-3 product latest-products">
+                    <div class="img-box">
+                        <img src="https://cafefcdn.com/thumb_w/640/203337114487263232/2022/11/24/photo1669283511049-16692835111751997281295.jpg"
+                             alt="Bán chạy 2">
+                    </div>
+                    <div class="content">
+                        <p>Bán chạy 2</p>
+                    </div>
+                </div>
+                <div class="col-md-3 product latest-products">
+                    <div class="img-box">
+                        <img src="https://th.bing.com/th/id/OIP.tcpizMARWL7EerFYSU2WlAHaE8?rs=1&pid=ImgDetMain"
+                             alt="Bán chạy 3">
+                    </div>
+                    <div class="content">
+                        <p>Bán chạy 3</p>
+                    </div>
+                </div>
+                </div>
+
+                <!-- Mới nhất -->
+                <div class="row new-arrivals justify-content-center">
+                    <div class="col-md-3 product new-arrivals">
+                        <div class="img-box">
+                            <img src="https://th.bing.com/th/id/OIP.-9A6Xq7y5WmcpW_CcwGqhAHaEJ?rs=1&pid=ImgDetMain"
+                                 alt="Mới nhất 1">
+
+                        </div>
+                        <div class="content">
+                            <p>Sức mạnh phi thường, thể lực vô hạn</p>
+                            <a href="https://localhost:7171/Home/Details/1"> Mua Ngay ----></a>
+                        </div>
+
+                    </div>
+                    <div class="col-md-3 product new-arrivals">
+                        <div class="img-box">
+                            <img src="https://th.bing.com/th/id/OIP.4hiRocLhjPhJuzLG9y3_dwHaEK?w=318&h=180&c=7&r=0&o=5&dpr=1.3&pid=1.7"
+                                 alt="Mới nhất 2">
+                        </div>
+                        <div class="content">
+                            <p>Anh da den gi cung biet</p>
+                            <a href="https://localhost:7171/Home/Details/2"> Mua Ngay ----></a>
+                        </div>
+
+                    </div>
+
+                    <div class="col-md-3 product new-arrivals">
+                        <div class="img-box">
+                            <img src="https://th.bing.com/th/id/OIP.shLEdKaGO7Excx0DIgCy0QAAAA?rs=1&pid=ImgDetMain"
+                                 alt="Mới nhất 3">
+                        </div>
+                        <div class="content">
+                            <p>Anh da den lich lam</p>
+                            <a href="https://localhost:7171/Home/Details/3"> Mua Ngay ----></a>
+                        </div>
+                    </div>
+                    
+    </div>
+    </div>
+
+
+ <footer class="end-footer">
+     <div class="container">
+         <div class="row">
+             <div class="footer-col">
+                 <h4>Company</h4>
+                 <ul>
+						<li>
+							<a href="#">about us</a>
+						</li>
+                        <li>
+                            <a href="#">our service</a>
+                        </li>
+                        <li>
+                            <a href="#">privacy policy</a>
+                        </li>
+                        <li>
+                            <a href="#">affiliate program</a>
+                        </li>
+                 </ul>
+             </div>
+                <div class="footer-col">
+                    <h4>Get help</h4>
+                    <ul>
+                        <li>
+                            <a href="#">FAQ</a>
+                        </li>
+                        <li>
+                            <a href="#">shipping</a>
+                        </li>
+                        <li>
+                            <a href="#">return</a>
+                        </li>
+                        <li>
+                            <a href="#">order status</a>
+                        </li>
+                        <li>
+                            <a href="#">payment opinions</a>
+                        </li>
+                    </ul>
+             </div>
+                <div class="footer-col">
+                    <h4>Service</h4>
+                    <ul>
+                        <li>
+                            <a href="#">dfdfsdsv</a>
+                        </li>
+                        <li>
+                            <a href="#">dvsdsvdsv</a>
+                        </li>
+                        <li>
+                            <a href="#">dsvdvsdvs</a>
+                        </li>
+                        <li>
+                            <a href="#">dsvdvsvds</a>
+                        </li>
+                        <li>
+                            <a href="#">vdsdsvdvs</a>
+                        </li>
+                        <li>
+                            <a href="#">dvsdvs</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Follow us</h4>
+                    <div class="social-link">
+                        <a href="#"><i class="fa-brands fa-tiktok"></i></a>
+                        <a href="#"><i class="fa-brands fa-facebook"></i></a>
+                        <a href="#"><i class="fa-brands fa-zalo"><img src="~/Img/icons8-zalo-50.png" width="25" height="25" /></i></a>
+                        <a href="#"><i class="fa-brands fa-youtube"></i></a>
+                    </div>
+                </div>
+         </div>
+     </div>
+	</footer>
+    @* Chat lỏ nha khoa:)) *@
+    <button class="toggle-chat" onclick="toggleChat()">Chat</button>
+    <div class="chatbox" id="chatbox">
+        <div class="chat-header" onclick="toggleChat()">Chatbot Nha Khoa</div>
+        <div class="chat-body" id="chat-body"></div>
+        <input type="text" id="chat-input" class="chat-input" placeholder="Nhập câu hỏi..." onkeypress="handleKeyPress(event)">
+    </div>
+
+    <script>
+        function toggleChat() {
+            var chatbox = document.getElementById("chatbox");
+            if (chatbox.style.display === "none" || chatbox.style.display === "") {
+                chatbox.style.display = "block";
+            } else {
+                chatbox.style.display = "none";
+            }
+        }
+         function handleKeyPress(event) {
+            if (event.key === "Enter") {
+                var input = document.getElementById("chat-input").value;
+                var chatBody = document.getElementById("chat-body");
+                var response = getChatResponse(input);
+                chatBody.innerHTML += `<p><strong>Bạn:</strong> ${input}</p>`;
+                chatBody.innerHTML += `<p><strong>Bot:</strong> ${response}</p>`;
+                document.getElementById("chat-input").value = "";
+                chatBody.scrollTop = chatBody.scrollHeight;
+            }
+        }
+
+        function getChatResponse(input) {
+            var responses = {
+                "bọc răng sứ": "Bọc răng sứ giúp cải thiện thẩm mỹ và bảo vệ răng.",
+                "cấy ghép implant": "Cấy ghép implant là phương pháp thay thế răng đã mất hiệu quả.",
+                "niềng răng": "Niềng răng giúp điều chỉnh vị trí răng, mang lại hàm răng đẹp.",
+                "tẩy trắng răng": "Tẩy trắng răng giúp răng sáng hơn, tự tin hơn.",
+                "nhổ răng khôn": "Nhổ răng khôn giúp ngăn ngừa các biến chứng về sau.",
+              "tôi mắc ỉa": "Cút về nhà mà ỉa",
+              "Tôi đẹp trai không": "Đep như nam thần campuchia",
+              "input":"co cai con c"
+            };
+            return responses[input.toLowerCase()] || "Xin lỗi, tôi chưa hiểu câu hỏi của bạn. Vui lòng thử lại!";
+        }
+    </script>
+
+       
+  @*   <div class="row new-arrivals d-flex justify-content-center"> *@
+  @*       <div class="col-md-2 section new-arrivals"> *@
+  @*       <div class="main" id="section1"> *@
+		@* 	<a href="#section2"> *@
+  @*           <img src="~/Img/kietdangngu.jpg" width="100" height="100"  /> *@
+  @*           </a> *@
+  @*       </div> *@
+  @*       </div> *@
+  @*       <div class="col-md-2 section new-arrivals"> *@
+  @*       <div class="main" id="section1"> *@
+		@* 	<a href="#section2"> *@
+  @*           <img src="~/Img/kietdangngu.jpg" width="100" height="100"  /> *@
+  @*           </a> *@
+  @*       </div> *@
+  @*       </div> *@
+  @*       <div class="col-md-2 section new-arrivals"> *@
+  @*           <div class="main" id="section1"> *@
+  @*               <a href="#section2"> *@
+  @*                   <img src="~/Img/kietdangngu.jpg" width="100" height="100" /> *@
+  @*               </a> *@
+  @*           </div> *@
+  @*       </div> *@
+  @*       <div class="col-md-2 section new-arrivals"> *@
+  @*           <div class="main" id="section1"> *@
+  @*               <a href="#section2"> *@
+  @*                   <img src="~/Img/kietdangngu.jpg" width="100" height="100" /> *@
+  @*               </a> *@
+  @*           </div> *@
+		@* </div> *@
+  @*       <div class="col-md-2 section new-arrivals"> *@
+  @*           <div class="main" id="section1"> *@
+  @*               <a href="#section2"> *@
+  @*                   <img src="~/Img/kietdangngu.jpg" width="100" height="100" /> *@
+  @*               </a> *@
+  @*           </div> *@
+  @*       </div> *@
+  @*            </div>            *@
+        
+    
+  @*       <div class="container-phongthuy"> *@
+		@* <div class="main" id="section2"> *@
+		@* 	<h2>Section 2</h2> *@
+		@* 	<a href="#section1">Click Me to Smooth Scroll to Section 1 Above</a> *@
+		@* </div> *@
+        @* </div> *@
+    <div class="preloader">
+        <svg class="cart" role="img" aria-label="Shopping cart line animation" viewBox="0 0 128 128" width="128px" height="128px" xmlns="http://www.w3.org/2000/svg">
+            <g fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="8">
+                <g class="cart__track" stroke="hsla(0,10%,10%,0.1)">
+                    <polyline points="4,4 21,4 26,22 124,22 112,64 35,64 39,80 106,80" />
+                    <circle cx="43" cy="111" r="13" />
+                    <circle cx="102" cy="111" r="13" />
+                </g>
+                <g class="cart__lines" stroke="currentColor">
+                    <polyline class="cart__top" points="4,4 21,4 26,22 124,22 112,64 35,64 39,80 106,80" stroke-dasharray="338 338" stroke-dashoffset="-338" />
+                    <g class="cart__wheel1" transform="rotate(-90,43,111)">
+                        <circle class="cart__wheel-stroke" cx="43" cy="111" r="13" stroke-dasharray="81.68 81.68" stroke-dashoffset="81.68" />
+                    </g>
+                    <g class="cart__wheel2" transform="rotate(90,102,111)">
+                        <circle class="cart__wheel-stroke" cx="102" cy="111" r="13" stroke-dasharray="81.68 81.68" stroke-dashoffset="81.68" />
+                    </g>
+                </g>
+            </g>
+        </svg>
+        <div class="preloader__text">
+            <p class="preloader__msg">Bringing you the goods…</p>
+            <p class="preloader__msg preloader__msg--last">This is taking long. Something’s wrong.</p>
+        </div>
+    </div>
+    
+    <script>
+        function delayRedirect() {
+            let preloader = document.querySelector(".preloader");
+
+            // Hiển thị preloader
+            preloader.style.display = "flex";
+            preloader.style.opacity = "1";
+
+            // Vô hiệu hóa nút bấm để tránh bấm nhiều lần
+            document.querySelector(".button-Login").style.pointerEvents = "none";
+            setTimeout(() => {
+                window.location.href = "/home/login";
+            }, 2000);
+        
+
+        document.querySelector(".button-Signup").style.pointerEvents = "none";
+            setTimeout(() => {
+                window.location.href = "/home/login";
+            }, 2000);
+        }
+        // Ẩn preloader khi trang tải xong
+        window.onload = function () {
+            let preloader = document.querySelector(".preloader");
+            preloader.style.opacity = "0";
+            setTimeout(() => {
+                preloader.style.display = "none";
+            }, 500); // Đợi 0.5s để hiệu ứng mượt hơn
+        };
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            $(".product").hide(); // Ẩn tất cả sản phẩm
+            $(".latest-products").show(); // Hiển thị mặc định danh mục "Bán chạy nhất"
+
+            $(".filter__controls li").click(function () {
+                var filter = $(this).data("filter");
+
+                $(".filter__controls li").removeClass("active");
+                $(this).addClass("active");
+
+                $(".product").hide(); // Ẩn toàn bộ sản phẩm
+                $("." + filter).fadeIn(); // Chỉ hiển thị danh mục được chọn
+            });
+        });
+    </script>
+
+
+    <script>
+        
+        function toggleMenu() {
+            let menu = document.querySelector('.menu-list');
+            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+        }
+    </script>
+    @* Preloader khi mới vào bỏ cũng đc *@
+    <div class="preloader-container">
+        <div class="preloader-text">
+            <span>H</span><span>A</span><span>H</span><span>A</span><span>N</span><span>A</span>
+        </div>
+    </div>
+    <script src="js/jquery-1.11.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.js"></script>
+    <script type="text/javascript" src="js/script.js"></script>
+</body>
+</html>

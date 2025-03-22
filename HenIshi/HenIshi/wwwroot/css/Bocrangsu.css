@@ -1,0 +1,465 @@
+﻿:root {
+    --accent-color: #717171;
+    --white-color: #fff;
+    --black-color: #272727;
+    --gray-color: #F3F3F3;
+    --gray-color-200: #E3E3E3;
+    --gray-color-300: #E0E0E0;
+    --gray-color-500: #D0D0D0;
+    --gray-color-800: #3A3A3A;
+    --light-gray-color: #D2D2D2;
+    --primary-color: #FF6543;
+    --bs-body-color: #272727;
+    --bs-secondary-color: rgba(194, 194, 194, 1);
+    --bs-secondary-rgb: 220, 220, 220;
+    --bs-primary-rgb: 255,101,67;
+    --bs-border-color: #E3E3E3;
+    --bs-dropdown-link-active-bg: #F5F5F5;
+    --light-color: #F8F8F8;
+    --light-blue-color: #EDF1F3;
+    --navbar-color-color: #131814;
+    --swiper-theme-color: #4A4A4A;
+    --swiper-pagination-color: #4A4A4A;
+    --bs-box-shadow: 0 0.2rem 0.6rem rgba(0, 0, 0, 0.08);
+    --bs-btn-font-size: 1rem;
+}
+
+body {
+    font-family: Arial;
+    background-color: white;
+    cursor: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewport='0 0 100 100' style='fill:black;font-size:20px;'%3E%3Ctext y='50%' x='50%' text-anchor='middle' dy='.3em'%3E💩%3C/text%3E%3C/svg%3E"), auto;
+    background-color: var(--bg);
+    overflow-x: hidden;
+}
+
+
+/*body {
+    
+    color: var(--fg);
+    
+    height: 100vh;
+    display: grid;
+    place-items: center;
+    transition: background-color var(--trans-dur), color var(--trans-dur);
+}*/
+/*gio hang*/
+.fa-brands {
+    text-decoration: none;
+    padding-inline: 1em;
+    border-radius: 2em;
+    color: black;
+    background-color: white;
+}
+
+    .fa-brands:hover {
+        color: deepskyblue;
+        transform: translate(2px,2px);
+    }
+/*btn dat ngay*/
+.btn-datngay {
+    background-color: red;
+    color: white;
+    font-size: 16px;
+}
+
+    .btn-datngay:hover {
+        background-color: red;
+        transform: translate(2px,2px);
+    }
+/*btn search*/
+
+.btn {
+    width: 80px;
+    font-size: 16px;
+    font-weight: 100;
+    line-height: 0.6cm;
+    text-decoration: none;
+    padding-inline: 1em;
+    border: 2px solid black;
+    border-radius: 2em;
+    color: black;
+    background-color: white;
+}
+
+    .btn:hover {
+        background-color: lightblue;
+        transform: translate(2px,2px);
+    }
+
+.button-Login {
+    left: 270px;
+    font-family: Arial;
+    font-size: 16px;
+    background-color: white;
+    border: 2px solid black;
+    color: black;
+    border-radius: 40px;
+    padding: 0.4em 2.1em;
+    display: inline-block;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    transition: 0.4s transform ease-in-out,0.4s box-shadow ease-in-out;
+}
+
+    .button-Login:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 12px rgba(0,0,0,0.25);
+    }
+
+    .button-Login::before {
+        background-color: rgb(112, 200, 229);
+        border-radius: 100%;
+        width: 100%;
+        height: 200%;
+        position: absolute;
+        z-index: -1;
+        top: 100%;
+        left: 100%;
+        content: "";
+        transition: 0.4s all ease-in-out;
+    }
+
+    .button-Login:hover::before {
+        top: -50%;
+        left: -30%;
+    }
+
+/*.button-Signup {
+    
+    font-family: Arial;
+    font-size: 16px;
+    left: 270px;
+    background-color: white;
+    border: 2px solid black;
+    color: black;
+    border-radius: 40px;
+    padding: 0.4em 1.8em;
+    display: inline-block;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    transition: 0.4s transform ease-in-out,0.4s box-shadow ease-in-out;
+}
+
+    .button-Signup:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 12px rgba(0,0,0,0.25);
+    }
+
+    .button-Signup::before {
+        background-color: rgb(112, 200, 229);
+        border-radius: 100%;
+        width: 100%;
+        height: 200%;
+        position: absolute;
+        z-index: -1;
+        top: 100%;
+        left: 100%;
+        content: "";
+        transition: 0.4s all ease-in-out;
+    }
+
+    .button-Signup:hover::before {
+        top: -50%;
+        left: -30%;
+    }*/
+/*navbar duoi top*/
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+}
+
+    .dropdown-content a {
+        color: black;
+        padding: 12px 16px;
+        text-decoration: none;
+        display: block;
+    }
+
+        .dropdown-content a:hover {
+            background-color: #f1f1f1
+        }
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+.dropdown:hover .dropbtn {
+    background-color: #3e8e41;
+}
+
+.navbar-bot {
+    margin-left: -160px;
+    margin-right: -125px;
+    padding: 10px;
+    position: sticky;
+    top: 0px;
+    backdrop-filter: blur(45px);
+    z-index: 1000;
+}
+
+.navbar-nav {
+    margin-top: -60px;
+    font-size: 15px;
+    font-weight: 700;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: #fff;
+    padding: 0 0px 10px 50px;
+    transition: color 0.3s ease-in-out,opacity 0.3s ease-in-out;
+}
+
+    .navbar-nav:has(:hover) a:not(:hover) {
+        opacity: 0.3;
+    }
+
+body .header__top {
+    background-color: lightblue;
+}
+
+.contact {
+    display: flex;
+    align-items: center; /* Căn giữa theo chiều dọc */
+    gap: 10px; /* Tạo khoảng cách giữa icon và nội dung */
+    margin-left: 400px; /* Đẩy phần này về bên phải */
+    position: absolute;
+    top: 15px;
+}
+
+    /* Thu nhỏ icon headphone */
+    .contact .headphone img {
+        width: 50px;
+        height: auto;
+    }
+
+    /* Thiết kế chữ "Hỗ trợ đặt khám" */
+    .contact h10 {
+        font-size: 14px;
+        font-weight: bold;
+        text-decoration: none;
+        color: #333; /* Màu chữ tối hơn */
+        display: block;
+    }
+
+    /* Số điện thoại */
+    .contact p {
+        margin: 0;
+        font-size: 14px;
+        color: #666;
+    }
+
+
+.navbar-brand {
+    margin-left: 100px;
+    margin-top: -40px;
+    margin-right: -50px;
+    margin-bottom: -50px;
+}
+/*Navbar trên cùng*/
+.nav-top {
+    margin-top: 0px;
+    margin-left: -160px;
+    margin-right: -125px;
+    padding: 10px;
+}
+
+.BigAss a {
+    text-decoration: none;
+    color: black;
+    font-size: 14px;
+}
+
+/*logo*/
+.menu-container {
+    position: relative;
+}
+/*mục lục*/
+h1 {
+    color: #ff8c00;
+}
+
+/* Mục lục */
+.toc {
+    max-width: 100%;
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    margin-bottom: 20px;
+}
+
+    .toc h2 {
+        font-size: 18px;
+        margin-bottom: 10px;
+    }
+
+    .toc ul {
+        list-style: none;
+        padding-left: 0;
+    }
+
+        .toc ul li {
+            margin-bottom: 8px;
+        }
+
+            .toc ul li a {
+                text-decoration: none;
+                color: #007bff;
+            }
+
+                .toc ul li a:hover {
+                    text-decoration: underline;
+                }
+
+/* Nội dung + Tin tức */
+.content-wrapper {
+    display: flex;
+    gap: 20px;
+    
+}
+
+.content {
+    flex: 3;
+}
+
+.news {
+    flex: 1;
+    max-width: 300px;
+    position: sticky;
+    top: 100px;
+    height: fit-content;
+}
+
+    .news h3 {
+        font-size: 18px;
+        margin-bottom: 10px;
+    }
+
+.news-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+    .news-item img {
+        width: 60px;
+        height: 60px;
+        object-fit: cover;
+        margin-right: 10px;
+    }
+
+    .news-item a {
+        text-decoration: none;
+        color: #007bff;
+    }
+
+        .news-item a:hover {
+            text-decoration: underline;
+        }
+
+/*end-footer*/
+
+.content-wrapper {
+    display: flex;
+    align-items: flex-start; /* Căn nội dung từ đầu */
+    gap: 20px;
+}
+.end-footer .container {
+    margin: auto;
+    margin-bottom: -300px;
+}
+
+.end-footer .row {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.end-footer ul {
+    list-style: none;
+}
+
+.end-footer {
+    background-color: #24262b;
+    padding: 0 15px;
+    width: 1580px;
+    margin: 0 0 0 -195px;
+}
+
+.footer-col {
+    width: 25%;
+    padding: 0 15px;
+}
+
+    .footer-col h4 {
+        font-size: 16px;
+        color: #ffffff;
+        text-transform: capitalize;
+        margin-bottom: 30px;
+        font-weight: 500;
+        position: relative;
+    }
+
+        .footer-col h4::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: -10px;
+            background-color: #e91e63;
+            height: 2px;
+            box-sizing: border-box;
+            width: 50px;
+        }
+
+    .footer-col ul li:not(:last-child) {
+        margin-bottom: 10px;
+    }
+
+    .footer-col ul li a {
+        font-size: 16px;
+        text-transform: capitalize;
+        color: #ffffff;
+        text-decoration: none;
+        font-weight: 300;
+        color: #bbbbbb;
+        display: block;
+        transition: all 0.3s ease;
+    }
+
+        .footer-col ul li a:hover {
+            color: #ffffff;
+            padding-left: 8px;
+        }
+
+    .footer-col .social-link i {
+        display: inline-block;
+        height: 40px;
+        width: 40px;
+        background-color: rgba(255,255,255,0.2);
+        margin: 0 10px 10px 0;
+        padding-left: 10px;
+        line-height: 40px;
+        border-radius: 50%;
+        color: #24262b;
+        transition: all 0.5s ease;
+    }
+
+        .footer-col .social-link i:hover {
+            color: #24262b;
+            background-color: #ffffff;
+        }
+
+@media(max-width: 574px) {
+    .footer-col {
+        width: 100%;
+    }
+}
