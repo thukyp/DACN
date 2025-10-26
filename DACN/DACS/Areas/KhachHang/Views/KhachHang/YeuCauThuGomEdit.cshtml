@@ -1,0 +1,382 @@
+﻿@model DACS.Models.ViewModels.ThuGomViewModel
+
+@{
+    ViewData["Title"] = $"Chỉnh sửa Yêu cầu Thu gom #{Model.M_YeuCau}";
+    // Layout = "~/Areas/KhachHang/Views/Shared/_UserAccountLayout.cshtml";
+}
+
+<div class="container mt-4 account-section">
+    <div class="row">
+        @* Cột Menu bên trái *@
+        <div class="col-lg-3 mb-4 mb-lg-0">
+            <div class="account-menu list-group">
+                <a asp-area="KhachHang" asp-controller="KhachHang" asp-action="Index" class="list-group-item list-group-item-action">
+                    <i class="fas fa-tachometer-alt fa-fw me-2"></i> Tổng quan
+                </a>
+                <a asp-area="KhachHang" asp-controller="KhachHang" asp-action="HoSoCaNhan" class="list-group-item list-group-item-action">
+                    <i class="fas fa-user-circle fa-fw me-2"></i> Hồ sơ cá nhân
+                </a>
+                <a asp-area="KhachHang" asp-controller="KhachHang" asp-action="LichSuDonHang" class="list-group-item list-group-item-action">
+                    <i class="fas fa-receipt fa-fw me-2"></i> Lịch sử Đơn hàng
+                </a>
+                @* Đánh dấu active cho link này *@
+                <a asp-area="KhachHang" asp-controller="KhachHang" asp-action="LichSuYeuCauThuGom" class="list-group-item list-group-item-action active">
+                    <i class="fas fa-recycle fa-fw me-2"></i> Lịch sử Thu gom
+                </a>
+                <a asp-area="Identity" asp-page="/Account/Manage/ChangePassword" class="list-group-item list-group-item-action">
+                    <i class="fas fa-lock fa-fw me-2"></i> Đổi mật khẩu
+                </a>
+                @* <a asp-area="KhachHang" asp-controller="Address" asp-action="Index" class="list-group-item list-group-item-action">
+                    <i class="fas fa-map-marker-alt fa-fw me-2"></i> Sổ địa chỉ
+                   </a> *@
+                <button type="submit" class="list-group-item list-group-item-action text-danger border-0 bg-transparent p-0 w-100 text-start">
+                    @* Adjusted button style to better match list items *@
+                    <a href="/home/index" class="list-group-item list-group-item-action border-0 text-danger"><i class="fas fa-sign-out-alt fa-fw me-2"></i> Về trang chủ</a>
+                </button>
+            </div>
+        </div>
+
+        @* Cột Nội dung chính bên phải *@
+        <div class="col-lg-9">
+            <div class="account-content">
+                <h4 class="mb-4">@ViewData["Title"]</h4>
+
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger validation-summary-errors" role="alert"></div>
+
+                @* --- FORM CHỈNH SỬA --- *@
+                <form asp-action="YeuCauThuGomEdit" asp-controller="KhachHang" asp-area="KhachHang" method="post" enctype="multipart/form-data">
+                    @Html.AntiForgeryToken()
+                    @* Trường ẩn để gửi lại Mã Yêu Cầu cần sửa *@
+                    <input type="hidden" asp-for="M_YeuCau" />
+
+                    <div class="row g-4">
+
+                        @* ----- CỘT THÔNG TIN NGƯỜI CUNG CẤP (Có thể chỉ hiển thị, không cho sửa) ----- *@
+                        <div class="col-md-6">
+                            <div class="card shadow-sm h-100">
+                                <div class="card-header bg-light">
+                                    <i class="fas fa-user me-2"></i> THÔNG TIN NGƯỜI CUNG CẤP
+                                </div>
+                                <div class="card-body">
+                                    @* Các trường này thường lấy từ profile và có thể không cho sửa ở đây *@
+                                    <div class="mb-3">
+                                        <label asp-for="SupplierName" class="form-label"></label>
+                                        <input asp-for="SupplierName" class="form-control" readonly> @* Thuộc tính readonly *@
+                                        <span asp-validation-for="SupplierName" class="text-danger field-validation-error"></span>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label asp-for="SupplierPhone" class="form-label"></label>
+                                        <input asp-for="SupplierPhone" type="tel" class="form-control" readonly> @* Thuộc tính readonly *@
+                                        <span asp-validation-for="SupplierPhone" class="text-danger field-validation-error"></span>
+                                    </div>
+
+                                    <hr>
+                                    <h5 class="mb-3">Địa chỉ lấy phụ phẩm</h5>
+                                    @* Nếu địa chỉ lấy từ Profile thì nên readonly, nếu cho sửa thì bỏ readonly *@
+                                    <div class="row g-3 mb-3">
+                                        <div class="col-md-6">
+                                            <label asp-for="SupplierProvince" class="form-label"></label>
+                                            @* Controller GET phải load và chọn sẵn giá trị cho Model.ProvinceOptions *@
+                                            <select asp-for="SupplierProvince" id="provinceSelectEdit" class="form-select" asp-items="Model.ProvinceOptions">
+                                                <option value="">-- Chọn Tỉnh/Thành phố --</option>
+                                            </select>
+                                            <span asp-validation-for="SupplierProvince" class="text-danger field-validation-error"></span>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label asp-for="SupplierDistrict" class="form-label"></label>
+                                            @* Controller GET phải load và chọn sẵn giá trị cho Model.DistrictOptions *@
+                                            <select asp-for="SupplierDistrict" id="districtSelectEdit" class="form-select" asp-items="Model.DistrictOptions">
+                                                <option value="">-- Chọn Quận/Huyện --</option>
+                                            </select>
+                                            <span asp-validation-for="SupplierDistrict" class="text-danger field-validation-error"></span>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label asp-for="SupplierWard" class="form-label"></label>
+                                            @* Controller GET phải load và chọn sẵn giá trị cho Model.WardOptions *@
+                                            <select asp-for="SupplierWard" id="wardSelectEdit" class="form-select" asp-items="Model.WardOptions">
+                                                <option value="">-- Chọn Xã/Phường --</option>
+                                            </select>
+                                            <span asp-validation-for="SupplierWard" class="text-danger field-validation-error"></span>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label asp-for="SupplierStreet" class="form-label"></label>
+                                            <input asp-for="SupplierStreet" class="form-control" placeholder="Số nhà, Tên đường, Ấp, Thôn...">
+                                            <span asp-validation-for="SupplierStreet" class="text-danger field-validation-error"></span>
+                                        </div>
+                                    </div>
+
+                                    <hr>
+
+                                    <div class="mb-3">
+                                        <label asp-for="PickupReadyTime" class="form-label"></label> <span class="text-danger">*</span>
+                                        <input asp-for="PickupReadyTime" type="datetime-local" class="form-control">
+                                        <span asp-validation-for="PickupReadyTime" class="text-danger field-validation-error"></span>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label asp-for="SupplierNotes" class="form-label"></label>
+                                        <textarea asp-for="SupplierNotes" class="form-control" rows="2" placeholder="Ghi chú..."></textarea>
+                                        <span asp-validation-for="SupplierNotes" class="text-danger field-validation-error"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        @* ----- CỘT THÔNG TIN PHỤ PHẨM ----- *@
+                        <div class="col-md-6">
+                            <div class="card shadow-sm h-100">
+                                <div class="card-header bg-light">
+                                    <i class="fas fa-box-open me-2"></i> THÔNG TIN PHỤ PHẨM
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <label asp-for="ByproductType" class="form-label">Loại Sản Phẩm</label> <span class="text-danger">*</span>
+                                        @* Controller GET phải load và chọn sẵn giá trị cho Model.LoaiSanPhamOptions *@
+                                        <select asp-for="ByproductType" class="form-select" asp-items="Model.LoaiSanPhamOptions">
+                                            <option value="">Chọn loại sản phẩm...</option>
+                                        </select>
+                                        <span asp-validation-for="ByproductType" class="text-danger field-validation-error"></span>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label asp-for="ByproductDescription" class="form-label"></label>
+                                        <textarea asp-for="ByproductDescription" class="form-control" rows="2" placeholder="Mô tả chi tiết..."></textarea>
+                                        <span asp-validation-for="ByproductDescription" class="text-danger field-validation-error"></span>
+                                    </div>
+
+                                    <div class="row g-3 mb-3">
+                                        <div class="col-sm-6">
+                                            <label asp-for="ByproductQuantity" class="form-label"></label> <span class="text-danger">*</span>
+                                            <input asp-for="ByproductQuantity" type="number" step="any" class="form-control" placeholder="Nhập số lượng" min="0.01">
+                                            <span asp-validation-for="ByproductQuantity" class="text-danger field-validation-error"></span>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <label asp-for="ByproductUnit" class="form-label"></label> <span class="text-danger">*</span>
+                                            @* Controller GET phải load và chọn sẵn giá trị cho Model.DonViTinhOptions *@
+                                            <select asp-for="ByproductUnit" class="form-select" asp-items="Model.DonViTinhOptions">
+                                                <option value="">Chọn ĐVT...</option>
+                                            </select>
+                                            <span asp-validation-for="ByproductUnit" class="text-danger field-validation-error"></span>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label asp-for="ByproductValue" class="form-label"></label>
+                                        <div class="input-group">
+                                            <input asp-for="ByproductValue" type="number" step="any" class="form-control" placeholder="Nhập giá trị" min="0">
+                                            <span class="input-group-text">VNĐ</span>
+                                        </div>
+                                        <span asp-validation-for="ByproductValue" class="text-danger field-validation-error"></span>
+                                    </div>
+
+                                    <hr>
+                                    <h5 class="mb-3">Đặc tính phụ phẩm</h5>
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <div class="form-check mb-2"><input asp-for="CharBulky" class="form-check-input" type="checkbox"><label asp-for="CharBulky" class="form-check-label"></label></div>
+                                            <div class="form-check mb-2"><input asp-for="CharWet" class="form-check-input" type="checkbox"><label asp-for="CharWet" class="form-check-label"> Ẩm / Ướt</label></div>
+                                            <div class="form-check mb-2"><input asp-for="CharDry" class="form-check-input" type="checkbox"><label asp-for="CharDry" class="form-check-label"> Khô</label></div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="form-check mb-2"><input asp-for="CharMoisture" class="form-check-input" type="checkbox"><label asp-for="CharMoisture" class="form-check-label"> Độ ẩm cao</label></div>
+                                            <div class="form-check mb-2"><input asp-for="CharImpure" class="form-check-input" type="checkbox"><label asp-for="CharImpure" class="form-check-label"> Tạp chất</label></div>
+                                            <div class="form-check mb-2"><input asp-for="CharProcessed" class="form-check-input" type="checkbox"><label asp-for="CharProcessed" class="form-check-label"> Đã xử lý</label></div>
+                                        </div>
+                                    </div>
+
+                                    <div class="mt-3">
+                                        <label asp-for="ByproductImages" class="form-label">Tải ảnh mới (nếu muốn thay đổi)</label>
+                                        <input asp-for="ByproductImages" type="file" class="form-control" multiple accept="image/*">
+                                        <span asp-validation-for="ByproductImages" class="text-danger field-validation-error"></span>
+                                        <small class="form-text text-muted">Để giữ ảnh cũ, không cần chọn file mới.</small>
+                                        @* Cần thêm logic hiển thị ảnh cũ nếu có *@
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        @* ----- CỘT SUBMIT ----- *@
+                        <div class="col-12">
+                            <div class="card shadow-sm">
+                                <div class="card-body text-center">
+                                    <button type="submit" class="btn btn-success btn-lg me-2"><i class="fas fa-save me-2"></i>Lưu thay đổi</button>
+                                    <a asp-action="YeuCauThuGomDetails" asp-route-id="@Model.M_YeuCau" class="btn btn-secondary"> <i class="fas fa-times me-1"></i> Hủy bỏ </a>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* --- SCRIPTS --- *@
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    @* Đảm bảo chỉ include jQuery một lần - nếu Layout đã có thì không cần ở đây *@
+    @await Html.PartialAsync("_ValidationScriptsPartial") @* Script validation *@
+
+    @* Script AJAX cho dropdown địa chỉ - Dùng lại script giống ThuGom.cshtml nhưng đổi ID nếu cần *@
+    <script>
+        $(document).ready(function () {
+            console.log("YeuCauThuGomEdit AJAX script initializing...");
+
+            // *** Đặt ID khác với form Tạo mới để tránh xung đột nếu cần ***
+            // Ví dụ: provinceSelectEdit, districtSelectEdit, wardSelectEdit
+            const provinceSelect = $('#provinceSelectEdit');
+            const districtSelect = $('#districtSelectEdit');
+            const wardSelect = $('#wardSelectEdit');
+
+            // ... (Phần còn lại của script AJAX giống hệt ThuGom.cshtml) ...
+            // ... Bao gồm hàm resetDropdown, enableDropdown ...
+            // ... Bao gồm xử lý sự kiện change cho provinceSelect và districtSelect ...
+            // Quan trọng: URL gọi AJAX cần trỏ đúng đến Action JSON trong Controller phù hợp
+            // Ví dụ: const url = '@Url.Action("GetDistrictsForHome", "Home")' + ...
+            // Hoặc nếu bạn tạo Action JSON trong KhachHangController:
+            // const url = '@Url.Action("GetDistrictsJson", "KhachHang", new { area = "KhachHang" })' + ...
+
+            // --- Phần kích hoạt tải dữ liệu ban đầu cho dropdown phụ thuộc ---
+            // Hàm này sẽ tải Quận/Huyện nếu Tỉnh đã được chọn sẵn khi trang load
+            function loadInitialDistricts() {
+                const selectedProvinceId = provinceSelect.val();
+                console.log("Initial province:", selectedProvinceId);
+                resetDropdown(wardSelect, '-- Chọn Xã/Phường --'); // Reset xã trước
+
+                if (selectedProvinceId) {
+                    resetDropdown(districtSelect, '-- Đang tải Quận/Huyện... --');
+                    const url = '@Url.Action("GetDistrictsForHome", "Home")' + '?provinceId=' + selectedProvinceId; // <<< Sửa lại URL nếu cần
+                    console.log("Requesting Initial Districts URL:", url);
+                    $.getJSON(url)
+                        .done(function (districts) {
+                            console.log("Initial Districts received:", districts);
+                             if (districts && !districts.error && districts.length > 0) {
+                                enableDropdown(districtSelect);
+                                districtSelect.find('option:first').text('-- Chọn Quận/Huyện --');
+                                var currentDistrict = '@Model.SupplierDistrict'; // Lấy giá trị hiện tại từ Model
+                                $.each(districts, function (index, district) {
+                                    var option = $('<option>', { value: district.id, text: district.name });
+                                    if(district.id === currentDistrict) {
+                                        option.prop('selected', true); // Chọn sẵn giá trị hiện tại
+                                    }
+                                    districtSelect.append(option);
+                                });
+                                // Kích hoạt sự kiện change để tải xã/phường nếu quận/huyện đã được chọn sẵn
+                                if (currentDistrict) {
+                                   districtSelect.trigger('change');
+                                }
+                            } else if (districts.error) {
+                                console.error("Server error initial districts:", districts.error);
+                                resetDropdown(districtSelect, districts.error);
+                            } else {
+                                 resetDropdown(districtSelect, '-- Không có Quận/Huyện --');
+                            }
+                        })
+                        .fail(function (jqXHR, textStatus, errorThrown) {
+                            console.error("AJAX Error initial districts:", textStatus, errorThrown);
+                            resetDropdown(districtSelect, 'Lỗi tải Quận/Huyện');
+                        });
+                } else {
+                     resetDropdown(districtSelect, '-- Chọn Quận/Huyện --');
+                     resetDropdown(wardSelect, '-- Chọn Xã/Phường --');
+                }
+            }
+
+            // Hàm này sẽ tải Xã/Phường nếu Quận/Huyện đã được chọn sẵn khi trang load (hoặc sau khi chọn Tỉnh)
+            function loadInitialWards() {
+                const selectedDistrictId = districtSelect.val(); // Lấy giá trị quận đang được chọn
+                console.log("Initial district:", selectedDistrictId);
+
+                if (selectedDistrictId) {
+                    resetDropdown(wardSelect, '-- Đang tải Xã/Phường... --');
+                     const url = '@Url.Action("GetWardsForHome", "Home")' + '?districtId=' + selectedDistrictId; // <<< Sửa lại URL nếu cần
+                     console.log("Requesting Initial Wards URL:", url);
+                    $.getJSON(url)
+                        .done(function (wards) {
+                             console.log("Initial Wards received:", wards);
+                            if (wards && !wards.error && wards.length > 0) {
+                                enableDropdown(wardSelect);
+                                wardSelect.find('option:first').text('-- Chọn Xã/Phường --');
+                                var currentWard = '@Model.SupplierWard'; // Lấy giá trị hiện tại từ Model
+                                $.each(wards, function (index, ward) {
+                                    var option = $('<option>', { value: ward.id, text: ward.name });
+                                     if(ward.id === currentWard) {
+                                        option.prop('selected', true); // Chọn sẵn giá trị hiện tại
+                                    }
+                                    wardSelect.append(option);
+                                });
+                            } else if (wards.error) {
+                                console.error("Server error initial wards:", wards.error);
+                                resetDropdown(wardSelect, wards.error);
+                            } else {
+                                resetDropdown(wardSelect, '-- Không có Xã/Phường --');
+                            }
+                        })
+                        .fail(function (jqXHR, textStatus, errorThrown) {
+                            console.error("AJAX Error initial wards:", textStatus, errorThrown);
+                            resetDropdown(wardSelect, 'Lỗi tải Xã/Phường');
+                        });
+                } else {
+                    resetDropdown(wardSelect, '-- Chọn Xã/Phường --');
+                }
+            }
+
+            // Gắn sự kiện change như cũ
+            provinceSelect.on('change', function () {
+               const selectedProvinceId = $(this).val();
+               resetDropdown(districtSelect, '-- Đang tải Quận/Huyện... --');
+               resetDropdown(wardSelect, '-- Chọn Xã/Phường --');
+               if (selectedProvinceId) {
+                    const url = '@Url.Action("GetDistrictsForHome", "Home")' + '?provinceId=' + selectedProvinceId; // <<< Sửa lại URL nếu cần
+                    $.getJSON(url)
+                        .done(function (districts) {
+                             if (districts && !districts.error && districts.length > 0) {
+                                enableDropdown(districtSelect);
+                                districtSelect.find('option:first').text('-- Chọn Quận/Huyện --');
+                                $.each(districts, function (index, district) {
+                                    districtSelect.append($('<option>', { value: district.id, text: district.name }));
+                                });
+                                // KHÔNG trigger change ở đây nữa, để người dùng tự chọn
+                            } else if (districts.error) { districtSelect.find('option:first').text(districts.error); }
+                             else { resetDropdown(districtSelect, '-- Không có Quận/Huyện --'); }
+                        })
+                        .fail(function () { resetDropdown(districtSelect, 'Lỗi tải Quận/Huyện'); });
+               } else { resetDropdown(districtSelect, '-- Chọn Quận/Huyện --'); resetDropdown(wardSelect, '-- Chọn Xã/Phường --'); }
+            });
+
+            districtSelect.on('change', function () {
+                const selectedDistrictId = $(this).val();
+                resetDropdown(wardSelect, '-- Đang tải Xã/Phường... --');
+                if (selectedDistrictId) {
+                     const url = '@Url.Action("GetWardsForHome", "Home")' + '?districtId=' + selectedDistrictId; // <<< Sửa lại URL nếu cần
+                     $.getJSON(url)
+                        .done(function (wards) {
+                             if (wards && !wards.error && wards.length > 0) {
+                                enableDropdown(wardSelect);
+                                wardSelect.find('option:first').text('-- Chọn Xã/Phường --');
+                                $.each(wards, function (index, ward) {
+                                    wardSelect.append($('<option>', { value: ward.id, text: ward.name }));
+                                });
+                            } else if(wards.error){ wardSelect.find('option:first').text(wards.error); }
+                             else { resetDropdown(wardSelect, '-- Không có Xã/Phường --'); }
+                        })
+                        .fail(function () { resetDropdown(wardSelect, 'Lỗi tải Xã/Phường'); });
+                } else { resetDropdown(wardSelect, '-- Chọn Xã/Phường --'); }
+            });
+
+
+            // Gọi hàm tải ban đầu nếu Tỉnh đã có giá trị
+            if (provinceSelect.val()) {
+                loadInitialDistricts(); // Tải Quận/Huyện ban đầu
+                // Hàm loadInitialDistricts sẽ tự trigger change nếu có Quận/Huyện được chọn sẵn -> tải Xã/Phường
+            } else {
+               // Vẫn disable nếu ban đầu chưa chọn Tỉnh
+               districtSelect.prop('disabled', true);
+               wardSelect.prop('disabled', true);
+            }
+
+            console.log("YeuCauThuGomEdit AJAX script initialization complete.");
+        });
+    </script>
+}

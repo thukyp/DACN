@@ -1,0 +1,68 @@
+﻿@using Microsoft.AspNetCore.Identity
+
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
+<ul class="navbar-nav">
+@if (SignInManager.IsSignedIn(User))
+{
+    <li class="nav-item">
+            @if (User.IsInRole("Owner"))
+            {
+                <a asp-area="Admin" asp-controller="Owner" asp-action="Index" class="nav-link">
+                    Hello, @(UserManager.GetUserName(User) ?? "User")!
+                </a>
+            }
+            @if (User.IsInRole("KhachHang"))
+            {
+                <a asp-area="KhachHang" asp-controller="KhachHang" asp-action="Index" class="nav-link">
+                    Hello, @(UserManager.GetUserName(User) ?? "User")!
+                </a>
+            }
+            @if (User.IsInRole("QuanLyDH"))
+            {
+                <a asp-area="QuanLyDH" asp-controller="QuanLyDH" asp-action="Index" class="nav-link">
+                    Hello, @(UserManager.GetUserName(User) ?? "User")!
+                </a>
+            }
+
+            @if (User.IsInRole("QuanLyXNK"))
+            {
+                <a asp-area="QuanLyXNK" asp-controller="QuanLyXNK" asp-action="Index" class="nav-link">
+                    Hello, @(UserManager.GetUserName(User) ?? "User")!
+                </a>
+            }
+            @if (User.IsInRole("QuanLyND"))
+            {
+                <a asp-area="QuanLyND" asp-controller="QuanLyND" asp-action="Index" class="nav-link">
+                    Hello, @(UserManager.GetUserName(User) ?? "User")!
+                </a>
+            }
+            @if (User.IsInRole("QuanLySP"))
+            {
+                <a asp-area="QuanLySP" asp-controller="QuanLySP" asp-action="Index" class="nav-link">
+                    Hello, @(UserManager.GetUserName(User) ?? "User")!
+                </a>
+            }
+        </li>
+    <li class="nav-item">
+        <form id="logoutForm" class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+            <button id="logout" type="submit" class="nav-link btn btn-link text-dark border-0">Logout</button>
+        </form>
+    </li>
+}
+else
+{
+    <li class="nav-item">
+        <a class="nav-link text-dark" id="register" asp-area="Identity" asp-page="/Account/Register">Register</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link text-dark" id="login" asp-area="Identity" asp-page="/Account/Login">Login</a>
+    </li>
+}
+</ul>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+<script type="text/javascript" src="js/script.js"></script>

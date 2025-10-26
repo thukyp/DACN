@@ -1,0 +1,784 @@
+﻿@using DACS.Extention
+@using DACS.Models
+@using YourNameSpace.Extensions
+
+@{
+    var cart = Context.Session.GetObjectFromJson<ShoppingCart>("Cart") ?? new ShoppingCart();
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Đồ_án_cs</title>
+    <script type="importmap"></script>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/Đồ_án_cs.styles.css" asp-append-version="true" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel='stylesheet' href='https://fonts.googleapis.com/css2?family=DM+Sans&amp;display=swap'>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap" rel="stylesheet">
+    <title>
+        Hahana
+    </title>
+</head>
+<body>
+
+    <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+        <symbol id="search" xmlns="http://www.w3.org/2000/symbolsvg" viewBox="0 0 24 24">
+            <path fill="currentColor" fill-rule="evenodd" d="M11.5 2.75a8.75 8.75 0 1 0 0 17.5a8.75 8.75 0 0 0 0-17.5M1.25 11.5c0-5.66 4.59-10.25 10.25-10.25S21.75 5.84 21.75 11.5c0 2.56-.939 4.902-2.491 6.698l3.271 3.272a.75.75 0 1 1-1.06 1.06l-3.272-3.271A10.21 10.21 0 0 1 11.5 21.75c-5.66 0-10.25-4.59-10.25-10.25" clip-rule="evenodd" />
+        </symbol>
+        <symbol id="user" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path fill="currentColor" fill-rule="evenodd" d="M12 1.25a4.75 4.75 0 1 0 0 9.5a4.75 4.75 0 0 0 0-9.5M8.75 6a3.25 3.25 0 1 1 6.5 0a3.25 3.25 0 0 1-6.5 0M12 12.25c-2.313 0-4.445.526-6.024 1.414C4.42 14.54 3.25 15.866 3.25 17.5v.102c-.001 1.162-.002 2.62 1.277 3.662c.629.512 1.51.877 2.7 1.117c1.192.242 2.747.369 4.773.369s3.58-.127 4.774-.369c1.19-.24 2.07-.605 2.7-1.117c1.279-1.042 1.277-2.5 1.276-3.662V17.5c0-1.634-1.17-2.96-2.725-3.836c-1.58-.888-3.711-1.414-6.025-1.414M4.75 17.5c0-.851.622-1.775 1.961-2.528c1.316-.74 3.184-1.222 5.29-1.222c2.104 0 3.972.482 5.288 1.222c1.34.753 1.961 1.677 1.961 2.528c0 1.308-.04 2.044-.724 2.6c-.37.302-.99.597-2.05.811c-1.057.214-2.502.339-4.476.339c-1.974 0-3.42-.125-4.476-.339c-1.06-.214-1.68-.509-2.05-.81c-.684-.557-.724-1.293-.724-2.601" clip-rule="evenodd" />
+        </symbol>
+        <symbol id="heart" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path fill="currentColor" fill-rule="evenodd" d="M5.624 4.424C3.965 5.182 2.75 6.986 2.75 9.137c0 2.197.9 3.891 2.188 5.343c1.063 1.196 2.349 2.188 3.603 3.154c.298.23.594.459.885.688c.526.415.995.778 1.448 1.043c.452.264.816.385 1.126.385c.31 0 .674-.12 1.126-.385c.453-.265.922-.628 1.448-1.043c.29-.23.587-.458.885-.687c1.254-.968 2.54-1.959 3.603-3.155c1.289-1.452 2.188-3.146 2.188-5.343c0-2.15-1.215-3.955-2.874-4.713c-1.612-.737-3.778-.542-5.836 1.597a.75.75 0 0 1-1.08 0C9.402 3.882 7.236 3.687 5.624 4.424M12 4.46C9.688 2.39 7.099 2.1 5 3.059C2.786 4.074 1.25 6.426 1.25 9.138c0 2.665 1.11 4.699 2.567 6.339c1.166 1.313 2.593 2.412 3.854 3.382c.286.22.563.434.826.642c.513.404 1.063.834 1.62 1.16c.557.325 1.193.59 1.883.59s1.326-.265 1.883-.59c.558-.326 1.107-.756 1.62-1.16a78.6 78.6 0 0 1 .826-.642c1.26-.97 2.688-2.07 3.854-3.382c1.457-1.64 2.567-3.674 2.567-6.339c0-2.712-1.535-5.064-3.75-6.077c-2.099-.96-4.688-.67-7 1.399" clip-rule="evenodd" />
+        </symbol>
+        <symbol id="cart" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path fill="currentColor" fill-rule="evenodd" d="M2.249 2.292a.75.75 0 1 0-.498 1.416l.262.091c.667.235 1.106.39 1.429.549c.303.149.437.27.525.398c.09.132.16.314.2.677c.04.38.041.875.041 1.615V9.76c0 1.453.014 2.5.151 3.3c.146.854.438 1.466.985 2.042c.594.627 1.346.9 2.243 1.026c.858.122 1.948.122 3.293.122h5.406c.742 0 1.366 0 1.87-.062c.537-.065 1.025-.209 1.452-.556c.426-.348.665-.797.837-1.309c.163-.482.289-1.093.439-1.82l.508-2.469l.002-.005l.01-.052c.165-.825.303-1.519.338-2.077c.036-.586-.031-1.164-.413-1.66c-.235-.306-.565-.479-.866-.584a4.617 4.617 0 0 0-1.002-.21c-.687-.076-1.522-.076-2.34-.076H5.667a5.932 5.932 0 0 0-.01-.108c-.054-.497-.17-.95-.453-1.362c-.284-.416-.662-.682-1.102-.899c-.412-.202-.936-.386-1.553-.603zm3.46 4.578h11.38c.856 0 1.61.001 2.205.067c.296.034.517.08.672.134a.56.56 0 0 1 .176.086c.062.082.128.23.102.651c-.027.444-.143 1.036-.321 1.926v.002l-.5 2.42c-.16.783-.27 1.303-.399 1.688c-.123.366-.239.523-.364.625c-.125.102-.303.184-.685.23c-.404.05-.935.051-1.734.051h-5.303c-1.417 0-2.4-.002-3.14-.107c-.716-.101-1.093-.285-1.366-.573c-.32-.338-.493-.668-.595-1.263c-.11-.65-.129-1.558-.129-3.047zM7.5 21.75a2.25 2.25 0 1 1 0-4.5a2.25 2.25 0 0 1 0 4.5m-.75-2.25a.75.75 0 1 0 1.5 0a.75.75 0 0 0-1.5 0m9.75 2.25a2.25 2.25 0 1 1 0-4.5a2.25 2.25 0 0 1 0 4.5m-.75-2.25a.75.75 0 1 0 1.5 0a.75.75 0 0 0-1.5 0" clip-rule="evenodd" />
+        </symbol>
+
+    </svg>
+
+    @* nhấn vào search hiện lên khung chat và đề xuất *@
+    
+    <header id="header" class="site-header">
+        <div class="nav-top navbar-expand-sm navbar-light bg-agriculture-green">
+            <div class="container-fluid">
+                <div class="row g-0">
+                    <div class="col-lg-5">
+                        <div class="Big4 ms-auto justify-content-start d-flex w-80">
+                            <div class="BigAss">
+                                <a href="https://www.youtube.com/watch?v=i6wU_CQUbIA">
+                                    <i class="fa-brands fa-tiktok">TikTok</i>
+                                </a>
+
+
+                                <a href="https://www.youtube.com/watch?v=i6wU_CQUbIA">
+                                    <i class="fa-brands fa-facebook">Facebook</i>
+                                </a>
+
+
+                                <a href="https://www.youtube.com/watch?v=i6wU_CQUbIA">
+                                    <i class="fa-brands fa-zalo"><img src="~/images/icons8-zalo-50.png" width="25" height="25" /> Zalo</i>
+
+                                </a>
+
+
+                                <a href="https://www.youtube.com/watch?v=i6wU_CQUbIA">
+                                    <i class="fa-brands fa-youtube">Youtube</i>
+
+                                </a>
+
+                            </div>
+                        </div>
+					</div>
+
+                    <div class="col-lg-2"></div>
+					<div class="col-lg-5 col-md-6 col-sm-5 language-currency-header">
+                        <partial name="_LoginPartial" />
+                          </div>
+
+                </div>
+            </div>
+        </div>
+        <div class="navbar-brand">
+            <a class="navbar-branch" href="#">
+                <img src="/images/hana.png" class="logo-lg d-none d-lg-block" width=200 height=170 />
+            </a>
+        </div>
+
+        <nav id="header-nav" class="navbar-mid navbar-expand-sm  navbar-light bg-agriculture-earth">
+            <div class="container">
+
+
+                <div class="user-items d-flex">
+                    
+                        
+					<ul class="d-flex justify-content-end list-unstyled mb-0">
+						
+							
+						<li class="search-item pe-3">
+							
+                            <!-- Nút mở popup -->
+                            <button class="search-button">
+                                <svg class="search" color="#009BDE">
+                                    <use xlink:href="#search"></use>
+                                </svg>
+                            </button>
+
+                            <!-- Popup tìm kiếm -->
+                            <div class="search-popup" id="searchPopup">
+                                <div class="search-popup-container">
+                                    <button class="close-btn" id="closeSearch">&times;</button>
+                                    <form action="/DS_SP/TimKiem" method="get">
+                                        <input type="text" id="searchBox" class="form-control" style="width:400px; border-radius:1.5rem;" name="keyword" placeholder="Tìm sản phẩm bạn cần..." autocomplete="off" />
+                                        
+                                        
+                                        <div id="suggestions" class="list-group w-100" style="z-index:1000;"></div>
+                                    </form>
+
+                                    <ul class="cat-list">
+                                        <li><a href="/DS_SP/TimKiem?keyword=b%C3%A3+m%C3%ADa">Bã mía</a></li>
+                                        <li><a href="/DS_SP/TimKiem?keyword=Trấu+nghiền">Trấu nghiền</a></li>
+                                        <li><a href="/DS_SP/TimKiem?keyword=Rơm+mì">Rơm mì</a></li>
+                                        <li><a href="/DS_SP/TimKiem?keyword=Xơ+dừa">Xơ dừa</a></li>
+                                        <li><a href="/DS_SP/TimKiem?keyword=Viên+nén+trấu">Viên nén trấu</a></li>
+                                        <li><a href="/DS_SP/TimKiem?keyword=Phân+compost">Phân compost</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </li>
+
+                        
+                        <li class="wishlist-dropdown dropdown pe-3">
+                            <a href="#" class="dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false">
+                                <svg class="wishlist">
+                                    <use xlink:href="#heart"></use>
+                                </svg>
+                            </a>
+                            <div class="dropdown-menu animate slide dropdown-menu-start dropdown-menu-lg-end p-3">
+                                <h4 class="d-flex justify-content-between align-items-center mb-3">
+                                    <span class="text-primary">Your wishlist</span>
+                                    <span class="badge bg-primary rounded-pill">2</span>
+                                </h4>
+                                <ul class="list-group mb-3">
+                                    
+	{
+                                    <li class="list-group-item bg-transparent d-flex justify-content-between lh-sm">
+                                        <div>
+                                            <h5>
+                                                <a href="single-product.html"></a>
+                                            </h5>
+                                            <small>Special discounted price.</small>
+                                            <a href="#" class="d-block fw-medium text-capitalize mt-2">Add to cart</a>
+                                        </div>
+                                        <span class="text-primary">$2000</span>
+                                    </li>
+                                    <li class="list-group-item bg-transparent d-flex justify-content-between lh-sm">
+                                        <div>
+                                            <h5>
+                                                <a href="single-product.html">Apple Watch (2nd Gen)</a>
+                                            </h5>
+                                            <small>Professional apple watch.</small>
+                                            <a href="#" class="d-block fw-medium text-capitalize mt-2">Add to cart</a>
+                                        </div>
+                                        <span class="text-primary">$400</span>
+                                    </li>
+                                    <li class="list-group-item bg-transparent d-flex justify-content-between">
+                                        <span class="text-uppercase"><b>Total (USD)</b></span>
+                                        <strong>$1470</strong>
+                                    </li>
+								</ul>
+                                <div class="d-flex flex-wrap justify-content-center">
+                                    <a href="#" class="w-100 btn btn-dark mb-1" type="submit">Add all to cart</a>
+                                    <a href="cart.html" class="w-100 btn btn-primary" type="submit">View cart</a>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="cart-dropdown dropdown">
+                            <a href="cart.html" class="dropdown-toggle d-inline-flex align-items-center" data-bs-toggle="dropdown" role="button" aria-expanded="false">
+                                <svg class="cart">
+                                    <use xlink:href="#cart"></use>
+                                </svg>
+                            </a>
+                            <div class="dropdown-menu animate slide dropdown-menu-start dropdown-menu-lg-end p-3">
+                                <h4 class="d-flex justify-content-between align-items-center mb-3">
+                                    <span class="text-primary">Xe hàng</span>
+                                    
+                                </h4>
+                                <ul class="list-group mb-3" id="cart-items">
+                                    @if (cart?.Items != null && cart.Items.Any() && User.IsInRole("KhachHang") || User.IsInRole("Owner") || User.IsInRole("QuanLyXNK") || User.IsInRole("QuanLyND") || User.IsInRole("QuanLySP") || User.IsInRole("QuanLyDH"))
+									{
+                                        float total = 0;
+                                        float itemCount = 0;
+
+                                        @foreach (var item in cart.Items)
+                                        {
+
+                                            total += item.Price * item.Quantity;
+                                            itemCount += item.Quantity;
+
+                                            <li class="list-group-item bg-transparent d-flex justify-content-between lh-sm">
+                                                <div>
+                                                    <h5>
+                                                        <a href="single-product.html" id="tensp">@item.Name</a>
+                                                    </h5>
+                                                    
+                                                        
+														<small>
+                                                        Khối lượng:1kg
+														</small>
+                                                        
+                                                    <br />
+                                                    <small>Hàng chất lượng cao đốt uống tăng tuổi thọ.</small>
+                                                </div>
+                                                <span class="text-primary">@String.Format("{0:N0}", item.Price * item.Quantity) ₫</span>
+                                            </li>
+                                        }
+
+                                        <li class="list-group-item bg-transparent d-flex justify-content-between">
+                                            <span class="text-uppercase"><b>Tổng sản phẩm:</b></span>
+                                            <strong>@itemCount</strong>
+                                        </li>
+
+                                        <li class="list-group-item bg-transparent d-flex justify-content-between">
+                                            <span class="text-uppercase"><b>Tổng tiền (VND):</b></span>
+                                            <strong class="text-danger">@String.Format("{0:N0}", total) ₫</strong>
+                                        </li>
+                                    }
+                                    else
+                                    {
+                                        <li class="list-group-item bg-transparent text-center">Giỏ hàng trống.</li>
+                                    }
+                                </ul>
+
+                                <div class="d-flex flex-wrap justify-content-center">
+                                    <a href="/ShoppingCart/Index" class="w-100 btn btn-dark mb-1" type="submit">Xem giỏ hàng</a>
+                                    
+                                </div>
+                            </div>
+                        </li>
+
+                    </ul>
+
+                </div>
+            </div>
+
+        </nav>
+      
+
+
+        
+
+        <nav class="navbar-bot navbar-expand-sm navbar-light bg-agriculture-green">
+            <div class="row">
+                <div class="col-lg-1 col-3 col-xs-3 ">
+                </div>
+                <div class="col-lg-11 col-9 col-xs-9 ">
+                    <ul class="navbar-nav d-flex w-200">
+
+                        <li class="nav-item">
+                            <a class="nav-link active" href="/home/index">Trang chủ</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/home/Introduction">Giới thiệu mô hình</a>
+                        </li>
+                        <li class="nav-item dropdown-hover-container">
+                            <a class="nav-link" asp-controller="DS_SP" asp-action="Index">Danh Mục Sản phẩm</a>
+                            <div class="mega-menu-content">
+                                <section class="category-section bg-white py-4">
+                                    @* Giữ lại padding cho section *@
+                                    @* KHÔNG CÓ <div class="container"> ở đây nữa *@
+                                    <div class="row">
+                                        @* Row nằm trực tiếp trong section *@
+
+                                        <div class="col-12 col-md-4 col-sm-6 mb-4">
+                                            @* Chia 4 cột trên màn lớn, tăng margin dưới *@
+                                            
+                                            <ul class="list-unstyled lh-lg">
+                                                @* Thêm line-height cho dễ đọc *@
+
+                                                <li><a asp-controller="DS_SP" asp-action="PhuPhamTho" class="text-decoration-none text-dark">Nguyên liệu thô</a></li>
+                                            </ul>
+                                        </div>
+
+                                        <div class="col-12 col-md-4 col-sm-6 mb-4">
+                                            
+                                            <ul class="list-unstyled lh-lg">
+
+                                                <li><a asp-controller="DS_SP" asp-action="DaQuaXuLy" class="text-decoration-none text-dark">Đã qua xử lý</a></li>
+                                            </ul>
+                                        </div>
+
+                                        <div class="col-12 col-md-4 col-sm-6 mb-4">
+                                            
+                                            <ul class="list-unstyled lh-lg">
+
+                                                <li><a asp-controller="DS_SP" asp-action="ThucAnChanNuoi" class="text-decoration-none text-dark">Thức ăn chăn nuôi</a></li>
+                                            </ul>
+                                        </div>
+
+										<div class="col-12 col-md-4 col-sm-6 mb-4">
+											<ul class="list-unstyled lh-lg">
+
+
+                                                <li><a asp-controller="DS_SP" asp-action="PhanBon" class="text-decoration-none text-dark">Phân bón & Giá thể</a></li>
+                                                
+                                            </ul>
+                                        </div>
+
+                                        <div class="col-12 col-md-4 col-sm-6 mb-4">
+                                            
+                                            <ul class="list-unstyled lh-lg">
+
+                                                <li><a asp-controller="DS_SP" asp-action="NangLuongSinhKhoi" class="text-decoration-none text-dark">Năng lượng sinh khối</a></li>
+                                            </ul>
+                                        </div>
+
+                                        
+
+
+
+                                    </div>
+                                </section>
+                            </div>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Home" asp-action="ThuGom">Đặt thu gom</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/home/News">Tin tức & bài viết</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/home/contact">Liên Hệ</a>
+                        </li>
+
+                    </ul>
+                </div>
+            </div>
+
+
+
+        </nav>
+
+    </header>
+
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="end-footer ">
+        <div class="container">
+            <div class="row ">
+                <!-- Giới thiệu công ty -->
+                <div class="footer-col mt-2">
+                    <h4>Về chúng tôi</h4>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-decoration-none text-light">Giới thiệu nền tảng</a></li>
+                        <li><a href="#" class="text-decoration-none text-light">Sứ mệnh & Tầm nhìn</a></li>
+                        <li><a href="#" class="text-decoration-none text-light">Chính sách bảo mật</a></li>
+                        <li><a href="#" class="text-decoration-none text-light">Hợp tác cùng chúng tôi</a></li>
+                    </ul>
+                </div>
+
+                <!-- Hỗ trợ khách hàng -->
+                <div class="footer-col mt-2">
+                    <h4>Hỗ trợ</h4>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-decoration-none text-light">Câu hỏi thường gặp</a></li>
+                        <li><a href="#" class="text-decoration-none text-light">Chính sách vận chuyển</a></li>
+                        <li><a href="#" class="text-decoration-none text-light">Chính sách đổi trả</a></li>
+                        <li><a href="#" class="text-decoration-none text-light">Tra cứu đơn hàng</a></li>
+                        <li><a href="#" class="text-decoration-none text-light">Phương thức thanh toán</a></li>
+                    </ul>
+                </div>
+
+                <!-- Dịch vụ chính -->
+                <div class="footer-col mt-2">
+                    <h4>Dịch vụ</h4>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-decoration-none text-light">Đăng bán phụ phẩm</a></li>
+                        <li><a href="#" class="text-decoration-none text-light">Thu mua tận nơi</a></li>
+                        <li><a href="#" class="text-decoration-none text-light">Kết nối doanh nghiệp</a></li>
+                        <li><a href="#" class="text-decoration-none text-light">Giao nhận & vận chuyển</a></li>
+                        <li><a href="#" class="text-decoration-none text-light">Tư vấn tái chế</a></li>
+                    </ul>
+                </div>
+
+                <!-- Mạng xã hội -->
+                <div class="footer-col mt-2">
+                    <h4>Kết nối với chúng tôi</h4>
+                    <div class="social-link">
+                        <a href="#" class="text-light "><i class="fa-brands fa-facebook"></i></a>
+                        <a href="#" class="text-light "><i class="fa-brands fa-youtube"></i></a>
+                        <a href="#" class="text-light "><i class="fa-brands fa-tiktok"></i></a>
+                        <a href="#" class="text-light ">
+                            <i class="fa-brands fa-zalo">
+                            <img src="~/images/icons8-zalo-50.png" width="25" height="25" alt="Zalo" style="vertical-align: middle;" /></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#searchBox').on('input', function () {
+                const keyword = $(this).val();
+                if (keyword.length === 0) {
+                    $('#suggestions').empty();
+                    return;
+                }
+
+                $.ajax({
+                    url: '/DS_SP/Suggest',
+                    type: 'GET',
+                    data: { keyword: keyword },
+                    success: function (data) {
+                        $('#suggestions').empty();
+                        if (data.length > 0) {
+                            data.forEach(function (item) {
+                                $('#suggestions').append(`
+                                    <a href="#" class="list-group-item list-group-item-action suggestion-item"
+                                       data-name="${item.tenSanPham}" data-id="${item.m_SanPham}">
+                                        ${item.tenSanPham}
+                                    </a>
+                                `);
+                            });
+                        }
+                    }
+                });
+            });
+
+            // Khi người dùng nhấn vào gợi ý
+            $(document).on('click', '.suggestion-item', function (e) {
+                e.preventDefault();
+                const name = $(this).data('name');
+                const id = $(this).data('id');
+
+                $('#searchBox').val(name); // Ghi vào ô input
+
+                
+            });
+
+            
+        });
+    </script>
+
+
+    
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            function updateCartStats() {
+                const uniqueIds = new Set(); // để tránh đếm trùng
+                const inputs = document.querySelectorAll(".soLuongInput");
+                let totalQuantity = 0;
+
+                inputs.forEach(input => {
+                    const productId = input.dataset.target;
+                    if (uniqueIds.has(productId)) return; // đã đếm rồi
+
+                    const quantity = parseFloat(input.value);
+                    if (!isNaN(quantity)) {
+                        totalQuantity += quantity;
+                        uniqueIds.add(productId); // tránh trùng
+                    }
+                });
+
+                const qty = Math.floor(totalQuantity).toString().padStart(2, '0');
+                const iddrop = document.getElementById("iddrop");
+                if (iddrop) iddrop.textContent = `(${qty})`;
+                const dropid = document.getElementById("dropid");
+                if (dropid) dropid.textContent = qty;
+            }
+
+            // Cập nhật khi load và khi người dùng thay đổi input
+            updateCartStats();
+            document.querySelectorAll(".soLuongInput").forEach(input => {
+                input.addEventListener("input", updateCartStats);
+            });0
+        });
+    </script>
+
+
+    <script>
+               document.addEventListener("DOMContentLoaded", function () {
+            // 1. Lấy đường dẫn URL hiện tại và chuẩn hóa nó
+            let currentPath = window.location.pathname.toLowerCase(); // Chuyển thành chữ thường
+
+            // Xóa dấu gạch chéo "/" ở cuối nếu có (trừ khi nó là trang gốc "/")
+            if (currentPath.length > 1 && currentPath.endsWith('/')) {
+                currentPath = currentPath.slice(0, -1);
+            }
+
+            // 2. Định nghĩa các đường dẫn có thể có cho trang chủ
+            // !!! Quan trọng: Chỉnh sửa mảng này cho phù hợp với href của link Trang chủ và các URL thực tế của bạn
+            const homePaths = ["/", "/home", "/home/index"]; // Ví dụ các đường dẫn trang chủ
+
+            // Kiểm tra xem trang hiện tại có phải là trang chủ không
+            const isCurrentPageHome = homePaths.includes(currentPath);
+
+            // 3. Lấy tất cả các link trong menu điều hướng
+            // !!! Quan trọng: Đảm bảo selector này khớp với cấu trúc HTML của bạn
+            const navLinks = document.querySelectorAll(".navbar-nav .nav-link"); // Sử dụng selector cụ thể hơn nếu cần
+
+            navLinks.forEach(link => {
+                const linkHref = link.getAttribute("href");
+
+                // Bỏ qua các link không hợp lệ hoặc chỉ là anchor "#"
+                if (!linkHref || linkHref === "#") {
+                    link.classList.remove("active"); // Đảm bảo link # không bao giờ active
+                    return; // Chuyển sang link tiếp theo
+                }
+
+                // 4. Chuẩn hóa href của link
+                let linkPath = linkHref.toLowerCase(); // Chuyển thành chữ thường
+                if (linkPath.length > 1 && linkPath.endsWith('/')) {
+                    linkPath = linkPath.slice(0, -1);
+                }
+
+                // 5. So sánh và quyết định có active hay không
+                let isActive = false;
+                if (isCurrentPageHome) {
+                    // Nếu trang hiện tại LÀ trang chủ => kiểm tra xem link này có trỏ về một trong các dạng của trang chủ không
+                    if (homePaths.includes(linkPath)) {
+                        isActive = true;
+                    }
+                } else {
+                    // Nếu trang hiện tại KHÔNG phải trang chủ => yêu cầu khớp chính xác đường dẫn
+                    if (currentPath === linkPath) {
+                        isActive = true;
+                    }
+                }
+
+                // 6. Thêm hoặc xóa class "active"
+                if (isActive) {
+                    link.classList.add("active");
+                } else {
+                    link.classList.remove("active");
+                }
+            });
+        });
+    </script>
+    <script>
+            // === POPUP TÌM KIẾM ===
+        const openBtn = document.querySelector('.search-button');
+        const searchPopup = document.getElementById('searchPopup');
+        const closeSearchBtn = document.getElementById('closeSearch');
+
+        // Mở popup tìm kiếm
+        openBtn.addEventListener('click', () => {
+            searchPopup.classList.add('active');
+        });
+
+        // Đóng popup tìm kiếm
+        closeSearchBtn.addEventListener('click', () => {
+            searchPopup.classList.remove('active');
+        });
+
+        // Bấm ra ngoài đóng popup tìm kiếm
+        document.addEventListener('click', (e) => {
+            if (
+                searchPopup.classList.contains('active') &&
+                !searchPopup.contains(e.target) &&
+                !e.target.closest('.search-button')
+            ) {
+                searchPopup.classList.remove('active');
+            }
+        });
+
+        // ESC để đóng popup tìm kiếm
+        document.addEventListener('keyup', (e) => {
+            if (e.key === 'Escape' && searchPopup.classList.contains('active')) {
+                searchPopup.classList.remove('active');
+            }
+        });
+    </script>
+
+    @{
+        ViewBag.Title = "Chatbot hỗ trợ khách hàng";
+    }
+    <div class="chat-bubble" id="chatToggle" aria-label="Open chat" title="Chat với hỗ trợ">
+        <svg class="chat-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21 15a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10z" stroke="blue" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" /></svg>
+    </div>
+    <aside class="chat-window" id="chatWindow" aria-hidden="true">
+        <header class="chat-header">
+            <div class="avatar">AI</div>
+            <div class="header-title">
+                <h4 style="color:ghostwhite">Hỗ trợ trực tuyến</h4>
+                <p style="color:ghostwhite">Thường trả lời trong vài giây</p>
+            </div>
+            <div class="header-actions">
+                <button class="icon-btn"style="color:white" id="minimizeBtn" title="Thu nhỏ">—</button>
+                <button class="icon-btn" style="color:white" id="closeBtn" title="Đóng">✕</button>
+            </div>
+        </header>
+
+
+        <div class="chat-body" id="chatbox" role="log" aria-live="polite">
+            <!-- demo messages -->
+            <div class="msg bot">Xin chào! Mình có thể giúp gì cho bạn hôm nay?</div>
+        </div>
+
+
+        <div class="chat-input">
+            <input id="userInput" class = "textchat"type="text" placeholder="Gõ tin nhắn..." aria-label="Gõ tin nhắn" />
+            <input type="file" id="fileInput" accept="image/*" style="display: none;" />
+            <button onclick="document.getElementById('fileInput').click()" class="send-btn">📎</button>
+            <button onclick="sendMessage()" class="send-btn" id="sendBtn">Gửi</button>
+        </div>
+    </aside>
+
+
+
+
+    <script>
+            const toggle = document.getElementById('chatToggle');
+        const chatWin = document.getElementById('chatWindow');
+        const closeBtn = document.getElementById('closeBtn');
+        const minBtn = document.getElementById('minimizeBtn');
+        const body = document.getElementById('chatbox');
+        const input = document.getElementById('userInput');
+        const sendBtn = document.getElementById('sendBtn');
+
+        let open = false;
+        let minimized = false;
+
+        // Mở chat
+        toggle.addEventListener('click', () => {
+            open = true;
+            minimized = false;
+            chatWin.style.display = 'flex';
+            chatWin.classList.add('open');
+            chatWin.classList.remove('minimized');
+            chatWin.style.opacity = '1';
+            chatWin.style.transform = 'scale(1)';
+            chatWin.setAttribute('aria-hidden', 'false');
+            setTimeout(() => input.focus(), 180);
+        });
+
+        // Đóng chat
+        closeBtn.addEventListener('click', () => {
+            open = false;
+            minimized = false;
+            chatWin.classList.remove('open', 'minimized');
+            chatWin.style.opacity = '0';
+            chatWin.style.transform = 'scale(0.8)';
+            setTimeout(() => { chatWin.style.display = 'none'; }, 200);
+        });
+
+        // Thu nhỏ chat
+        minBtn.addEventListener('click', () => {
+            if (!open) return;
+            minimized = !minimized;
+            chatWin.classList.toggle('minimized', minimized);
+            if (!minimized) setTimeout(() => input.focus(), 120);
+        });
+
+        // Click ra ngoài chỉ đóng chat nếu không click vào khung chat hoặc icon chat
+        document.addEventListener('click', (e) => {
+            if (
+                chatWin.classList.contains('open') &&
+                !chatWin.contains(e.target) &&
+                !e.target.closest('#chatToggle')
+            ) {
+                chatWin.classList.remove('open');
+                chatWin.style.opacity = '0';
+                chatWin.style.transform = 'scale(0.8)';
+                setTimeout(() => { chatWin.style.display = 'none'; open = false; }, 200);
+            }
+        });
+
+        // ESC để đóng chat
+        document.addEventListener('keyup', (e) => {
+            if (e.key === 'Escape' && chatWin.classList.contains('open')) {
+                chatWin.classList.remove('open');
+                chatWin.style.display = 'none';
+                open = false;
+            }
+        });
+         function showThinking() {
+            const botTyping = document.createElement("div");
+            botTyping.className = "msg bot typing";
+            botTyping.innerHTML = `<i>Đang suy nghĩ<span class="dots">...</span></i>`;
+            body.appendChild(botTyping);
+            body.scrollTop = body.scrollHeight;
+        }
+
+        function hideThinking() {
+            const typingMsg = document.querySelector(".msg.bot.typing");
+            if (typingMsg) typingMsg.remove();
+        }
+        // input file
+                document.getElementById("fileInput").addEventListener("change", async function () {
+            const file = this.files[0];
+            if (!file) return;
+
+            const formData = new FormData();
+            formData.append("file", file);
+
+            // Thêm phần hiển thị trước khi gửi
+            const chatbox = document.getElementById("chatbox");
+            const msgDiv = document.createElement("div");
+            msgDiv.className = "msg user";
+            msgDiv.innerHTML = `<img src="${URL.createObjectURL(file)}" alt="Ảnh tải lên" style="max-width:150px; border-radius:8px;">`;
+            chatbox.appendChild(msgDiv);
+showThinking();
+            // Gửi ảnh lên server
+            try {
+                const response = await fetch("/api/chat/upload", {
+                    method: "POST",
+                    body: formData
+                });
+
+                if (!response.ok) throw new Error("Upload thất bại");
+
+                const result = await response.json();
+                
+                // Hiển thị phản hồi từ chatbot
+                const botDiv = document.createElement("div");
+                botDiv.className = "msg bot";
+                botDiv.innerText = result.reply || "Ảnh đã được xử lý!";
+                chatbox.appendChild(botDiv);
+                chatbox.scrollTop = chatbox.scrollHeight;
+                        hideThinking();
+            } catch (err) {
+                hideThinking();
+                alert("❌ Lỗi khi tải ảnh: " + err.message);
+            }
+        });
+               
+
+        // === GỬI TIN NHẮN ĐẾN SERVER ===
+        async function sendMessage() {
+            const msg = input.value.trim();
+            if (!msg) return;
+
+            body.innerHTML += `<div class="msg user"><b>Bạn:</b> ${msg}</div>`;
+            showThinking();
+            try {
+                const res = await fetch('/Home/Ask', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: `message=${encodeURIComponent(msg)}`
+                });
+
+                if (!res.ok) throw new Error("dang nhap đê.");
+                const data = await res.json();
+                hideThinking();
+                body.innerHTML += `<div class="msg bot"><b>Bot:</b> ${data.response}</div>`;
+            } catch (err) { 
+                hideThinking();
+                body.innerHTML += `<div class="msg bot" style="color:#f87171"><b>Lỗi:</b> ${err.message}</div>`;
+            }
+
+            input.value = "";
+            body.scrollTop = body.scrollHeight;
+        }
+
+        // Gửi khi nhấn Enter
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+    </script>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

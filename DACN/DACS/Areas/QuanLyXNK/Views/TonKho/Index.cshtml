@@ -1,0 +1,303 @@
+﻿@* File: Areas/QuanLyXNK/Views/TonKho/Index.cshtml *@
+@model DACS.Models.ViewModels.TonKhoIndexViewModel
+@using DACS.Models.ViewModels;
+
+@{
+    ViewData["Title"] = "Tồn Kho Theo Sản Phẩm";
+    // Layout = "~/Views/Shared/_AdminLayout.cshtml"; // Comment dòng này nếu muốn layout trong view này
+}
+
+@* Hiển thị thông báo *@
+@if (TempData["SuccessMessage"] != null) @* Thêm kiểm tra TempData *@
+{
+    <div class="alert alert-success alert-dismissible fade show mb-3" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show mb-3" role="alert">
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@* ****** KHUYẾN NGHỊ: Chuyển CSS này vào file .css của Layout ****** *@
+<style>
+    /* Copy CSS từ code QuanLyXNK/Index.cshtml vào đây */
+    /* (Đã lược bớt các style trùng lặp hoặc không cần thiết cho cấu trúc này) */
+    body, html {
+        height: 100%;
+    }
+
+    .container {
+        display: grid;
+        max-width: 100%;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+    }
+        .main-container { /* Đổi tên từ .container để tránh xung đột Bootstrap */
+        display: flex; /* Sử dụng flexbox */
+        width: 100%;
+        min-height: 100vh; /* Đảm bảo chiều cao tối thiểu */
+        margin: 0;
+        padding: 0;
+    }
+
+    .sidebar {
+        background-color: #212529;
+        color: #fff;
+        padding: 15px;
+        width: 250px;
+        flex-shrink: 0; /* Không co lại */
+        /* min-height: 100vh; -> main-container đã xử lý */
+        display: flex; /* Thêm flex để đẩy logout xuống */
+        flex-direction: column; /* Thêm flex để đẩy logout xuống */
+    }
+
+        .sidebar h2 {
+            border-bottom: 1px solid #495057;
+            padding-bottom: 10px;
+            font-size: 1.5rem;
+            margin-bottom: 1rem; /* Thêm khoảng cách */
+        }
+
+        .sidebar .nav {
+            flex-grow: 1; /* Để các nav item chiếm không gian */
+        }
+
+        .sidebar .nav-link {
+            color: #adb5bd;
+            padding: 8px 15px;
+            border-radius: 0.25rem; /* Thêm bo góc */
+            margin-bottom: 5px; /* Khoảng cách giữa các link */
+        }
+
+            .sidebar .nav-link.active, .sidebar .nav-link:hover {
+                color: #fff;
+                background-color: #495057;
+            }
+        /* CSS cho nút logout */
+        .sidebar .nav-item.mt-auto { /* Đảm bảo nó thực sự ở cuối */
+            margin-top: auto;
+        }
+
+        .sidebar .logout-form button { /* Style cho nút logout */
+            padding: 8px 15px;
+            color: #dc3545; /* Màu đỏ */
+        }
+
+            .sidebar .logout-form button:hover {
+                background-color: rgba(220, 53, 69, 0.1); /* Nền đỏ nhẹ khi hover */
+                color: #bd2130;
+            }
+
+    .main-content-area {
+        padding: 25px;
+        background-color: #f8f9fa;
+        flex-grow: 1; /* Cho phép mở rộng */
+        overflow-y: auto; /* Thêm cuộn nếu nội dung dài */
+        height: 100vh; /* Đảm bảo cuộn nếu cần */
+    }
+
+    .page-header {
+        font-size: 1.75rem;
+        font-weight: 500;
+        margin-bottom: 1.5rem;
+        color: #343a40;
+    }
+
+    .filter-card {
+        background-color: #fff;
+        padding: 1rem 1.5rem;
+        border-radius: 0.375rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,.075);
+    }
+    /* Thêm class table-container nếu bạn muốn style riêng */
+    .table-container .card-header { /* Ví dụ style header bảng */
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    .table-container .card-footer { /* Ví dụ style footer bảng */
+        border-top: 1px solid #dee2e6;
+    }
+
+    /* Style cho badge trạng thái tồn kho */
+    .badge {
+        font-size: 0.8em;
+        padding: 0.4em 0.6em;
+    }
+
+</style>
+@* ****** KẾT THÚC KHUYẾN NGHỊ ****** *@
+
+
+<div class="d-flex main-container">
+    @* --- SIDEBAR --- *@
+    <div class="sidebar">
+        <h2>Quản Lý XNK</h2>
+        <ul class="nav flex-column">
+            <li class="nav-item"><a asp-area="QuanLyXNK" asp-controller="QuanLyXNK" asp-action="Index" class="nav-link"><i class="fas fa-truck-loading me-2"></i> Quản lý Thu gom</a></li>
+            <li class="nav-item"><a asp-area="QuanLyXNK" asp-controller="QuanLyDSPX" asp-action="Index" class="nav-link "><i class="fas fa-dolly-flatbed me-2"></i> DS Phiếu Xuất</a></li> @* Link mới *@
+            <li class="nav-item"><a asp-area="QuanLyXNK" asp-controller="QuanLyDSPX" asp-action="Create" class="nav-link"><i class="fas fa-plus-circle me-2"></i> Tạo Phiếu Xuất</a></li> @* Link mới *@
+            <li class="nav-item"><a asp-area="QuanLyXNK" asp-controller="KhoHang" asp-action="Index" class="nav-link"><i class="fas fa-warehouse me-2"></i> DS Kho hàng</a></li>
+            <li class="nav-item"><a asp-area="QuanLyXNK" asp-controller="TonKho" asp-action="Index" class="nav-link active"><i class="fas fa-boxes-stacked me-2"></i> Tồn kho SP</a></li>
+            <li class="nav-item"><a asp-area="QuanLyXNK" asp-controller="ThongKe" asp-action="Index" class="nav-link"><i class="fas fa-chart-bar me-2"></i> Thống kê NX</a></li>
+        </ul>
+        <div class="nav-item mt-auto ">
+            <button type="submit" class="text-danger border-0 bg-transparent p-0 w-100 text-start mt-1">
+                @* Adjusted button style to better match list items *@
+                <a href="/home/index" class="border-0 text-danger" style="text-decoration: none;"><i class="fas fa-sign-out-alt fa-fw me-2"></i> Về trang chủ</a>
+            </button>
+        </div>
+    </div>
+
+    @* --- MAIN CONTENT --- *@
+    <div class="main-content-area">
+        <div class="page-header">@ViewData["Title"]</div>
+
+        @* --- FILTER FORM --- *@
+        <div class="filter-card card shadow-sm mb-4">
+            <div class="card-body">
+                <form asp-action="Index" asp-controller="TonKho" method="get" class="row g-3 align-items-end">
+                    <div class="col-md-5 col-lg-4">
+                        <label asp-for="SearchTerm" class="form-label form-label-sm">Tìm sản phẩm/lô</label>
+                        <input asp-for="SearchTerm" class="form-control form-control-sm" placeholder="Nhập tên, mã SP hoặc số lô...">
+                    </div>
+                    <div class="col-md-4 col-lg-3">
+                        <label asp-for="MaKhoFilter" class="form-label form-label-sm">Kho hàng</label>
+                        <select asp-for="MaKhoFilter" asp-items="Model.KhoHangOptions" class="form-select form-select-sm">
+                            @* Option "Tất cả kho" đã được thêm từ Repository *@
+                        </select>
+                    </div>
+                    <div class="col-md-3 col-lg-2">
+                        <button type="submit" class="btn btn-sm btn-primary w-100"><i class="fas fa-filter me-1"></i> Lọc</button>
+                    </div>
+                    <div class="col-md-2 col-lg-2">
+                        <a asp-action="Index" asp-controller="TonKho" class="btn btn-sm btn-outline-secondary w-100">
+                            <i class="fas fa-sync-alt me-1"></i> Reset
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        @* --- DATA TABLE --- *@
+        <div class="table-container card shadow-sm">
+            <div class="card-header bg-light py-2">
+                <h5 class="mb-0"><i class="fas fa-boxes-stacked me-2"></i> Danh sách Tồn kho</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover table-sm align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>@Html.DisplayNameFor(model => model.TonKhoItems[0].TenKho)</th>
+                                <th>@Html.DisplayNameFor(model => model.TonKhoItems[0].TenSanPham)</th>
+                                <th>@Html.DisplayNameFor(model => model.TonKhoItems[0].TenDonViTinh)</th>
+                                <th class="text-end">@Html.DisplayNameFor(model => model.TonKhoItems[0].KhoiLuong)</th>
+                                @* <th>@Html.DisplayNameFor(model => model.TonKhoItems[0].DinhMucToiThieu)</th> *@
+                                <th class="text-center">@Html.DisplayNameFor(model => model.TonKhoItems[0].TrangThai)</th>
+                                
+                                @* <th class="text-center">Hành động</th> *@
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model == null || !Model.TonKhoItems.Any())
+                            {
+                                <tr>
+                                    <td colspan="8" class="text-center text-muted py-3">Không tìm thấy dữ liệu tồn kho phù hợp.</td> @* Cập nhật colspan thành 8 *@
+                                </tr>
+                            }
+                            else
+                            {
+                                @foreach (var item in Model.TonKhoItems)
+                                {
+                                    // Gọi hàm helper để lấy class cho badge
+                                    string statusBadgeClass = GetTonKhoStatusBadgeClass(item.TrangThai);
+
+                                    <tr>
+                                        <td>@Html.DisplayFor(modelItem => item.TenKho)</td>
+                                        <td>@Html.DisplayFor(modelItem => item.TenSanPham)</td>
+                                        <td>@Html.DisplayFor(modelItem => item.TenDonViTinh)</td>
+                                        <td class="text-end">@item.KhoiLuong.ToString("N0")</td>
+                                        @* <td>@(item.DinhMucToiThieu?.ToString("N0") ?? "N/A")</td> *@
+                                        <td class="text-center"><span class="badge @statusBadgeClass">@Html.DisplayFor(modelItem => item.TrangThai)</span></td>
+                                        
+                                        @* <td>... Actions ...</td> *@
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            @* --- PAGINATION --- *@
+            @if (Model != null && Model.TotalPages > 1)
+            {
+                <div class="card-footer bg-light">
+                    <nav aria-label="Inventory page navigation">
+                        <ul class="pagination pagination-sm justify-content-center mb-0">
+                            <li class="page-item @(Model.HasPreviousPage ? "" : "disabled")">
+                                <a class="page-link" asp-action="Index"
+                                   asp-route-page="@(Model.PageIndex - 1)"
+                                   asp-route-searchTerm="@Model.SearchTerm"
+                                   asp-route-maKhoFilter="@Model.MaKhoFilter"
+                                   aria-label="Previous">&laquo;</a>
+                            </li>
+
+                            @for (int i = Math.Max(1, Model.PageIndex - 2); i <= Math.Min(Model.TotalPages, Model.PageIndex + 2); i++)
+                            {
+                                <li class="page-item @(i == Model.PageIndex ? "active" : "")">
+                                    <a class="page-link" asp-action="Index"
+                                       asp-route-page="@i"
+                                       asp-route-searchTerm="@Model.SearchTerm"
+                                       asp-route-maKhoFilter="@Model.MaKhoFilter">@i</a>
+                                </li>
+                            }
+
+                            <li class="page-item @(Model.HasNextPage ? "" : "disabled")">
+                                <a class="page-link" asp-action="Index"
+                                   asp-route-page="@(Model.PageIndex + 1)"
+                                   asp-route-searchTerm="@Model.SearchTerm"
+                                   asp-route-maKhoFilter="@Model.MaKhoFilter"
+                                   aria-label="Next">&raquo;</a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            }
+        </div> @* End Table Container *@
+
+    </div> @* End Main Content Area *@
+</div> @* End Main Container *@
+
+
+@* Hàm helper để lấy class cho badge trạng thái Tồn kho *@
+@functions {
+    string GetTonKhoStatusBadgeClass(string status)
+    {
+        status = status?.Trim().ToLower() ?? "";
+        switch (status)
+        {
+            case "hết hàng": return "bg-danger";
+            case "sắp hết": return "bg-warning text-dark";
+            case "đủ hàng": return "bg-success";
+            case "còn hàng": return "bg-success"; // Hoặc bg-secondary nếu muốn phân biệt rõ
+            case "dư tồn": return "bg-info text-dark";
+            default: return "bg-secondary"; // Trạng thái không xác định
+        }
+    }
+}
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    @* Thêm các script tùy chỉnh nếu cần cho trang Tồn Kho *@
+}

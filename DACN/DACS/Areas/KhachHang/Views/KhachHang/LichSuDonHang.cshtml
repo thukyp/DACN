@@ -1,0 +1,128 @@
+﻿@model DACS.Models.ViewModels.OrderHistoryViewModel
+@{
+    ViewData["Title"] = "Lịch Sử Đơn Hàng";
+    // Layout = "_AccountLayout"; // Nếu bạn có layout riêng cho trang tài khoản
+}
+<div class="container mt-4 account-section">
+    @* Added mt-4 for top margin *@
+    <div class="row">
+        @* Cột Menu bên trái *@
+        <div class="col-lg-3 mb-4 mb-lg-0">
+            @* Added bottom margin for mobile *@
+            <div class="account-menu list-group">
+                <a asp-area="KhachHang" asp-controller="KhachHang" asp-action="Index" class="list-group-item list-group-item-action ">
+                    <i class="fas fa-tachometer-alt fa-fw me-2"></i> Tổng quan
+                </a>
+                <a asp-area="KhachHang" asp-controller="KhachHang" asp-action="HoSoCaNhan" class="list-group-item list-group-item-action">
+                    <i class="fas fa-user-circle fa-fw me-2"></i> Hồ sơ cá nhân
+                </a>
+				<a asp-area="KhachHang" asp-controller="KhachHang" asp-action="LichSuDonHang" class="list-group-item list-group-item-action active">
+                    <i class="fas fa-receipt fa-fw me-2"></i> Lịch sử Đơn hàng
+                </a>
+                <a asp-area="KhachHang" asp-controller="KhachHang" asp-action="LichSuYeuCauThuGom" class="list-group-item list-group-item-action">
+                    @* Added link to Collection History here for consistency *@
+                    <i class="fas fa-recycle fa-fw me-2"></i> Lịch sử Thu gom
+                </a>
+                <a asp-area="Identity" asp-page="/Account/Manage/ChangePassword" class="list-group-item list-group-item-action">
+                    <i class="fas fa-lock fa-fw me-2"></i> Đổi mật khẩu
+                </a>
+                @* <a asp-area="KhachHang" asp-controller="Address" asp-action="Index" class="list-group-item list-group-item-action">
+                    <i class="fas fa-map-marker-alt fa-fw me-2"></i> Sổ địa chỉ
+                   </a> *@
+               
+                    <button  type="submit" class="list-group-item list-group-item-action text-danger border-0 bg-transparent p-0 w-100 text-start">
+                        @* Adjusted button style to better match list items *@
+					<a href="/home/index" class="list-group-item list-group-item-action border-0 text-danger"><i class="fas fa-sign-out-alt fa-fw me-2"></i> Về trang chủ</a>
+                    </button>
+                
+            </div>
+        </div>
+        <div class="col-lg-9">
+<div class="table-responsive">
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th scope="col">Mã Đơn</th>
+                <th scope="col">Ngày Đặt</th>
+                <th scope="col" class="text-end">Tổng Tiền</th>
+                <th scope="col">Trạng Thái</th>
+                <th scope="col"></th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.Orders.Any())
+            {
+                @foreach (var order in Model.Orders)
+                {
+                    <tr>
+                        <td><a asp-action="ChiTietDonHang" asp-route-id="@order.OrderId" class="order-id-link">#@order.OrderId</a></td>
+                        <td>@order.OrderDate.ToString("dd/MM/yyyy")</td>
+                        <td class="text-end">@order.TotalAmount.ToString("N0") đ</td>
+                        <td>
+                            @* Dùng if/else hoặc switch để hiển thị badge màu tương ứng với Status *@
+                            @if (order.Status == "Đã giao")
+                            {
+                                <span class="badge bg-success">@order.Status</span>
+                            }
+                            else if (order.Status == "Đang xử lý")
+                            {
+                                <span class="badge bg-info text-dark">@order.Status</span>
+                            }
+                            else if (order.Status == "Đang giao hàng")
+                            {
+                                <span class="badge bg-primary">@order.Status</span>
+                            }
+                            else if (order.Status == "Đã hủy")
+                            {
+                                <span class="badge bg-danger">@order.Status</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary">@order.Status</span>
+                            }
+                        </td>
+                        <td><a asp-action="ChiTietDonHang" asp-route-id="@order.OrderId" class="action-link">Xem</a></td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="5" class="text-center">Bạn chưa có đơn hàng nào.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+        </div>
+    </div>
+</div>
+@if (Model.TotalPages > 1)
+{
+    <nav aria-label="Order history navigation" class="mt-4 d-flex justify-content-center">
+        <ul class="pagination pagination-sm">
+            <li class="page-item @(Model.HasPreviousPage ? "" : "disabled")">
+                <a class="page-link" asp-action="LichSuDonHang"
+                   asp-route-page="@(Model.PageIndex - 1)"
+                   asp-route-statusFilter="@Model.CurrentStatusFilter"
+                   asp-route-timeFilter="@Model.CurrentTimeFilter">Trước</a>
+            </li>
+            @for (int i = 1; i <= Model.TotalPages; i++)
+            {
+                <li class="page-item @(i == Model.PageIndex ? "active" : "")">
+                    <a class="page-link" asp-action="LichSuDonHang"
+                       asp-route-page="@i"
+                       asp-route-statusFilter="@Model.CurrentStatusFilter"
+                       asp-route-timeFilter="@Model.CurrentTimeFilter">@i</a>
+                </li>
+            }
+            <li class="page-item @(Model.HasNextPage ? "" : "disabled")">
+                <a class="page-link" asp-action="LichSuDonHang"
+                   asp-route-page="@(Model.PageIndex + 1)"
+                   asp-route-statusFilter="@Model.CurrentStatusFilter"
+                   asp-route-timeFilter="@Model.CurrentTimeFilter">Sau</a>
+            </li>
+        </ul>
+    </nav>
+   
+}

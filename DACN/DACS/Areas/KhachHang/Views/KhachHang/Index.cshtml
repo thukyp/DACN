@@ -1,0 +1,215 @@
+﻿@model DACS.Models.ViewModels.KhachHangDashboardViewModel
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<ApplicationUser> UserManager
+@{
+    ViewData["Title"] = "Tổng quan tài khoản";
+    // Layout = "~/Areas/KhachHang/Views/Shared/_UserAccountLayout.cshtml"; // Consider using a dedicated layout if you haven't already
+    var currentUser = await UserManager.GetUserAsync(User);
+    var displayName = Model?.TenNguoiMua ?? currentUser?.FullName ?? User.Identity?.Name ?? "Khách";
+}
+
+<div class="container mt-4 account-section">
+    @* Added mt-4 for top margin *@
+    <div class="row">
+        @* Cột Menu bên trái *@
+        <div class="col-lg-3 mb-4 mb-lg-0">
+            @* Added bottom margin for mobile *@
+            <div class="account-menu list-group">
+                <a asp-area="KhachHang" asp-controller="KhachHang" asp-action="Index" class="list-group-item list-group-item-action active">
+                    <i class="fas fa-tachometer-alt fa-fw me-2"></i> Tổng quan
+                </a>
+                <a asp-area="KhachHang" asp-controller="KhachHang" asp-action="HoSoCaNhan" class="list-group-item list-group-item-action">
+                    <i class="fas fa-user-circle fa-fw me-2"></i> Hồ sơ cá nhân
+                </a>
+                <a asp-area="KhachHang" asp-controller="KhachHang" asp-action="LichSuDonHang" class="list-group-item list-group-item-action">
+                    <i class="fas fa-receipt fa-fw me-2"></i> Lịch sử Đơn hàng
+                </a>
+                <a asp-area="KhachHang" asp-controller="KhachHang" asp-action="LichSuYeuCauThuGom" class="list-group-item list-group-item-action">
+                    @* Added link to Collection History here for consistency *@
+                    <i class="fas fa-recycle fa-fw me-2"></i> Lịch sử Thu gom
+                </a>
+                <a asp-area="Identity" asp-page="/Account/Manage/ChangePassword" class="list-group-item list-group-item-action">
+                    <i class="fas fa-lock fa-fw me-2"></i> Đổi mật khẩu
+                </a>
+                @* <a asp-area="KhachHang" asp-controller="Address" asp-action="Index" class="list-group-item list-group-item-action">
+                    <i class="fas fa-map-marker-alt fa-fw me-2"></i> Sổ địa chỉ
+                   </a> *@
+                <button type="submit" class="list-group-item list-group-item-action text-danger border-0 bg-transparent p-0 w-100 text-start">
+                    @* Adjusted button style to better match list items *@
+                    <a href="/home/index" class="list-group-item list-group-item-action border-0 text-danger"><i class="fas fa-sign-out-alt fa-fw me-2"></i> Về trang chủ</a>
+                </button>
+            </div>
+        </div>
+
+        @* Cột Nội dung chính bên phải *@
+        <div class="col-lg-9">
+            <div class="account-content">
+
+                <h4 class="mb-3">Xin chào, @displayName!</h4> @* Adjusted margin slightly *@
+                <p class="mb-3">Từ trang tổng quan tài khoản, bạn có thể xem các đơn hàng và yêu cầu thu gom gần đây, quản lý địa chỉ giao hàng và chỉnh sửa mật khẩu cùng thông tin tài khoản.</p>
+
+                @* --- Row 1: Recent Orders & Recent Collections --- *@
+                <div class="row mb-4">
+                    @* Card Đơn hàng gần đây *@
+                    <div class="col-md-6 mb-3 mb-md-0">
+                        @* Added spacing for mobile *@
+                        <div class="card dashboard-card h-100">
+                            @* Added h-100 *@
+                            <div class="card-header">
+                                <i class="fas fa-receipt me-2"></i> Đơn hàng gần đây
+                            </div>
+                            <ul class="list-group list-group-flush">
+                                @if (Model?.RecentOrders != null && Model.RecentOrders.Any())
+                                {
+                                    @foreach (var order in Model.RecentOrders)
+                                    {
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            <div>
+                                                @* Consider adding controller/area if OrderDetails isn't in KhachHang controller *@
+                                                <a asp-action="ChiTietDonHang" asp-controller="KhachHang" asp-route-id="@order.OrderId" class="order-id-link fw-bold">#@order.OrderId</a>
+                                                <small class="d-block text-muted">@order.OrderDate.ToString("dd/MM/yyyy")</small>
+                                            </div>
+                                            <span class="badge @GetStatusBadgeClass(order.Status) order-status">@order.Status</span>
+                                        </li>
+                                    }
+                                }
+                                else
+                                {
+                                    <li class="list-group-item text-muted">Bạn chưa có đơn hàng nào gần đây.</li>
+                                }
+                                <li class="list-group-item text-center bg-light">
+                                    @* Added bg-light for footer feel *@
+                                    <a asp-action="LichSuDonHang" asp-controller="KhachHang" asp-area="KhachHang" class="btn btn-sm btn-outline-primary">Xem tất cả đơn hàng</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    @* Card Yêu cầu Thu gom Gần đây *@
+                    <div class="col-md-6">
+                        <div class="card dashboard-card h-100">
+                            @* Added h-100 *@
+                            <div class="card-header">
+                                <i class="fas fa-recycle me-2"></i> Yêu cầu Thu gom Gần đây
+                            </div>
+                            <ul class="list-group list-group-flush">
+                                @if (Model?.RecentCollectionRequests != null && Model.RecentCollectionRequests.Any())
+                                {
+                                    @foreach (var request in Model.RecentCollectionRequests)
+                                    {
+                                        var tenLoaiSanPham = request.ChiTietThuGoms?.FirstOrDefault()?.LoaiSanPham?.TenLoai ?? "Nhiều loại/Không xác định";
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <a asp-action="YeuCauThuGomDetails" asp-controller="KhachHang" asp-area="KhachHang" asp-route-id="@request.M_YeuCau" class="order-id-link fw-bold">#@request.M_YeuCau</a>
+                                                <small class="d-block text-muted">Ngày YC: @request.NgayYeuCau.ToString("dd/MM/yyyy HH:mm")</small>
+                                                <small class="d-block text-muted" title="@tenLoaiSanPham">Loại SP: @(tenLoaiSanPham.Length > 20 ? tenLoaiSanPham.Substring(0, 17) + "..." : tenLoaiSanPham)</small> @* Truncate long names *@
+                                            </div>
+                                            <span class="badge @GetStatusBadgeClass(request.TrangThai) order-status">@request.TrangThai</span>
+                                        </li>
+                                    }
+                                }
+                                else
+                                {
+                                    <li class="list-group-item text-muted">Bạn chưa có yêu cầu thu gom nào gần đây.</li>
+                                }
+                                <li class="list-group-item text-center bg-light">
+                                    @* Added bg-light for footer feel *@
+                                    <a asp-action="LichSuYeuCauThuGom" asp-controller="KhachHang" asp-area="KhachHang" class="btn btn-sm btn-outline-primary">Xem tất cả yêu cầu</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div> @* --- End Row 1 --- *@
+
+
+                @* --- Row 2: Account Info & Default Address --- *@
+                <div class="row">
+                    @* Card Thông tin tài khoản *@
+                    <div class="col-md-6 mb-3 mb-md-0">
+                        @* Added spacing for mobile *@
+                        <div class="card dashboard-card h-100">
+                            @* Added h-100 *@
+                            <div class="card-header">
+                                <i class="fas fa-user-edit me-2"></i> Thông tin tài khoản
+                            </div>
+                            <div class="card-body">
+                                <p class="mb-2"><strong>Họ tên:</strong> @(Model?.TenNguoiMua ?? currentUser?.FullName ?? "-")</p>
+                                <p class="mb-2"><strong>Email:</strong> @(Model?.EmailNguoiMua ?? currentUser?.Email ?? User.Identity?.Name ?? "-")</p>
+                                <p class="mb-3"><strong>SĐT:</strong> @(Model?.SdtNguoiMua ?? currentUser?.PhoneNumber ?? "-")</p>
+                                <a asp-action="HoSoCaNhan" asp-controller="KhachHang" asp-area="KhachHang" class="btn btn-sm btn-primary me-2"><i class="fas fa-edit me-1"></i> Quản lý hồ sơ</a>
+                                <a asp-area="Identity" asp-page="/Account/Manage/ChangePassword" class="btn btn-sm btn-outline-secondary"><i class="fas fa-key me-1"></i> Đổi mật khẩu</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    @* Card Địa chỉ giao hàng mặc định *@
+                    <div class="col-md-6">
+                        <div class="card dashboard-card h-100">
+                            @* Added h-100 *@
+                            <div class="card-header">
+                                <i class="fas fa-map-marked-alt me-2"></i> Địa chỉ giao hàng mặc định
+                            </div>
+                            <div class="card-body">
+                                @if (!string.IsNullOrWhiteSpace(Model?.DiaChiMacDinh))
+                                {
+                                    <p class="mb-3">@Model.DiaChiMacDinh</p>
+                                }
+                                else
+                                {
+                                    <p class="text-muted mb-3">Chưa có địa chỉ mặc định.</p>
+                                }
+                                @* Uncomment and adjust if you have an address management page
+                                <a asp-action="Index" asp-controller="Address" asp-area="KhachHang" class="btn btn-sm btn-outline-primary"><i class="fas fa-address-book me-1"></i> Quản lý địa chỉ</a>
+                                *@
+                            </div>
+                        </div>
+                    </div>
+                </div> @* --- End Row 2 --- *@
+
+            </div> @* End account-content *@
+        </div> @* End col-lg-9 *@
+    </div> @* End row *@
+</div> @* End container *@
+
+
+@functions {
+    string GetStatusBadgeClass(string status)
+    {
+        status = status?.Trim().ToLower() ?? ""; // Added Trim() for safety
+        switch (status)
+        {
+            case "đang giao":
+            case "shipping":
+            case "đang vận chuyển": // Added variation
+                return "bg-primary";
+            case "đã giao":
+            case "delivered":
+            case "hoàn thành": // Added variation
+                return "bg-success";
+            case "đang xử lý":
+            case "processing":
+                return "bg-info text-dark"; // Kept text-dark for light background
+            case "đã hủy":
+            case "cancelled":
+                return "bg-danger";
+            case "chờ thanh toán":
+            case "pending payment":
+                return "bg-warning text-dark"; // Kept text-dark for light background
+            case "chờ xác nhận": // Added common status
+            case "pending confirmation":
+                return "bg-secondary";
+            case "đã tiếp nhận": // Added common status for requests
+                return "bg-info-subtle text-info-emphasis"; // Using Bootstrap 5.3 subtle colors
+            case "đang thu gom": // Added common status for requests
+                return "bg-primary-subtle text-primary-emphasis";
+            case "thu gom thành công": // Added common status for requests
+                return "bg-success-subtle text-success-emphasis";
+            case "thu gom thất bại": // Added common status for requests
+                return "bg-warning-subtle text-warning-emphasis";
+            default:
+                return "bg-light text-dark border"; // More neutral default
+        }
+    }
+}
+
+}

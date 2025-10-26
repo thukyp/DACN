@@ -1,0 +1,127 @@
+﻿@model DACS.Models.KhoHang // Chỉ định model là KhoHang, không phải KhoHangViewModel
+
+@{
+    ViewData["Title"] = "Thêm Kho Hàng Mới";
+    // Giả sử bạn có một _Layout.cshtml chung cho khu vực QuanLyXNK hoặc toàn bộ ứng dụng
+    // Layout = "_Layout_QuanLyXNK"; // Hoặc Layout = "_Layout"; nếu dùng layout chung
+}
+
+@* --- Có thể đưa CSS vào file riêng hoặc dùng @section Styles nếu Layout hỗ trợ --- *@
+<style>
+    /* Kế thừa style từ Index hoặc layout, hoặc thêm style riêng nếu cần */
+    .page-header {
+        font-size: 1.75rem;
+        font-weight: 500;
+        margin-bottom: 1.5rem;
+        color: #343a40;
+    }
+
+    .container {
+        display: grid;
+        max-width: 100%;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        flex-direction: row;
+    }
+
+    .card-header {
+        background-color: #e9ecef; /* Giống màu a header bảng */
+        font-weight: 600;
+    }
+</style>
+
+@* Container chính cho nội dung trang, tương tự Index nhưng không có sidebar ở đây *@
+<div class="main-content-area p-4">
+    @* Giả định class này được định nghĩa trong layout chính *@
+
+    <div class="page-header">@ViewData["Title"]</div>
+
+    <div class="row">
+        <div class="col-md-8 col-lg-6 mx-auto">
+            @* Canh giữa form trên các màn hình lớn hơn *@
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    Thông tin kho hàng
+                </div>
+                <div class="card-body">
+                    @* Form gửi dữ liệu đến action Create (POST) *@
+                    <form asp-action="Create" method="post">
+                        @* Hiển thị các lỗi không thuộc về thuộc tính cụ thể nào (Model-level errors) *@
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                        @*
+                            Mã kho thường được tạo tự động hoặc có quy tắc riêng.
+                            Nếu người dùng được phép nhập, cần input này.
+                            Nếu tạo tự động, bạn có thể ẩn hoặc bỏ field này đi và xử lý logic tạo mã trong Controller (POST).
+                            Ví dụ dưới đây cho phép người dùng nhập:
+                         *@
+                        <div class="mb-3">
+                            <label asp-for="MaKho" class="form-label fw-semibold"></label>
+                            <input asp-for="MaKho" class="form-control form-control-sm" />
+                            @* Hiển thị lỗi validation cho MaKho *@
+                            <span asp-validation-for="MaKho" class="text-danger d-block mt-1"></span>
+                            @* Hiển thị lỗi "Mã kho đã tồn tại" nếu Controller thêm vào ModelState *@
+                            @if (ViewData.ModelState["MaKho"] != null && ViewData.ModelState["MaKho"].Errors.Any(e => e.ErrorMessage.Contains("đã tồn tại")))
+                            {
+                                <span class="text-danger d-block mt-1">@ViewData.ModelState["MaKho"].Errors.First(e => e.ErrorMessage.Contains("đã tồn tại")).ErrorMessage</span>
+                            }
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="TenKho" class="form-label fw-semibold"></label>
+                            <input asp-for="TenKho" class="form-control form-control-sm" />
+                            <span asp-validation-for="TenKho" class="text-danger d-block mt-1"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="DiaChi" class="form-label fw-semibold"></label>
+                            <textarea asp-for="DiaChi" class="form-control form-control-sm" rows="3"></textarea>
+                            <span asp-validation-for="DiaChi" class="text-danger d-block mt-1"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="SucChuaTomTat" class="form-label fw-semibold"></label>
+                            <input asp-for="SucChuaTomTat" class="form-control form-control-sm" placeholder="Ví dụ: 100 tấn, 500m³..." />
+                            <span asp-validation-for="SucChuaTomTat" class="text-danger d-block mt-1"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="TrangThai" class="form-label fw-semibold"></label>
+                            @* Dropdown lấy dữ liệu từ ViewBag.TrangThaiOptions *@
+                            <select asp-for="TrangThai" class="form-select form-select-sm" asp-items="ViewBag.TrangThaiOptions">
+                                @* Controller đã xử lý việc chọn giá trị mặc định, không cần option trống ở đây *@
+                                @* <option value="">-- Chọn trạng thái --</option> *@
+                            </select>
+                            <span asp-validation-for="TrangThai" class="text-danger d-block mt-1"></span>
+                        </div>
+
+                        @* Nút Lưu và Hủy *@
+                        <div class="d-flex justify-content-end pt-3 border-top mt-4">
+                            @* Nút Hủy - Quay lại trang Index *@
+                            <a asp-action="Index" class="btn btn-outline-secondary me-2">
+                                <i class="fas fa-times me-1"></i> Hủy bỏ
+                            </a>
+                            @* Nút Lưu - Gửi form *@
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-save me-1"></i> Lưu Kho Hàng
+                            </button>
+                        </div>
+                    </form>
+                </div> @* End card-body *@
+            </div> @* End card *@
+        </div> @* End Col *@
+    </div> @* End Row *@
+</div> @* End Main Content Area *@
+
+
+@section Scripts {
+    @{
+        // Thêm partial view chứa script cho validation phía client (nếu bạn có file _ValidationScriptsPartial.cshtml)
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        // Thêm các script tùy chỉnh khác nếu cần cho trang này
+        // Ví dụ: $(document).ready(function() { ... });
+    </script>
+}

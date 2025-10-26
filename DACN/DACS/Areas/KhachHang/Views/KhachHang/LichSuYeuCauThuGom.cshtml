@@ -1,0 +1,174 @@
+﻿@model IEnumerable<DACS.Models.YeuCauThuGom>
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<ApplicationUser> UserManager
+
+@{
+    ViewData["Title"] = "Lịch sử Yêu cầu Thu gom";
+    // Layout = "~/Areas/KhachHang/Views/Shared/_UserAccountLayout.cshtml"; // Đảm bảo Layout đúng
+}
+
+<div class="container mt-4 account-section">
+    <div class="row">
+        @* Cột Menu bên trái *@
+        <div class="col-lg-3 mb-4 mb-lg-0">
+            <div class="account-menu list-group">
+                <a asp-area="KhachHang" asp-controller="KhachHang" asp-action="Index" class="list-group-item list-group-item-action">
+                    <i class="fas fa-tachometer-alt fa-fw me-2"></i> Tổng quan
+                </a>
+                <a asp-area="KhachHang" asp-controller="KhachHang" asp-action="HoSoCaNhan" class="list-group-item list-group-item-action">
+                    <i class="fas fa-user-circle fa-fw me-2"></i> Hồ sơ cá nhân
+                </a>
+                <a asp-area="KhachHang" asp-controller="KhachHang" asp-action="LichSuDonHang" class="list-group-item list-group-item-action">
+                    <i class="fas fa-receipt fa-fw me-2"></i> Lịch sử Đơn hàng
+                </a>
+                @* Đánh dấu active cho link này *@
+                <a asp-area="KhachHang" asp-controller="KhachHang" asp-action="LichSuYeuCauThuGom" class="list-group-item list-group-item-action active">
+                    <i class="fas fa-recycle fa-fw me-2"></i> Lịch sử Thu gom
+                </a>
+                <a asp-area="Identity" asp-page="/Account/Manage/ChangePassword" class="list-group-item list-group-item-action">
+                    <i class="fas fa-lock fa-fw me-2"></i> Đổi mật khẩu
+                </a>
+                @* <a asp-area="KhachHang" asp-controller="Address" asp-action="Index" class="list-group-item list-group-item-action">
+                    <i class="fas fa-map-marker-alt fa-fw me-2"></i> Sổ địa chỉ
+                   </a> *@
+                <button type="submit" class="list-group-item list-group-item-action text-danger border-0 bg-transparent p-0 w-100 text-start">
+                    @* Adjusted button style to better match list items *@
+                    <a href="/home/index" class="list-group-item list-group-item-action border-0 text-danger"><i class="fas fa-sign-out-alt fa-fw me-2"></i> Về trang chủ</a>
+                </button>
+            </div>
+        </div>
+
+        @* Cột Nội dung chính bên phải *@
+        <div class="col-lg-9">
+            <div class="account-content">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4 class="mb-0">@ViewData["Title"]</h4>         
+                </div>
+
+                @* Hiển thị thông báo (nếu có) *@
+                @if (TempData["SuccessMessage"] != null)
+                {
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">@TempData["SuccessMessage"]<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>
+                }
+                @if (TempData["ErrorMessage"] != null)
+                {
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">@TempData["ErrorMessage"]<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>
+                }
+
+                @if (Model != null && Model.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th scope="col">ID Yêu cầu</th>
+                                    <th scope="col">Ngày yêu cầu</th>
+                                    <th scope="col">Loại SP (Chính)</th>
+                                    <th scope="col" class="text-center">Trạng thái</th>
+                                    <th scope="col" class="text-end">Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var request in Model)
+                                {
+                                    // Lấy thông tin từ chi tiết đầu tiên để hiển thị tóm tắt
+                                    var firstDetail = request.ChiTietThuGoms?.FirstOrDefault();
+                                    var productTypeName = firstDetail?.LoaiSanPham?.TenLoai ?? "N/A";
+                                    <tr>
+                                        <td><span class="fw-bold">#@request.M_YeuCau</span></td>
+                                        <td>@request.NgayYeuCau.ToString("dd/MM/yyyy HH:mm")</td>
+                                        <td title="@productTypeName">
+                                            @* Hiển thị đầy đủ khi hover *@
+                                            @(productTypeName.Length > 30 ? productTypeName.Substring(0, 27) + "..." : productTypeName)
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="badge @GetStatusBadgeClass(request.TrangThai) order-status">@request.TrangThai</span>
+                                        </td>
+                                        <td class="text-end">
+                                            <a asp-action="YeuCauThuGomDetails" asp-controller="KhachHang" asp-area="KhachHang" asp-route-id="@request.M_YeuCau"
+                                               class="btn btn-sm btn-outline-info" title="Xem chi tiết">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            @* Optional: Thêm nút Hủy nếu trạng thái cho phép *@
+                                            @if (request.TrangThai?.Equals("Chờ xử lý", StringComparison.OrdinalIgnoreCase) == true)
+                                            {
+                                                <a asp-action="YeuCauThuGomCancel" asp-controller="KhachHang" asp-area="KhachHang" asp-route-id="@request.M_YeuCau"
+                                                   class="btn btn-sm btn-outline-danger ms-1" title="Hủy yêu cầu">
+                                                    <i class="fas fa-times"></i>
+                                                </a>
+                                            }
+                                            @* Optional: Thêm nút Sửa nếu trạng thái cho phép *@
+                                            @if (request.TrangThai?.Equals("Chờ xử lý", StringComparison.OrdinalIgnoreCase) == true)
+                                            {
+                                                <a asp-action="YeuCauThuGomEdit" asp-controller="KhachHang" asp-area="KhachHang" asp-route-id="@request.M_YeuCau"
+                                                   class="btn btn-sm btn-outline-secondary ms-1" title="Sửa yêu cầu">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    @* Optional: Thêm phân trang nếu danh sách quá dài *@
+                    @* Logic phân trang cần được thêm vào Action Controller và truyền dữ liệu phân trang vào đây *@
+
+                }
+                else
+                {
+                    <div class="alert alert-secondary text-center" role="alert">
+                        Bạn chưa có yêu cầu thu gom nào.
+                        <a asp-action="ThuGom" asp-controller="Home" asp-area="" class="alert-link">Tạo yêu cầu mới ngay!</a>
+                        @* ^^^^^^^^^             ^^^^^^^^^^^     ^^^^^^^^^^
+                       Action ThuGom        Controller Home   Ra khỏi Area hiện tại *@
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@* Sao chép hàm C# nội tuyến để lấy class Badge màu mè cho Status *@
+@* Cân nhắc chuyển hàm này vào một lớp Helper hoặc _ViewImports nếu dùng ở nhiều nơi *@
+@functions {
+    string GetStatusBadgeClass(string status)
+    {
+        status = status?.Trim().ToLower() ?? ""; // Added Trim() for safety
+        switch (status)
+        {
+            case "đang giao":
+            case "shipping":
+            case "đang vận chuyển":
+                return "bg-primary";
+            case "đã giao":
+            case "delivered":
+            case "hoàn thành":
+                return "bg-success";
+            case "đang xử lý":
+            case "processing":
+                return "bg-info text-dark";
+            case "đã hủy":
+            case "cancelled":
+                return "bg-danger";
+            case "chờ thanh toán":
+            case "pending payment":
+                return "bg-warning text-dark";
+            case "chờ xác nhận":
+            case "pending confirmation":
+            case "chờ xử lý": // Thêm trạng thái của YeuCauThuGom
+                return "bg-secondary";
+            case "đã tiếp nhận":
+                return "bg-info-subtle text-info-emphasis";
+            case "đang thu gom":
+                return "bg-primary-subtle text-primary-emphasis";
+            case "thu gom thành công":
+                return "bg-success-subtle text-success-emphasis";
+            case "thu gom thất bại":
+                return "bg-warning-subtle text-warning-emphasis";
+            default:
+                return "bg-light text-dark border";
+        }
+    }
+}

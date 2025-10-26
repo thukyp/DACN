@@ -1,0 +1,142 @@
+﻿@using DACS.Extention
+@using YourNameSpace.Extensions
+@model DACS.Models.DonHang
+
+@{
+    ViewData["Title"] = "Thanh toán";
+    var cart = Context.Session.GetObjectFromJson<ShoppingCart>("Cart");
+}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+    <link rel='stylesheet' href='https://fonts.googleapis.com/css2?family=DM+Sans&amp;display=swap'>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css">
+    <title>
+        Hahana
+    </title>
+    <style>
+    :root {
+            --primary: #4CAF50;
+            --secondary: #8D6E63;
+            --light-bg: #F9FBE7;
+            --dark-text: #2E2E2E;
+            --card-border: #C8E6C9;
+        }
+
+        h2, h4{
+            color: var(--primary);
+        }
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--light-bg);
+            color: var(--dark-text);
+        }
+        </style>
+        </head>
+        <body>
+<h2 class="mb-4">Xác nhận đơn hàng</h2>
+
+@if (cart == null || !cart.Items.Any())
+{
+    <div class="alert alert-warning">Giỏ hàng của bạn đang trống.</div>
+}
+else
+{
+    <form asp-action="Checkout" method="post">
+        <div class="row">
+            <!-- Cột trái: Thông tin giỏ hàng -->
+            <div class="col-md-7">
+                <h4>Chi tiết đơn hàng</h4>
+                <table class="table table-bordered">
+                    <thead class="thead-light">
+                        <tr>
+                            <th>Sản phẩm</th>
+                            <th>Khối lượng</th>
+                            <th>Đơn giá</th>
+                            <th>Thành tiền</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in cart.Items)
+                        {
+                            <tr>
+                                <td>@item.Name</td>
+                                <td>@item.Khoiluong.ToString("0.##") kg</td>
+                                <td>@item.Price.ToString("N0") ₫</td>
+                                <td>@(item.Price * item.Khoiluong) ₫</td>
+                                
+                            </tr>
+                        }
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="3" class="text-right font-weight-bold">Tổng cộng:</td>
+                            <td class="font-weight-bold">@cart.Items.Sum(i => i.Price * i.Khoiluong).ToString("N0") ₫</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+
+            <!-- Cột phải: Thông tin giao hàng -->
+            <div class="col-md-5">
+                <h4>Thông tin giao hàng</h4>
+                <div class="form-group">
+                    <label asp-for="Tendathang">Họ và tên người nhận</label>
+                    <input asp-for="Tendathang" class="form-control" required />
+                    <span asp-validation-for="Tendathang" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="SoDienThoaidathang">Số điện thoại</label>
+                    <input asp-for="SoDienThoaidathang" class="form-control" required />
+                    <span asp-validation-for="SoDienThoaidathang" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="ShippingAddress">Địa chỉ nhận hàng</label>
+                    <input asp-for="ShippingAddress" class="form-control" required />
+                    <span asp-validation-for="ShippingAddress" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Notes">Ghi chú</label>
+                    <textarea asp-for="Notes" class="form-control" rows="3"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="M_PhuongThuc">Phương thức thanh toán</label>
+                    <select asp-for="M_PhuongThuc" class="form-control" required>
+                        <option value="">-- Chọn phương thức --</option>
+                        <option value="PT001">Thanh toán khi nhận hàng (COD)</option>
+                        <option value="PT002">Chuyển khoản ngân hàng</option>
+                        <option value="PT003">Ví điện tử MoMo</option>
+                        <option value="PT004">Ví điện tử ZaloPay</option>
+                        <!-- Thêm các phương thức khác nếu có -->
+                    </select>
+                </div>
+                
+
+                
+
+
+
+                <button type="submit" class="btn btn-success w-100">Đặt hàng</button>
+            </div>
+        </div>
+    </form>
+    
+}
+</body>
+</html>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

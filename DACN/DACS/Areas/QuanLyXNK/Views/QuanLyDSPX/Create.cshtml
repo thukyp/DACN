@@ -1,0 +1,325 @@
+﻿@model DACS.Models.ViewModels.PhieuXuatCreateViewModel
+
+@{
+    ViewData["Title"] = "Tạo Phiếu Xuất Kho";
+    // Layout = "~/Views/Shared/_AdminLayout.cshtml"; // Tùy chỉnh layout nếu cần
+}
+
+@* Bạn có thể copy phần CSS và Sidebar từ các view khác nếu muốn giao diện đồng nhất *@
+<style>
+    <style >
+    body, html {
+        height: 100%;
+    }
+
+    .container {
+        display: grid;
+        max-width: 100%;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        flex-direction: row;
+    }
+
+    .main-container {
+        display: flex;
+        width: 100%;
+        min-height: 100vh;
+        margin: 0;
+        padding: 0;
+    }
+    /* main-container thay cho .container của bạn */
+    .sidebar {
+        background-color: #212529;
+        color: #fff;
+        padding: 15px;
+        width: 250px;
+        flex-shrink: 0;
+        display: flex;
+        flex-direction: column;
+    }
+
+        .sidebar h2 {
+            border-bottom: 1px solid #495057;
+            padding-bottom: 10px;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .sidebar .nav {
+            flex-grow: 1;
+        }
+
+        .sidebar .nav-link {
+            color: #adb5bd;
+            padding: 8px 15px;
+            border-radius: 0.25rem;
+            margin-bottom: 5px;
+        }
+
+            .sidebar .nav-link.active, .sidebar .nav-link:hover {
+                color: #fff;
+                background-color: #495057;
+            }
+
+        .sidebar .nav-item.mt-auto {
+            margin-top: auto;
+        }
+
+        .sidebar .logout-form button {
+            padding: 8px 15px;
+            color: #dc3545;
+            background: none;
+            border: none;
+            width: 100%;
+            text-align: left;
+        }
+
+            .sidebar .logout-form button:hover {
+                background-color: rgba(220, 53, 69, 0.1);
+                color: #bd2130;
+            }
+
+    .main-content-area {
+        padding: 25px;
+        background-color: #f8f9fa;
+        flex-grow: 1;
+        overflow-y: auto;
+        height: 100vh;
+    }
+
+    .page-header {
+        font-size: 1.75rem;
+        font-weight: 500;
+        margin-bottom: 1.5rem;
+        color: #343a40;
+    }
+
+    .stat-card {
+        background-color: #fff;
+        border-radius: 0.375rem;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,.075);
+        text-align: center;
+    }
+
+        .stat-card .value {
+            font-size: 1.75rem;
+            font-weight: 600;
+        }
+
+        .stat-card .label {
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-top: 0.25rem;
+        }
+
+    .filter-card {
+        background-color: #fff;
+        padding: 1rem 1.5rem;
+        border-radius: 0.375rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,.075);
+    }
+
+    .table-container .card-header {
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    .table-container .card-footer {
+        border-top: 1px solid #dee2e6;
+    }
+
+    .badge {
+        font-size: 0.8em;
+        padding: 0.4em 0.6em;
+    }
+
+    .item-row {
+        margin-bottom: 15px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid #eee;
+    }
+
+        .item-row:last-child {
+            border-bottom: none;
+        }
+</style>
+
+<div class="d-flex main-container">
+    
+    <hr />
+    
+
+    <div class="sidebar">
+        <h2>Quản Lý XNK</h2>
+        <ul class="nav flex-column">
+            <li class="nav-item"><a asp-area="QuanLyXNK" asp-controller="QuanLyXNK" asp-action="Index" class="nav-link"><i class="fas fa-truck-loading me-2"></i> Quản lý Thu gom</a></li>
+            <li class="nav-item"><a asp-area="QuanLyXNK" asp-controller="QuanLyDSPX" asp-action="Index" class="nav-link "><i class="fas fa-dolly-flatbed me-2"></i> DS Phiếu Xuất</a></li> @* Link mới *@
+            <li class="nav-item"><a asp-area="QuanLyXNK" asp-controller="QuanLyDSPX" asp-action="Create" class="nav-link active"><i class="fas fa-plus-circle me-2"></i> Tạo Phiếu Xuất</a></li> @* Link mới *@
+            <li class="nav-item"><a asp-area="QuanLyXNK" asp-controller="KhoHang" asp-action="Index" class="nav-link"><i class="fas fa-warehouse me-2"></i> DS Kho hàng</a></li>
+            <li class="nav-item"><a asp-area="QuanLyXNK" asp-controller="TonKho" asp-action="Index" class="nav-link"><i class="fas fa-boxes-stacked me-2"></i> Tồn kho SP</a></li>
+            <li class="nav-item"><a asp-area="QuanLyXNK" asp-controller="ThongKe" asp-action="Index" class="nav-link"><i class="fas fa-chart-bar me-2"></i> Thống kê NX</a></li>
+        </ul>
+        <div class="nav-item mt-auto ">
+            <button type="submit" class="text-danger border-0 bg-transparent p-0 w-100 text-start mt-1">
+                    @* Adjusted button style to better match list items *@
+                <a href="/home/index" class="border-0 text-danger" style="text-decoration: none;"><i class="fas fa-sign-out-alt fa-fw me-2"></i> Về trang chủ</a>
+            </button>
+        </div>
+    </div>
+
+    <div class="main-content-area">
+        <div class="page-header">@ViewData["Title"]</div>
+
+    <form asp-action="Create" method="post">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <label asp-for="MaKho" class="form-label"></label>
+                <select asp-for="MaKho" asp-items="Model.KhoHangOptions" class="form-select">
+                    <option value="">-- Chọn kho xuất --</option>
+                </select>
+                <span asp-validation-for="MaKho" class="text-danger"></span>
+            </div>
+            <div class="col-md-4 mb-3">
+                <label asp-for="NgayXuat" class="form-label"></label>
+                <input asp-for="NgayXuat" type="datetime-local" class="form-control" />
+                <span asp-validation-for="NgayXuat" class="text-danger"></span>
+            </div>
+            <div class="col-md-4 mb-3">
+                <label asp-for="LyDoXuat" class="form-label"></label>
+                <input asp-for="LyDoXuat" class="form-control" />
+                <span asp-validation-for="LyDoXuat" class="text-danger"></span>
+            </div>
+        </div>
+
+        <h4 class="mt-4">Chi Tiết Sản Phẩm Xuất</h4>
+        @if (ViewData.ModelState.ContainsKey("ChiTietItems"))
+        {
+            <div class="text-danger">@ViewData.ModelState["ChiTietItems"].Errors.First().ErrorMessage</div>
+        }
+
+        <div id="chiTietItemsContainer">
+            @for (int i = 0; i < Model.ChiTietItems.Count; i++)
+            {
+                <div class="row item-row align-items-end">
+                    <div class="col-md-4">
+                        <label asp-for="ChiTietItems[i].M_LoaiSP" class="form-label"></label>
+                        <select asp-for="ChiTietItems[i].M_LoaiSP" asp-items="Model.LoaiSanPhamOptions" class="form-select chi-tiet-san-pham">
+                            <option value="">-- Chọn sản phẩm --</option>
+                        </select>
+                        <span asp-validation-for="ChiTietItems[i].M_LoaiSP" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-3">
+                        <label asp-for="ChiTietItems[i].M_DonViTinh" class="form-label"></label>
+                        <select asp-for="ChiTietItems[i].M_DonViTinh" asp-items="Model.DonViTinhOptions" class="form-select chi-tiet-donvitinh">
+                            <option value="">-- Chọn ĐVT --</option>
+                        </select>
+                        <span asp-validation-for="ChiTietItems[i].M_DonViTinh" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-2">
+                        <label asp-for="ChiTietItems[i].SoLuong" class="form-label"></label>
+                        <input asp-for="ChiTietItems[i].SoLuong" type="number" class="form-control chi-tiet-soluong" min="1" />
+                        <span asp-validation-for="ChiTietItems[i].SoLuong" class="text-danger"></span>
+                    </div>
+                    @* Nút xóa dòng (cần JavaScript) - ví dụ *@
+                    @if (i > 0) @* Không cho xóa dòng đầu tiên nếu chỉ có 1 dòng *@
+                    {
+                        <div class="col-md-1">
+                            <button type="button" class="btn btn-sm btn-danger removeItemBtn">Xóa</button>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+
+        @* Nút thêm dòng mới (cần JavaScript) *@
+        <button type="button" id="addItemBtn" class="btn btn-sm btn-outline-success mt-2 mb-3">Thêm Sản Phẩm</button>
+
+        <div class="form-group mt-4">
+            <button type="submit" class="btn btn-primary">Tạo Phiếu Xuất</button>
+            <a asp-action="Index" asp-controller="TonKho" class="btn btn-secondary">Hủy</a>
+        </div>
+    </form>
+</div>
+</div>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // --- JavaScript để thêm/xóa dòng chi tiết ---
+            // Đây là ví dụ rất cơ bản, bạn có thể cần hoàn thiện thêm
+            const container = document.getElementById('chiTietItemsContainer');
+            const addItemBtn = document.getElementById('addItemBtn');
+            let itemIndex = @Model.ChiTietItems.Count; // Bắt đầu từ số lượng item hiện có
+
+            if (addItemBtn) {
+                addItemBtn.addEventListener('click', function () {
+                    const newItemRow = `
+                        <div class="row item-row align-items-end">
+                            <div class="col-md-4">
+                                <label for="ChiTietItems_${itemIndex}__M_LoaiSP" class="form-label">Sản phẩm</label>
+                                <select name="ChiTietItems[${itemIndex}].M_LoaiSP" id="ChiTietItems_${itemIndex}__M_LoaiSP" class="form-select chi-tiet-san-pham">
+                                    <option value="">-- Chọn sản phẩm --</option>
+        @foreach (var option in Model.LoaiSanPhamOptions ?? Enumerable.Empty<SelectListItem>())
+        {
+                                            <option value="@option.Value">@option.Text</option>
+        }
+                                </select>
+                                <span data-valmsg-for="ChiTietItems[${itemIndex}].M_LoaiSP" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="ChiTietItems_${itemIndex}__M_DonViTinh" class="form-label">ĐVT</label>
+                                <select name="ChiTietItems[${itemIndex}].M_DonViTinh" id="ChiTietItems_${itemIndex}__M_DonViTinh" class="form-select chi-tiet-donvitinh">
+                                    <option value="">-- Chọn ĐVT --</option>
+        @foreach (var option in Model.DonViTinhOptions ?? Enumerable.Empty<SelectListItem>())
+        {
+                                            <option value="@option.Value">@option.Text</option>
+        }
+                                </select>
+                                <span data-valmsg-for="ChiTietItems[${itemIndex}].M_DonViTinh" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-2">
+                                <label for="ChiTietItems_${itemIndex}__SoLuong" class="form-label">Số lượng xuất</label>
+                                <input type="number" name="ChiTietItems[${itemIndex}].SoLuong" id="ChiTietItems_${itemIndex}__SoLuong" class="form-control chi-tiet-soluong" min="1" />
+                                <span data-valmsg-for="ChiTietItems[${itemIndex}].SoLuong" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-1">
+                                <button type="button" class="btn btn-sm btn-danger removeItemBtn">Xóa</button>
+                            </div>
+                        </div>`;
+                    container.insertAdjacentHTML('beforeend', newItemRow);
+                    itemIndex++;
+                    // Gắn lại sự kiện xóa cho các nút mới
+                    attachRemoveListeners();
+                    // Bạn có thể cần re-parse validator của jQuery nếu dùng Unobtrusive validation cho các trường mới
+                    // var form = $("form"); // Hoặc ID của form
+                    // form.removeData("validator");
+                    // form.removeData("unobtrusiveValidation");
+                    // $.validator.unobtrusive.parse(form);
+                });
+            }
+
+            function attachRemoveListeners() {
+                const removeBtns = container.querySelectorAll('.removeItemBtn');
+                removeBtns.forEach(btn => {
+                    // Xóa listener cũ để tránh gắn nhiều lần
+                    btn.replaceWith(btn.cloneNode(true));
+                });
+                // Gắn listener mới
+                container.querySelectorAll('.removeItemBtn').forEach(btn => {
+                     btn.addEventListener('click', function(e) {
+                        e.target.closest('.item-row').remove();
+                        // Cập nhật lại itemIndex nếu cần thiết (phức tạp hơn, có thể bỏ qua nếu không quá quan trọng)
+                    });
+                });
+            }
+            attachRemoveListeners(); // Gắn lần đầu cho các item có sẵn
+        });
+    </script>
+}

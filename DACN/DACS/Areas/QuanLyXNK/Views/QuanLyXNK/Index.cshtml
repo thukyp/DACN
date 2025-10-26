@@ -1,0 +1,579 @@
+﻿@model DACS.Models.ViewModels.QuanLyThuGomViewModel
+
+@{
+    ViewData["Title"] = "Quản Lý Thu Gom Phụ Phẩm";
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+}
+<style>
+    /* Copy CSS từ code #53 vào đây hoặc file CSS riêng */
+    body, html {
+        height: 100%;
+    }
+
+    .container {
+        display: grid;
+        max-width: 100%;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        flex-direction: row;
+    }
+
+    .main-container {
+        display: flex;
+        height: 100vh;
+    }
+    /* Sửa lại thành flex */
+    .sidebar {
+        background-color: #212529;
+        color: #fff;
+        padding: 15px;
+        width: 250px;
+        flex-shrink: 0; /* Không co lại */
+        /* min-height: 100vh; -> main-container đã xử lý */
+        display: flex; /* Thêm flex để đẩy logout xuống */
+        flex-direction: column; /* Thêm flex để đẩy logout xuống */
+    }
+
+        .sidebar h2 {
+            border-bottom: 1px solid #495057;
+            padding-bottom: 10px;
+            font-size: 1.5rem;
+            margin-bottom: 1rem; /* Thêm khoảng cách */
+        }
+
+        .sidebar .nav {
+            flex-grow: 1; /* Để các nav item chiếm không gian */
+        }
+
+        .sidebar .nav-link {
+            color: #adb5bd;
+            padding: 8px 15px;
+            border-radius: 0.25rem; /* Thêm bo góc */
+            margin-bottom: 5px; /* Khoảng cách giữa các link */
+        }
+
+            .sidebar .nav-link.active, .sidebar .nav-link:hover {
+                color: #fff;
+                background-color: #495057;
+            }
+        /* CSS cho nút logout */
+        .sidebar .nav-item.mt-auto { /* Đảm bảo nó thực sự ở cuối */
+            margin-top: auto;
+        }
+
+        .sidebar .logout-form button { /* Style cho nút logout */
+            padding: 8px 15px;
+            color: #dc3545; /* Màu đỏ */
+        }
+
+            .sidebar .logout-form button:hover {
+                background-color: rgba(220, 53, 69, 0.1); /* Nền đỏ nhẹ khi hover */
+                color: #bd2130;
+            }
+
+    .main-content-area {
+        padding: 25px;
+        background-color: #f8f9fa;
+        flex-grow: 1;
+        overflow-y: auto;
+    }
+
+    .page-header {
+        font-size: 1.75rem;
+        font-weight: 500;
+        margin-bottom: 1.5rem;
+        color: #343a40;
+    }
+
+    .stat-card {
+        background-color: #fff;
+        border-radius: 0.375rem;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,.075);
+        text-align: center;
+    }
+
+        .stat-card .value {
+            font-size: 1.75rem;
+            font-weight: 600;
+        }
+
+        .stat-card .label {
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-top: 0.25rem;
+        }
+
+    .filter-card {
+        background-color: #fff;
+        padding: 1rem 1.5rem;
+        border-radius: 0.375rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,.075);
+    }
+
+    .table-container {
+        background-color: #fff;
+        padding: 1.5rem;
+        border-radius: 0.375rem;
+        box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,.075);
+        margin-top: 1.5rem; /* Thêm margin */
+    }
+
+    .table th {
+        font-weight: 600;
+        background-color: #e9ecef;
+    }
+
+    .actions .btn {
+        margin: 0 2px;
+    }
+</style>
+
+
+<div class="d-flex main-container">
+    @* --- SIDEBAR --- *@
+    <div class="sidebar">
+        <h2>Quản Lý XNK</h2>
+        <ul class="nav flex-column">
+            <li class="nav-item"><a asp-area="QuanLyXNK" asp-controller="QuanLyXNK" asp-action="Index" class="nav-link active"><i class="fas fa-truck-loading me-2"></i> Quản lý Thu gom</a></li>
+            <li class="nav-item"><a asp-area="QuanLyXNK" asp-controller="QuanLyDSPX" asp-action="Index" class="nav-link "><i class="fas fa-dolly-flatbed me-2"></i> DS Phiếu Xuất</a></li> @* Link mới *@
+            <li class="nav-item"><a asp-area="QuanLyXNK" asp-controller="QuanLyDSPX" asp-action="Create" class="nav-link"><i class="fas fa-plus-circle me-2"></i> Tạo Phiếu Xuất</a></li> @* Link mới *@
+            <li class="nav-item"><a asp-area="QuanLyXNK" asp-controller="KhoHang" asp-action="Index" class="nav-link"><i class="fas fa-warehouse me-2"></i> DS Kho hàng</a></li>
+            <li class="nav-item"><a asp-area="QuanLyXNK" asp-controller="TonKho" asp-action="Index" class="nav-link"><i class="fas fa-boxes-stacked me-2"></i> Tồn kho SP</a></li>
+            <li class="nav-item"><a asp-area="QuanLyXNK" asp-controller="ThongKe" asp-action="Index" class="nav-link"><i class="fas fa-chart-bar me-2"></i> Thống kê NX</a></li>
+        </ul>
+        <div class="nav-item mt-auto ">
+            <button type="submit" class="text-danger border-0 bg-transparent p-0 w-100 text-start mt-1">
+                @* Adjusted button style to better match list items *@
+                <a href="/home/index" class="border-0 text-danger" style="text-decoration: none;"><i class="fas fa-sign-out-alt fa-fw me-2"></i> Về trang chủ</a>
+            </button>
+        </div>
+    </div>
+
+    @* --- MAIN CONTENT --- *@
+    <div class="main-content-area">
+        <div class="page-header">@ViewData["Title"]</div>
+
+        @* --- STATS CARDS --- *@
+        <div class="row">
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-card">
+                    <div class="value text-info">@(Model.Statistics?.DaLenLich ?? 0)</div> <div class="label">Đã lên lịch</div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-card">
+                    <div class="value text-primary">@(Model.Statistics?.DangThucHien ?? 0)</div> <div class="label">Đang thực hiện</div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-card">
+                    <div class="value text-success">@(Model.Statistics?.HoanThanhTrongTuan ?? 0)</div> <div class="label">Đã hoàn thành (tuần)</div>
+                </div>
+            </div>
+        </div>
+
+        @* --- FILTER FORM --- *@
+        <div class="filter-card">
+            <form method="get" asp-action="Index">
+                <div class="row g-3 align-items-center">
+                    <div class="col-md-3">
+                        <input asp-for="SearchTerm" class="form-control form-control-sm" placeholder="Tìm mã YC, tên, SĐT...">
+                    </div>
+                    <div class="col-md-2">
+                        <input asp-for="DateFilter" type="date" class="form-control form-control-sm" title="Lọc theo ngày thu gom">
+                    </div>
+                    <div class="col-md-2">
+                        <select asp-for="StatusFilter" asp-items="Model.StatusOptions" class="form-select form-select-sm"></select>
+                    </div>
+                    <div class="col-md-1">
+                        <button type="submit" class="btn btn-sm btn-primary w-100" title="Lọc dữ liệu"><i class="fas fa-filter"></i></button>
+                    </div>
+                    <div class="col-md-2 text-end">
+                        @* Nút này có thể trỏ đến Action Create của Admin hoặc chức năng khác *@
+                        <a asp-action="CreateManualEntry" class="btn btn-sm btn-success"><i class="fas fa-plus me-1"></i> Ghi nhận mới</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        @* --- DATA TABLE --- *@
+        <div class="table-container">
+            <div class="table-responsive">
+                <table class="table table-striped table-hover table-sm align-middle">
+                    <thead>
+                        <tr>
+                            <th>Mã YC</th>
+                            <th>Người Yêu Cầu</th>
+                            <th>Địa chỉ</th>
+                            <th>Loại Phụ Phẩm</th>
+                            <th>Số Lượng</th>
+                            <th>Ngày YC/Thu Gom</th>
+                            <th>Trạng Thái</th>
+                            <th class="text-center">Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody id="product-table-body">
+                        @if (Model.DanhSachYeuCau != null && Model.DanhSachYeuCau.Any()) // Thêm kiểm tra null cho Model.DanhSachYeuCau
+                        {
+                            @foreach (var request in Model.DanhSachYeuCau)
+                            {
+                                <tr>
+                                    <td><span class="fw-bold">@request.M_YeuCau</span></td>
+                                    <td class="user-info"> @request.TenKhachHang <small>@request.SdtKhachHang</small> </td>
+                                    <td style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="@request.DiaChiTomTat">@request.DiaChiTomTat</td>
+                                    <td>@request.TenLoaiSanPham</td>
+                                    <td>@request.SoLuong @request.TenDonViTinh</td>
+                                    <td>
+                                        <small title="Ngày Yêu Cầu">YC: @request.NgayYeuCau.ToString("dd/MM/yy HH:mm")</small><br>
+                                        <small title="Ngày Thu Gom">TG: @(request.NgayThuGom?.ToString("dd/MM/yy HH:mm") ?? "N/A")</small>
+                                    </td>
+                                    <td><span class="badge @GetStatusBadgeClass(request.TrangThai ?? "")">@request.TrangThai</span></td>
+                                    <td class="actions text-center">
+                                        @* Các nút hành động sẽ thay đổi tùy theo trạng thái *@
+                                        <a asp-action="Details" asp-route-id="@request.M_YeuCau" class="btn btn-sm btn-outline-info" title="Xem Chi tiết"><i class="fas fa-eye"></i></a>
+
+                                        @if (request.TrangThai == "Chờ xử lý")
+                                        {
+                                            <a asp-action="Schedule" asp-route-id="@request.M_YeuCau" class="btn btn-sm btn-outline-primary" title="Lên lịch"><i class="fas fa-calendar-alt"></i></a>
+                                            <form asp-action="AdminCancel" asp-route-id="@request.M_YeuCau" method="post" style="display: inline;" onsubmit="return confirm('Bạn có chắc chắn muốn hủy yêu cầu này không?');">
+                                                @* Quan trọng: Đảm bảo có method="post" *@
+
+                                                @* Thêm AntiForgeryToken nếu Action trong Controller có [ValidateAntiForgeryToken] *@
+                                                @* @Html.AntiForgeryToken() *@
+
+                                                <button type="submit" class="btn btn-sm btn-outline-danger" title="Hủy YC">
+                                                    <i class="fas fa-times-circle"></i>
+                                                </button>
+                                            </form>
+                                        }
+                                        else if (request.TrangThai == "Đã lên lịch")
+                                        {
+                                            <form asp-action="StartCollection" asp-route-id="@request.M_YeuCau" method="post" style="display: inline;" onsubmit="return confirm('Bạn có chắc muốn bắt đầu thu gom yêu cầu này?');">
+                                                @* Thêm AntiForgeryToken nếu Action trong Controller có [ValidateAntiForgeryToken] *@
+                                                @* @Html.AntiForgeryToken()  *@
+                                                <button type="submit" class="btn btn-sm btn-outline-warning" title="Bắt đầu">
+                                                    <i class="fas fa-truck-loading"></i>
+                                                </button>
+                                            </form>                                           
+                                            <a asp-action="EditSchedule" asp-route-id="@request.M_YeuCau" class="btn btn-sm btn-outline-secondary" title="Sửa lịch"><i class="fas fa-edit"></i></a>
+                                        }
+                                        else if (request.TrangThai == "Đang thu gom")
+                                        {
+                                            @* *** NÚT ĐÚNG ĐỂ MỞ MODAL *** *@
+                                            <button type="button" class="btn btn-sm btn-success btn-mark-complete"
+                                                    data-bs-toggle="modal" data-bs-target="#completeConfirmationModal"
+                                                    data-request-id="@request.M_YeuCau"
+                                                    title="Đánh dấu Hoàn thành">
+                                                <i class="fas fa-check-circle"></i>
+                                            </button>
+
+                                            @* Form cho nút Thất bại *@
+                                            <form asp-action="MarkFailed" asp-route-id="@request.M_YeuCau" method="post" style="display: inline;" onsubmit="return confirm('Bạn có chắc muốn đánh dấu yêu cầu này là THẤT BẠI không?');">
+                                                @Html.AntiForgeryToken() @* <-- THÊM TOKEN *@
+                                                <button type="submit" class="btn btn-sm btn-outline-danger" title="Thất bại">
+                                                    <i class="fas fa-exclamation-triangle"></i>
+                                                </button>
+                                            </form>
+                                        }
+                                        @* Các trạng thái khác có thể có nút khác *@
+                                    </td>
+                                </tr>
+                            }
+                            <div class="modal fade" id="completeConfirmationModal" tabindex="-1" aria-labelledby="completeModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="completeModalLabel">Xác nhận Hoàn thành Yêu cầu</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <p>Bạn có chắc muốn đánh dấu yêu cầu <strong id="modal-request-id-display">[Mã YC]</strong> là HOÀN THÀNH?</p>
+                                            <hr />
+                                            <p class="fw-bold">Vui lòng chọn kho đích để nhập hàng:</p>
+                                            <div class="mb-3">
+                                                <label for="targetKhoSelect" class="form-label">Kho Đích <span class="text-danger">*</span></label>
+                                                <select id="targetKhoSelect" class="form-select form-select-sm" required>
+                                                    <option value="" selected disabled>-- Chọn kho hàng --</option>
+                                                    @* Vòng lặp qua danh sách kho từ ViewModel *@
+                                                    @if (Model?.ActiveKhoHangOptions != null)
+                                                    {
+                                                        @foreach (var khoOption in Model.ActiveKhoHangOptions)
+                                                        {
+                                                            <option value="@khoOption.Value">@khoOption.Text</option>
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        <option value="" disabled>Không tải được danh sách kho</option>
+                                                    }
+                                                </select>
+                                                <div id="khoSelectError" class="text-danger mt-1" style="display: none;">Vui lòng chọn kho đích.</div>
+                                            </div>
+                                            @* Input ẩn để lưu M_YeuCau *@
+                                            <input type="hidden" id="modal-request-id-hidden" />
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                                <i class="fas fa-times me-1"></i> Hủy
+                                            </button>
+                                            <button type="button" class="btn btn-success" id="confirmCompleteBtn">
+                                                <i class="fas fa-check me-1"></i> Xác nhận Hoàn thành
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <tr><td colspan="9" class="text-center text-muted py-3">Không có yêu cầu nào phù hợp với bộ lọc hiện tại hoặc chưa có yêu cầu nào.</td></tr>
+                            // Sửa thông báo
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            @* --- PAGINATION --- *@
+            @if (Model.TotalPages > 1)
+            {
+                <nav aria-label="Collection navigation" class="mt-3 d-flex justify-content-center">
+                    <ul class="pagination pagination-sm">
+                        <li class="page-item @(Model.HasPreviousPage ? "" : "disabled")">
+                            <a class="page-link" asp-action="Index"
+                               asp-route-page="@(Model.PageIndex - 1)"
+                               asp-route-searchTerm="@Model.SearchTerm"
+                               asp-route-statusFilter="@Model.StatusFilter"
+                               asp-route-dateFilter="@Model.DateFilter?.ToString("yyyy-MM-dd")" @*Định dạng lại DateFilter*@
+                               asp-route-collectorFilter="@Model.CollectorFilter"
+                               aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                        @for (int i = 1; i <= Model.TotalPages; i++)
+                        {
+                            <li class="page-item @(i == Model.PageIndex ? "active" : "")">
+                                <a class="page-link" asp-action="Index"
+                                   asp-route-page="@i"
+                                   asp-route-searchTerm="@Model.SearchTerm"
+                                   asp-route-statusFilter="@Model.StatusFilter"
+                                   asp-route-dateFilter="@Model.DateFilter?.ToString("yyyy-MM-dd")" @*Định dạng lại DateFilter*@
+                                   asp-route-collectorFilter="@Model.CollectorFilter">@i</a>
+                            </li>
+                        }
+                        <li class="page-item @(Model.HasNextPage ? "" : "disabled")">
+                            <a class="page-link" asp-action="Index"
+                               asp-route-page="@(Model.PageIndex + 1)"
+                               asp-route-searchTerm="@Model.SearchTerm"
+                               asp-route-statusFilter="@Model.StatusFilter"
+                               asp-route-dateFilter="@Model.DateFilter?.ToString("yyyy-MM-dd")" @*Định dạng lại DateFilter*@
+                               asp-route-collectorFilter="@Model.CollectorFilter"
+                               aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            }
+            <nav aria-label="Product navigation" class="mt-3 d-flex justify-content-center">
+                <ul class="pagination pagination-sm" id="pagination"></ul>
+            </nav>
+        </div> @* End Table Container *@
+
+
+    </div> @* End Main Content Area *@
+</div> @* End Main Container *@
+
+@* Sao chép hàm GetStatusBadgeClass nếu Layout chưa có *@
+@functions {
+    string GetStatusBadgeClass(string status)
+    {
+        status = status?.Trim().ToLower() ?? "";
+        switch (status)
+        {
+            case "chờ xử lý": return "bg-secondary";
+            case "đã tiếp nhận": return "bg-info-subtle text-info-emphasis"; // Giả sử có trạng thái này
+            case "đã lên lịch": return "bg-info text-dark"; // Có thể đổi màu nếu muốn
+            case "đang thu gom": return "bg-primary";
+            case "hoàn thành": case "thu gom thành công": return "bg-success";
+            case "đã hủy": return "bg-danger";
+            case "thu gom thất bại": return "bg-warning text-dark";
+            default: return "bg-light text-dark border"; // Trạng thái không xác định
+        }
+    }
+}
+
+<div class="modal fade" id="completeConfirmationModal" tabindex="-1" aria-labelledby="completeModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="completeModalLabel">Xác nhận Hoàn thành Yêu cầu</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Bạn có chắc muốn đánh dấu yêu cầu <strong id="modal-request-id-display">[Mã YC]</strong> là HOÀN THÀNH?</p>
+                <hr />
+                <p class="fw-bold">Vui lòng chọn kho đích để nhập hàng:</p>
+                <div class="mb-3">
+                    <label for="targetKhoSelect" class="form-label">Kho Đích <span class="text-danger">*</span></label>
+                    <select id="targetKhoSelect" class="form-select form-select-sm" required>
+                        <option value="" selected disabled>-- Chọn kho hàng --</option>
+                        @if (Model?.ActiveKhoHangOptions != null && Model.ActiveKhoHangOptions.Any())
+                        {
+                            @foreach (var khoOption in Model.ActiveKhoHangOptions)
+                            {
+                                <option value="@khoOption.Value">@khoOption.Text</option>
+                            }
+                        }
+                        else
+                        {
+                            <option value="" disabled>Không tải được danh sách kho</option>
+                        }
+                    </select>
+                    <div id="khoSelectError" class="text-danger mt-1" style="display: none;">Vui lòng chọn kho đích.</div>
+                </div>
+                <input type="hidden" id="modal-request-id-hidden" />
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-1"></i> Hủy
+                </button>
+                <button type="button" class="btn btn-success" id="confirmCompleteBtn">
+                    <i class="fas fa-check me-1"></i> Xác nhận Hoàn thành
+                </button>
+            </div>
+            
+        </div>
+    </div>
+</div>
+
+<form id="hiddenCompleteForm" method="post" style="display: none;">
+    @Html.AntiForgeryToken() @* ĐÃ THÊM TOKEN *@
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    @* Đảm bảo jQuery đã được load trước script này *@
+    <script>
+        $(document).ready(function () {
+            var completeModalElement = document.getElementById('completeConfirmationModal');
+            if (completeModalElement) {
+                var completeModal = new bootstrap.Modal(completeModalElement);
+                var requestIdToComplete = null;
+
+                // 1. Handler cho nút .btn-mark-complete
+                $(document).on('click', '.btn-mark-complete', function () {
+                    requestIdToComplete = $(this).data('request-id');
+                    $('#modal-request-id-display').text(requestIdToComplete);
+                    $('#modal-request-id-hidden').val(requestIdToComplete);
+                    $('#targetKhoSelect').val('');
+                    $('#khoSelectError').hide();
+                     completeModal.show();
+                });
+
+                // 2. Handler cho nút #confirmCompleteBtn trong modal
+                $('#confirmCompleteBtn').on('click', function () {
+                    console.log("Confirm button clicked!");
+                    var selectedKho = $('#targetKhoSelect').val();
+                    var requestId = $('#modal-request-id-hidden').val();
+                    console.log("Request ID:", requestId);
+                    console.log("Selected Kho:", selectedKho);
+
+                    if (!selectedKho) {
+                        console.log("Validation failed: Kho not selected.");
+                        $('#khoSelectError').show();
+                        return;
+                    } else {
+                        $('#khoSelectError').hide();
+                    }
+
+                    var postUrl = '@Url.Action("MarkComplete", "QuanLyXNK", new { Area = "QuanLyXNK" })'
+                                + '/' + requestId
+                                + '?targetMaKho=' + encodeURIComponent(selectedKho);
+                    console.log("Generated POST URL:", postUrl);
+
+                    var hiddenForm = $('#hiddenCompleteForm');
+                    console.log("Hidden form found:", hiddenForm.length);
+
+                    if(hiddenForm.length === 0) {
+                        console.error("Hidden form #hiddenCompleteForm not found!");
+                        alert("Lỗi: Không tìm thấy form ẩn để gửi yêu cầu."); // Lỗi bạn gặp
+                        return;
+                    }
+                    hiddenForm.attr('action', postUrl);
+                    console.log("Form action set to:", hiddenForm.attr('action'));
+
+                    console.log("Submitting hidden form...");
+                    try {
+                         hiddenForm.submit();
+                         console.log("Form submitted.");
+                    } catch (e) {
+                         console.error("Error submitting form:", e);
+                    }
+                    // completeModal.hide();
+                });
+
+                // Reset khi modal đóng
+                $(completeModalElement).on('hidden.bs.modal', function () {
+                     requestIdToComplete = null;
+                     $('#modal-request-id-hidden').val('');
+                     $('#modal-request-id-display').text('[Mã YC]');
+                     $('#targetKhoSelect').val('');
+                     $('#khoSelectError').hide();
+                });
+
+            } else {
+                 console.error("Modal element #completeConfirmationModal not found!");
+            }
+
+            // Tooltip initialization (nếu bạn vẫn muốn dùng)
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl)
+            });
+
+        }); // End document ready
+    </script>
+
+
+    @* tìm kiếm *@
+ <script>
+        function filterRequests() {
+       const keyword = document.getElementById("search-input").value.toLowerCase().trim();
+
+       const rows = document.querySelectorAll("#requestTable tbody tr");
+
+       rows.forEach(row => {
+         const cells = row.getElementsByTagName("td");
+         const textContent = row.innerText.toLowerCase();
+
+         const matchesKeyword = textContent.includes(keyword);
+
+         row.style.display = (matchesKeyword ) ? "" : "none";
+       });
+     }
+
+     // Gắn sự kiện lọc
+     document.getElementById("search-input").addEventListener("keyup", filterRequests);
+
+ </script>
+}

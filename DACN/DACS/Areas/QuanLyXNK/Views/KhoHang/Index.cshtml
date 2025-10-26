@@ -1,0 +1,322 @@
+﻿@model DACS.Models.ViewModels.KhoHangViewModel
+
+@{
+    ViewData["Title"] = "Danh Sách Kho Hàng";
+}
+
+@* --- Có thể đưa CSS vào file riêng hoặc dùng @section Styles nếu Layout hỗ trợ --- *@
+<style>
+    /* Copy CSS từ file HTML của bạn vào đây nếu muốn */
+    body, html {
+        height: 100%;
+    }
+
+    .container {
+        display: grid;
+        max-width: 100%;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        flex-direction: row;
+    }
+
+    .main-container {
+        display: flex;
+        height: 100vh;
+    }
+    /* Sửa lại thành flex */
+    .sidebar {
+        background-color: #212529;
+        color: #fff;
+        padding: 15px;
+        width: 250px;
+        flex-shrink: 0; /* Không co lại */
+        /* min-height: 100vh; -> main-container đã xử lý */
+        display: flex; /* Thêm flex để đẩy logout xuống */
+        flex-direction: column; /* Thêm flex để đẩy logout xuống */
+    }
+
+        .sidebar h2 {
+            border-bottom: 1px solid #495057;
+            padding-bottom: 10px;
+            font-size: 1.5rem;
+            margin-bottom: 1rem; /* Thêm khoảng cách */
+        }
+
+        .sidebar .nav {
+            flex-grow: 1; /* Để các nav item chiếm không gian */
+        }
+
+        .sidebar .nav-link {
+            color: #adb5bd;
+            padding: 8px 15px;
+            border-radius: 0.25rem; /* Thêm bo góc */
+            margin-bottom: 5px; /* Khoảng cách giữa các link */
+        }
+
+            .sidebar .nav-link.active, .sidebar .nav-link:hover {
+                color: #fff;
+                background-color: #495057;
+            }
+        /* CSS cho nút logout */
+        .sidebar .nav-item.mt-auto { /* Đảm bảo nó thực sự ở cuối */
+            margin-top: auto;
+        }
+
+        .sidebar .logout-form button { /* Style cho nút logout */
+            padding: 8px 15px;
+            color: #dc3545; /* Màu đỏ */
+        }
+
+            .sidebar .logout-form button:hover {
+                background-color: rgba(220, 53, 69, 0.1); /* Nền đỏ nhẹ khi hover */
+                color: #bd2130;
+            }
+
+    .main-content-area {
+        padding: 25px;
+        background-color: #f8f9fa;
+        flex-grow: 1;
+        overflow-y: auto;
+    }
+
+    .page-header {
+        font-size: 1.75rem;
+        font-weight: 500;
+        margin-bottom: 1.5rem;
+        color: #343a40;
+    }
+
+    .stat-card {
+        background-color: #fff;
+        border-radius: 0.375rem;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,.075);
+        text-align: center;
+    }
+
+        .stat-card .value {
+            font-size: 1.75rem;
+            font-weight: 600;
+        }
+
+        .stat-card .label {
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-top: 0.25rem;
+        }
+
+    .filter-card {
+        background-color: #fff;
+        padding: 1rem 1.5rem;
+        border-radius: 0.375rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,.075);
+    }
+
+    .table-container {
+        background-color: #fff;
+        padding: 1.5rem;
+        border-radius: 0.375rem;
+        box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,.075);
+        margin-top: 1.5rem; /* Thêm margin */
+    }
+
+    .table th {
+        font-weight: 600;
+        background-color: #e9ecef;
+    }
+
+    .actions .btn {
+        margin: 0 2px;
+    }
+</style>
+
+<div class="d-flex main-container">
+    @* Đổi tên class nếu Layout dùng container khác *@
+    @* --- SIDEBAR --- *@
+    @* Mình giả sử Sidebar là một Partial View hoặc nằm trong Layout *@
+    @* Nếu không, copy code Sidebar HTML vào đây *@
+    <div class="sidebar">
+        <h2>Quản Lý XNK</h2>
+        <ul class="nav flex-column">
+            <li class="nav-item"><a asp-area="QuanLyXNK" asp-controller="QuanLyXNK" asp-action="Index" class="nav-link"><i class="fas fa-truck-loading me-2"></i> Quản lý Thu gom</a></li>
+            <li class="nav-item"><a asp-area="QuanLyXNK" asp-controller="QuanLyDSPX" asp-action="Index" class="nav-link "><i class="fas fa-dolly-flatbed me-2"></i> DS Phiếu Xuất</a></li> @* Link mới *@
+            <li class="nav-item"><a asp-area="QuanLyXNK" asp-controller="QuanLyDSPX" asp-action="Create" class="nav-link"><i class="fas fa-plus-circle me-2"></i> Tạo Phiếu Xuất</a></li> @* Link mới *@
+            <li class="nav-item"><a asp-area="QuanLyXNK" asp-controller="KhoHang" asp-action="Index" class="nav-link active"><i class="fas fa-warehouse me-2"></i> DS Kho hàng</a></li>
+            <li class="nav-item"><a asp-area="QuanLyXNK" asp-controller="TonKho" asp-action="Index" class="nav-link"><i class="fas fa-boxes-stacked me-2"></i> Tồn kho SP</a></li>
+            <li class="nav-item"><a asp-area="QuanLyXNK" asp-controller="ThongKe" asp-action="Index" class="nav-link"><i class="fas fa-chart-bar me-2"></i> Thống kê NX</a></li>
+        </ul>
+        <div class="nav-item mt-auto ">
+            <button type="submit" class="text-danger border-0 bg-transparent p-0 w-100 text-start mt-1">
+                @* Adjusted button style to better match list items *@
+                <a href="/home/index" class="border-0 text-danger" style="text-decoration: none;"><i class="fas fa-sign-out-alt fa-fw me-2"></i> Về trang chủ</a>
+            </button>
+        </div>
+    </div>
+
+    @* --- MAIN CONTENT --- *@
+    <div class="main-content-area">
+        <div class="page-header">@ViewData["Title"]</div>
+
+        @* --- STATS CARDS (Lấy dữ liệu từ ViewModel) --- *@
+        <div class="row">
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-card">
+                    <div class="value text-primary">@(Model.Statistics?.TongKho ?? 0)</div>
+                    <div class="label">Tổng kho</div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-card">
+                    <div class="value text-success">@(Model.Statistics?.ConTrong ?? 0)</div>
+                    <div class="label">Còn trống</div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-card">
+                    <div class="value text-warning">@(Model.Statistics?.GanDay ?? 0)</div>
+                    <div class="label">Gần đầy</div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-card">
+                    <div class="value text-danger">@(Model.Statistics?.BaoTri ?? 0)</div>
+                    <div class="label">Đang bảo trì</div>
+                </div>
+            </div>
+        </div>
+
+        @* --- FILTER FORM (Sử dụng Tag Helper) --- *@
+        <div class="filter-card">
+            <form method="get" asp-action="Index">
+                @* Gửi form đến action Index *@
+                <div class="row g-3 align-items-center">
+                    <div class="col-md-4">
+                        @* Liên kết với thuộc tính SearchTerm trong ViewModel *@
+                        <input asp-for="SearchTerm" class="form-control form-control-sm" placeholder="Tìm tên kho, địa chỉ...">
+                    </div>
+                    <div class="col-md-3">
+                        @* Liên kết với StatusFilter và StatusOptions *@
+                        <select asp-for="StatusFilter" asp-items="Model.StatusOptions" class="form-select form-select-sm"></select>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-sm btn-primary w-100"><i class="fas fa-filter"></i> Lọc</button>
+                    </div>
+                    <div class="col-md-3 text-end">
+                        @* Liên kết đến action Create *@
+                        <a asp-action="Create" class="btn btn-sm btn-success"><i class="fas fa-plus me-1"></i> Thêm kho mới</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        @* --- DATA TABLE (Lặp qua dữ liệu từ ViewModel) --- *@
+        <div class="table-container">
+            <div class="table-responsive">
+                <table class="table table-striped table-hover table-sm align-middle">
+                    <thead>
+                        <tr>
+                            <th>@Html.DisplayNameFor(model => model.DanhSachKhoHang[0].MaKho)</th>
+                            <th>@Html.DisplayNameFor(model => model.DanhSachKhoHang[0].TenKho)</th>
+                            <th>@Html.DisplayNameFor(model => model.DanhSachKhoHang[0].DiaChi)</th>
+                            <th>@Html.DisplayNameFor(model => model.DanhSachKhoHang[0].SucChuaTomTat)</th>
+                            <th>@Html.DisplayNameFor(model => model.DanhSachKhoHang[0].TrangThai)</th>
+                            <th class="text-center">Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.DanhSachKhoHang.Any())
+                        {
+                            @foreach (var item in Model.DanhSachKhoHang)
+                            {
+                                <tr>
+                                    <td>@Html.DisplayFor(modelItem => item.MaKho)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.TenKho)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.DiaChi)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.SucChuaTomTat)</td>
+                                    <td>
+                                        @* Thêm logic để hiển thị badge dựa trên item.TrangThai nếu cần *@
+                                        <span class="badge @GetStatusBadgeClass(item.TrangThai)">@Html.DisplayFor(modelItem => item.TrangThai)</span>
+                                    </td>
+                                    <td class="text-center actions">
+                                        @* Liên kết đến action Details và Edit *@
+                                        <a asp-action="Details" asp-route-id="@item.MaKho" class="btn btn-sm btn-outline-info" title="Xem chi tiết"><i class="fas fa-eye"></i></a>
+                                        <a asp-action="Edit" asp-route-id="@item.MaKho" class="btn btn-sm btn-outline-warning" title="Chỉnh sửa"><i class="fas fa-edit"></i></a>
+                                        @* Nút xóa cần form POST *@
+                                        <form asp-action="Delete" asp-route-id="@item.MaKho" method="post" style="display: inline;" onsubmit="return confirm('Bạn có chắc muốn xóa kho hàng này?');">
+                                            @Html.AntiForgeryToken() @* Thêm token chống CSRF *@
+                                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Xóa kho"><i class="fas fa-trash"></i></button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="6" class="text-center text-muted py-3">Không tìm thấy kho hàng nào phù hợp.</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            @* --- PAGINATION (Sử dụng Tag Helper hoặc logic động) --- *@
+            @if (Model.TotalPages > 1)
+            {
+                <nav aria-label="Warehouse navigation" class="mt-3 d-flex justify-content-center">
+                    <ul class="pagination pagination-sm">
+                        <li class="page-item @(Model.HasPreviousPage ? "" : "disabled")">
+                            @* Thêm asp-route-* để giữ bộ lọc khi chuyển trang *@
+                            <a class="page-link" asp-action="Index"
+                               asp-route-page="@(Model.PageIndex - 1)"
+                               asp-route-searchTerm="@Model.SearchTerm"
+                               asp-route-statusFilter="@Model.StatusFilter">Trước</a>
+                        </li>
+                        @for (int i = 1; i <= Model.TotalPages; i++)
+                        {
+                            <li class="page-item @(i == Model.PageIndex ? "active" : "")">
+                                <a class="page-link" asp-action="Index"
+                                   asp-route-page="@i"
+                                   asp-route-searchTerm="@Model.SearchTerm"
+                                   asp-route-statusFilter="@Model.StatusFilter">@i</a>
+                            </li>
+                        }
+                        <li class="page-item @(Model.HasNextPage ? "" : "disabled")">
+                            <a class="page-link" asp-action="Index"
+                               asp-route-page="@(Model.PageIndex + 1)"
+                               asp-route-searchTerm="@Model.SearchTerm"
+                               asp-route-statusFilter="@Model.StatusFilter">Sau</a>
+                        </li>
+                    </ul>
+                </nav>
+            }
+        </div>
+    </div>
+</div>
+
+@* Thêm hàm helper cho badge trạng thái (nếu cần) *@
+@functions {
+    string GetStatusBadgeClass(string status)
+    {
+        status = status?.ToLower() ?? "";
+        switch (status)
+        {
+            case KhoHangTrangThai.ConTrong: return "bg-success";
+            case KhoHangTrangThai.GanDay: return "bg-warning text-dark";
+            case KhoHangTrangThai.BaoTri: return "bg-danger";
+            default: return "bg-secondary";
+        }
+    }
+}
+
+@section Scripts {
+        @* <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script> *@
+    <script>
+        // Kích hoạt tooltip nếu dùng data-bs-toggle="tooltip"
+        var tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+        var tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+    </script>
+}

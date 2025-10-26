@@ -1,0 +1,65 @@
+﻿@model DACS.Models.ViewModels.ScheduleViewModel
+
+@{
+    ViewData["Title"] = "Chỉnh sửa Lịch Thu gom";
+}
+
+<div class="container mt-4">
+    <h1 class="page-header">@ViewData["Title"] cho Yêu cầu: @Model.M_YeuCau</h1>
+    <hr />
+
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card mb-4">
+                <div class="card-header">
+                    Thông tin Yêu cầu
+                </div>
+                <div class="card-body">
+                    <dl class="row mb-0">
+                        <dt class="col-sm-3">Mã Yêu Cầu</dt>
+                        <dd class="col-sm-9">@Model.M_YeuCau</dd>
+
+                        <dt class="col-sm-3">Khách hàng</dt>
+                        <dd class="col-sm-9">@Model.TenKhachHang</dd>
+
+                        <dt class="col-sm-3">Địa chỉ</dt>
+                        <dd class="col-sm-9">@Model.DiaChiTomTat</dd>
+                    </dl>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">Cập nhật Lịch hẹn</div>
+                <div class="card-body">
+                    <form asp-action="EditSchedule" method="post">
+                        <input asp-for="M_YeuCau" type="hidden" />
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                        <div class="mb-3">
+                            <label asp-for="ThoiGianSanSang" class="form-label"></label>
+                            @* Input này sẽ hiển thị giá trị ThoiGianSanSang hiện tại *@
+                            <input asp-for="ThoiGianSanSang" type="datetime-local" class="form-control" />
+                            <span asp-validation-for="ThoiGianSanSang" class="text-danger"></span>
+                            <small class="form-text text-muted">Chọn ngày và giờ dự kiến mới.</small>
+                        </div>
+
+                        <div class="mt-4">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-1"></i> Cập nhật Lịch
+                            </button>
+                            <a asp-action="Index" class="btn btn-secondary ms-2">
+                                <i class="fas fa-times me-1"></i> Hủy bỏ
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

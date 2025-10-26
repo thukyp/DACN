@@ -1,0 +1,159 @@
+﻿@model DACS.Models.KhoHang // Model cho View này là KhoHang
+
+@{
+    ViewData["Title"] = "Chi Tiết Kho Hàng";
+    // Layout = "_Layout"; // Đảm bảo có Layout phù hợp
+}
+
+@* --- Hàm helper cho badge trạng thái (cần có ở đây nếu chưa định nghĩa ở nơi khác) --- *@
+@* Tốt nhất là nên đưa hàm này vào một class helper chung hoặc TagHelper *@
+@functions {
+    string GetStatusBadgeClass(string status)
+    {
+        status = status?.ToLower() ?? "";
+        // Sử dụng tên trạng thái thực tế của bạn
+        switch (status)
+        {
+            case "còn trống": return "bg-success";      // Giả định trạng thái là "Còn trống"
+            case "gần đầy": return "bg-warning text-dark"; // Giả định trạng thái là "Gần đầy"
+            case "đang bảo trì": return "bg-danger";    // Giả định trạng thái là "Đang bảo trì"
+            default: return "bg-secondary";          // Trạng thái mặc định/không xác định
+        }
+    }
+}
+
+@* --- Styles (Tùy chọn) --- *@
+<style>
+    .page-header {
+        font-size: 1.75rem;
+        font-weight: 500;
+        margin-bottom: 1.5rem;
+        color: #343a40;
+    }
+
+    .card-header {
+        background-color: #e9ecef;
+        font-weight: 600;
+    }
+    /* Định dạng cho danh sách định nghĩa (definition list) */
+    .details-dl dt { /* dt: definition term (nhãn) */
+        font-weight: 600;
+        color: #495057;
+        padding-top: 0.5rem; /* Thêm khoảng cách trên cho dễ nhìn */
+    }
+
+    .details-dl dd { /* dd: definition description (giá trị) */
+        margin-bottom: 0.75rem;
+        padding-top: 0.5rem; /* Thêm khoảng cách trên cho dễ nhìn */
+    }
+
+    .badge { /* Đảm bảo badge hiển thị đẹp */
+        font-size: 0.9em;
+        padding: 0.4em 0.7em;
+        vertical-align: middle; /* Căn giữa badge với text */
+    }
+</style>
+
+<div class="main-content-area p-4">
+
+    <div class="page-header">@ViewData["Title"]</div>
+
+    <div class="row">
+        <div class="col-md-10 col-lg-8 mx-auto">
+            @* Cho phép rộng hơn một chút để xem chi tiết *@
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    Thông tin chi tiết: @Model.TenKho (@Model.MaKho)
+                </div>
+                <div class="card-body">
+                     @* Sử dụng Definition List (dl, dt, dd) để hiển thị cặp Tên-Giá trị *@
+                    <dl class="row details-dl">
+                        @* Class 'row' của Bootstrap để chia cột *@
+
+                        <dt class="col-sm-4 col-md-3">
+                            @* Tên thuộc tính *@
+                            @Html.DisplayNameFor(model => model.MaKho)
+                        </dt>
+                        <dd class="col-sm-8 col-md-9">
+                            @* Giá trị thuộc tính *@
+                            @Html.DisplayFor(model => model.MaKho)
+                        </dd>
+
+                        <dt class="col-sm-4 col-md-3">
+                            @Html.DisplayNameFor(model => model.TenKho)
+                        </dt>
+                        <dd class="col-sm-8 col-md-9">
+                            @Html.DisplayFor(model => model.TenKho)
+                        </dd>
+
+                        <dt class="col-sm-4 col-md-3">
+                            @Html.DisplayNameFor(model => model.DiaChi)
+                        </dt>
+                        <dd class="col-sm-8 col-md-9">
+                            @Html.DisplayFor(model => model.DiaChi)
+                        </dd>
+
+                        <dt class="col-sm-4 col-md-3">
+                            @Html.DisplayNameFor(model => model.SucChuaTomTat)
+                        </dt>
+                        <dd class="col-sm-8 col-md-9">
+                            @Html.DisplayFor(model => model.SucChuaTomTat)
+                        </dd>
+
+                        <dt class="col-sm-4 col-md-3">
+                            @Html.DisplayNameFor(model => model.TrangThai)
+                        </dt>
+                        <dd class="col-sm-8 col-md-9">
+                             @* Hiển thị cả text và badge màu cho trạng thái *@
+                            @Html.DisplayFor(model => model.TrangThai)
+                            <span class="badge ms-2 @GetStatusBadgeClass(Model.TrangThai)">
+                                @Html.DisplayFor(model => model.TrangThai)
+                            </span>
+                        </dd>
+
+                         @* --- Thêm các trường khác của KhoHang nếu có --- *@
+                         @*
+                         <dt class="col-sm-4 col-md-3">
+                             @Html.DisplayNameFor(model => model.NgayTao) // Ví dụ
+                         </dt>
+                         <dd class="col-sm-8 col-md-9">
+                             @Html.DisplayFor(model => model.NgayTao)
+                         </dd>
+                         *@
+
+                    </dl> @* End dl *@
+
+                     @* --- Có thể hiển thị danh sách liên quan ở đây (nếu có Include trong Controller) --- *@
+                     @*
+                     @if (Model.DanhSachSanPhamTrongKho != null && Model.DanhSachSanPhamTrongKho.Any())
+                     {
+                         <h5 class="mt-4 pt-3 border-top">Sản phẩm trong kho</h5>
+                         <ul>
+                             @foreach (var sanPham in Model.DanhSachSanPhamTrongKho)
+                             {
+                                 <li>@sanPham.TenSanPham - Số lượng: @sanPham.SoLuong</li>
+                             }
+                         </ul>
+                     }
+                     *@
+
+                </div> @* End card-body *@
+
+                <div class="card-footer bg-light d-flex justify-content-between align-items-center">
+                     @* Nút Quay lại danh sách *@
+                    <a asp-action="Index" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-1"></i> Quay lại Danh sách
+                    </a>
+                     @* Nút Chỉnh sửa *@
+                    <a asp-action="Edit" asp-route-id="@Model.MaKho" class="btn btn-warning">
+                        <i class="fas fa-edit me-1"></i> Chỉnh sửa
+                    </a>
+                </div>@* End card-footer *@
+            </div> @* End card *@
+        </div> @* End col *@
+    </div> @* End row *@
+</div> @* End Main Content Area *@
+
+@section Scripts {
+        @* Thường không cần script riêng cho trang Details *@
+}

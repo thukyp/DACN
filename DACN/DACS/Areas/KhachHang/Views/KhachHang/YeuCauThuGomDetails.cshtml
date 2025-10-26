@@ -1,0 +1,220 @@
+﻿@model DACS.Models.YeuCauThuGom
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<ApplicationUser> UserManager
+
+@{
+    ViewData["Title"] = $"Chi tiết Yêu cầu Thu gom #{Model.M_YeuCau}";
+    // Layout = "~/Areas/KhachHang/Views/Shared/_UserAccountLayout.cshtml"; // Đảm bảo Layout đúng
+
+    // Lấy chi tiết đầu tiên (vì thiết kế hiện tại có vẻ chỉ có 1 chi tiết/yêu cầu)
+    var firstDetail = Model.ChiTietThuGoms?.FirstOrDefault();
+}
+
+<div class="container mt-4 account-section">
+    <div class="row">
+        @* Cột Menu bên trái *@
+        <div class="col-lg-3 mb-4 mb-lg-0">
+            <div class="account-menu list-group">
+                <a asp-area="KhachHang" asp-controller="KhachHang" asp-action="Index" class="list-group-item list-group-item-action">
+                    <i class="fas fa-tachometer-alt fa-fw me-2"></i> Tổng quan
+                </a>
+                <a asp-area="KhachHang" asp-controller="KhachHang" asp-action="HoSoCaNhan" class="list-group-item list-group-item-action">
+                    <i class="fas fa-user-circle fa-fw me-2"></i> Hồ sơ cá nhân
+                </a>
+                <a asp-area="KhachHang" asp-controller="KhachHang" asp-action="LichSuDonHang" class="list-group-item list-group-item-action">
+                    <i class="fas fa-receipt fa-fw me-2"></i> Lịch sử Đơn hàng
+                </a>
+                @* Đánh dấu active cho link này *@
+                <a asp-area="KhachHang" asp-controller="KhachHang" asp-action="LichSuYeuCauThuGom" class="list-group-item list-group-item-action active">
+                    <i class="fas fa-recycle fa-fw me-2"></i> Lịch sử Thu gom
+                </a>
+                <a asp-area="Identity" asp-page="/Account/Manage/ChangePassword" class="list-group-item list-group-item-action">
+                    <i class="fas fa-lock fa-fw me-2"></i> Đổi mật khẩu
+                </a>
+                @* <a asp-area="KhachHang" asp-controller="Address" asp-action="Index" class="list-group-item list-group-item-action">
+                    <i class="fas fa-map-marker-alt fa-fw me-2"></i> Sổ địa chỉ
+                   </a> *@
+                <button type="submit" class="list-group-item list-group-item-action text-danger border-0 bg-transparent p-0 w-100 text-start">
+                    @* Adjusted button style to better match list items *@
+                    <a href="/home/index" class="list-group-item list-group-item-action border-0 text-danger"><i class="fas fa-sign-out-alt fa-fw me-2"></i> Về trang chủ</a>
+                </button>
+            </div>
+        </div>
+
+        @* Cột Nội dung chính bên phải *@
+        <div class="col-lg-9">
+            <div class="account-content">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4 class="mb-0">@ViewData["Title"]</h4>
+                    <a asp-action="LichSuYeuCauThuGom" class="btn btn-sm btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-1"></i> Quay lại Lịch sử
+                    </a>
+                </div>
+
+                @* Hiển thị thông báo (nếu có) *@
+                @if (TempData["SuccessMessage"] != null)
+                {
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">@TempData["SuccessMessage"]<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>
+                }
+                @if (TempData["ErrorMessage"] != null)
+                {
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">@TempData["ErrorMessage"]<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>
+                }
+
+                @if (Model != null)
+                {
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header">
+                            <i class="fas fa-file-alt me-2"></i> Thông tin chung Yêu cầu
+                        </div>
+                        <div class="card-body">
+                            <dl class="row definition-list mb-0">
+                                <dt class="col-sm-4">Mã yêu cầu:</dt>
+                                <dd class="col-sm-8 fw-bold">#@Model.M_YeuCau</dd>
+
+                                <dt class="col-sm-4">Ngày yêu cầu:</dt>
+                                <dd class="col-sm-8">@Model.NgayYeuCau.ToString("dd/MM/yyyy HH:mm")</dd>
+
+                                <dt class="col-sm-4">Trạng thái:</dt>
+                                <dd class="col-sm-8"><span class="badge @GetStatusBadgeClass(Model.TrangThai)">@Model.TrangThai</span></dd>
+
+                                <dt class="col-sm-4">Thời gian sẵn sàng lấy:</dt>
+                                <dd class="col-sm-8">@Model.ThoiGianSanSang.ToString("dd/MM/yyyy HH:mm")</dd>
+
+                                <dt class="col-sm-4">Ghi chú của bạn:</dt>
+                                <dd class="col-sm-8">@(string.IsNullOrWhiteSpace(Model.GhiChu) ? "Không có" : Model.GhiChu)</dd>
+
+                                @* Hiển thị thông tin Khách hàng (nếu cần và đã Include) *@
+                                @*
+                                 <dt class="col-sm-4">Người gửi:</dt>
+                                 <dd class="col-sm-8">@Model.KhachHang?.Ten_KhachHang</dd>
+                                 <dt class="col-sm-4">Số điện thoại liên hệ:</dt>
+                                 <dd class="col-sm-8">@Model.KhachHang?.SDT_KhachHang</dd>
+                                 *@
+                            </dl>
+                        </div>
+                        @* Nút bấm ở Footer Card (nếu trạng thái cho phép) *@
+                        @if (Model.TrangThai?.Equals("Chờ xử lý", StringComparison.OrdinalIgnoreCase) == true)
+                        {
+                            <div class="card-footer text-end bg-light">
+                                <a asp-action="YeuCauThuGomEdit" asp-controller="KhachHang" asp-area="KhachHang" asp-route-id="@Model.M_YeuCau"
+                                   class="btn btn-sm btn-secondary me-2">
+                                    <i class="fas fa-edit me-1"></i> Sửa yêu cầu
+                                </a>
+                                <a asp-action="YeuCauThuGomCancel" asp-controller="KhachHang" asp-area="KhachHang" asp-route-id="@Model.M_YeuCau"
+                                   class="btn btn-sm btn-danger">
+                                    <i class="fas fa-times me-1"></i> Hủy yêu cầu
+                                </a>
+                            </div>
+                        }
+                    </div>
+
+                    @if (firstDetail != null)
+                    {
+                        <div class="card shadow-sm">
+                            <div class="card-header">
+                                <i class="fas fa-box-open me-2"></i> Chi tiết Phụ phẩm
+                            </div>
+                            <div class="card-body">
+                                <dl class="row definition-list">
+                                    <dt class="col-sm-4">Loại sản phẩm:</dt>
+                                    <dd class="col-sm-8">@(firstDetail.LoaiSanPham?.TenLoai ?? "N/A")</dd>
+
+                                    <dt class="col-sm-4">Mô tả:</dt>
+                                    <dd class="col-sm-8">@(string.IsNullOrWhiteSpace(firstDetail.MoTa) ? "(Không có mô tả)" : firstDetail.MoTa)</dd>
+
+                                    <dt class="col-sm-4">Số lượng:</dt>
+                                    <dd class="col-sm-8">@firstDetail.SoLuong @(firstDetail.DonViTinh?.TenLoaiTinh ?? "")</dd> @* Sửa TenLoaiTinh thành TenDonViTinh nếu cần *@
+
+                                    <dt class="col-sm-4">Giá trị mong muốn:</dt>
+                                    <dd class="col-sm-8">@(firstDetail.GiaTriMongMuon.HasValue ? firstDetail.GiaTriMongMuon.Value.ToString("N0") + " VNĐ" : "Không đề xuất")</dd>
+
+                                    <dt class="col-sm-4">Đặc tính:</dt>
+                                    <dd class="col-sm-8">
+                                        @{
+                                            var characteristics = new List<string>();
+                                            if (firstDetail.DacTinh_CongKenh) characteristics.Add("Cồng kềnh");
+                                            if (firstDetail.DacTinh_AmUot) characteristics.Add("Ẩm/Ướt");
+                                            if (firstDetail.DacTinh_Kho) characteristics.Add("Khô");
+                                            if (firstDetail.DacTinh_DoAmCao) characteristics.Add("Độ ẩm cao");
+                                            if (firstDetail.DacTinh_TapChat) characteristics.Add("Tạp chất");
+                                            if (firstDetail.DacTinh_DaXuLy) characteristics.Add("Đã xử lý");
+                                        }
+                                        @(characteristics.Any() ? string.Join(", ", characteristics) : "Không có")
+                                    </dd>
+
+                                    <dt class="col-sm-4">Hình ảnh:</dt>
+                                    <dd class="col-sm-8">
+                                        @if (!string.IsNullOrEmpty(firstDetail.DanhSachHinhAnh))
+                                        {
+                                            var imagePaths = firstDetail.DanhSachHinhAnh.Split(';', StringSplitOptions.RemoveEmptyEntries);
+                                            <div class="row g-2 mt-1">
+                                                @foreach (var path in imagePaths)
+                                                {
+                                                    <div class="col-auto">
+                                                        @* Giả sử ảnh có thể xem trực tiếp, cần cấu hình Static Files *@
+                                                        <a href="@Url.Content("~" + path)" data-bs-toggle="tooltip" title="Xem ảnh gốc" target="_blank">
+                                                            <img src="@Url.Content("~" + path)" alt="Ảnh phụ phẩm" style="max-height: 80px; max-width: 100px; border: 1px solid #dee2e6; border-radius: 0.25rem; object-fit: cover;">
+                                                        </a>
+                                                    </div>
+                                                }
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">Không có hình ảnh.</span>
+                                        }
+                                    </dd>
+                                </dl>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-warning">Không tìm thấy thông tin chi tiết cho yêu cầu này.</div>
+                    }
+                }
+                else
+                {
+                    <div class="alert alert-danger">Không thể tải thông tin chi tiết yêu cầu.</div>
+                }
+
+            </div>
+        </div>
+    </div>
+</div>
+
+@* Sao chép hàm C# nội tuyến để lấy class Badge màu mè cho Status *@
+@functions {
+    string GetStatusBadgeClass(string status)
+    {
+        status = status?.Trim().ToLower() ?? ""; // Added Trim() for safety
+        switch (status)
+        {
+            // ... (Giữ nguyên các case trạng thái như trong LichSuYeuCauThuGom.cshtml) ...
+            case "đang giao": case "shipping": case "đang vận chuyển": return "bg-primary";
+            case "đã giao": case "delivered": case "hoàn thành": return "bg-success";
+            case "đang xử lý": case "processing": return "bg-info text-dark";
+            case "đã hủy": case "cancelled": return "bg-danger";
+            case "chờ thanh toán": case "pending payment": return "bg-warning text-dark";
+            case "chờ xác nhận": case "pending confirmation": case "chờ xử lý": return "bg-secondary";
+            case "đã tiếp nhận": return "bg-info-subtle text-info-emphasis";
+            case "đang thu gom": return "bg-primary-subtle text-primary-emphasis";
+            case "thu gom thành công": return "bg-success-subtle text-success-emphasis";
+            case "thu gom thất bại": return "bg-warning-subtle text-warning-emphasis";
+            default: return "bg-light text-dark border";
+        }
+    }
+}
+
+
+@* Optional: Thêm JS nếu cần (ví dụ: cho Tooltip ảnh) *@
+@section Scripts {
+    <script>
+        // Khởi tạo tooltip của Bootstrap (nếu dùng)
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+          return new bootstrap.Tooltip(tooltipTriggerEl)
+        })
+    </script>
+}

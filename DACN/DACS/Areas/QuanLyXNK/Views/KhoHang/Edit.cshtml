@@ -1,0 +1,114 @@
+﻿@model DACS.Models.KhoHang // Model cho View này là KhoHang
+
+@{
+    ViewData["Title"] = "Chỉnh Sửa Kho Hàng";
+    // Layout = "_Layout"; // Đảm bảo có Layout phù hợp
+}
+
+@* --- Styles (Tùy chọn) --- *@
+<style>
+    .page-header {
+        font-size: 1.75rem;
+        font-weight: 500;
+        margin-bottom: 1.5rem;
+        color: #343a40;
+    }
+
+    .container {
+        display: grid;
+        max-width: 100%;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        flex-direction: row;
+    }
+
+    .card-header {
+        background-color: #e9ecef;
+        font-weight: 600;
+    }
+    /* Làm cho input readonly dễ nhìn hơn */
+    input[readonly].form-control {
+        background-color: #e9ecef; /* Màu nền xám nhạt */
+        opacity: 1;
+        cursor: not-allowed; /* Con trỏ không cho phép */
+    }
+</style>
+
+<div class="main-content-area p-4">
+
+    @* Tiêu đề trang, hiển thị cả tên và mã kho đang sửa *@
+    <div class="page-header">@ViewData["Title"]: @Model.TenKho (@Model.MaKho)</div>
+
+    <div class="row">
+        <div class="col-md-8 col-lg-6 mx-auto">
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    Cập nhật thông tin kho hàng
+                </div>
+                <div class="card-body">
+                    @* Form gửi đến action Edit (POST), bao gồm cả ID kho hàng trong route *@
+                    <form asp-action="Edit" asp-route-id="@Model.MaKho" method="post">
+                        @* Hiển thị lỗi model-level (ví dụ lỗi concurrency) *@
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                        @*
+                            Mã Kho (MaKho) là khóa chính, không nên cho phép sửa đổi.
+                            Hiển thị nó ở dạng chỉ đọc (readonly).
+                            Input này vẫn cần có trong form để giá trị MaKho được gửi lại server
+                            và kiểm tra khớp với ID trong route.
+                        *@
+                        <div class="mb-3">
+                            <label asp-for="MaKho" class="form-label fw-semibold"></label>
+                            <input asp-for="MaKho" class="form-control form-control-sm" readonly />
+                            @* Không cần span validation cho trường readonly *@
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="TenKho" class="form-label fw-semibold"></label>
+                            <input asp-for="TenKho" class="form-control form-control-sm" />
+                            <span asp-validation-for="TenKho" class="text-danger d-block mt-1"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="DiaChi" class="form-label fw-semibold"></label>
+                            <textarea asp-for="DiaChi" class="form-control form-control-sm" rows="3"></textarea>
+                            <span asp-validation-for="DiaChi" class="text-danger d-block mt-1"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="SucChuaTomTat" class="form-label fw-semibold"></label>
+                            <input asp-for="SucChuaTomTat" class="form-control form-control-sm" />
+                            <span asp-validation-for="SucChuaTomTat" class="text-danger d-block mt-1"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="TrangThai" class="form-label fw-semibold"></label>
+                            <select asp-for="TrangThai" class="form-select form-select-sm" asp-items="ViewBag.TrangThaiOptions">
+                            </select>
+                            <span asp-validation-for="TrangThai" class="text-danger d-block mt-1"></span>
+                        </div>
+
+                        <div class="d-flex justify-content-end pt-3 border-top mt-4">
+                            @* Nút Hủy - Quay lại trang Index *@
+                            <a asp-action="Index" class="btn btn-outline-secondary me-2">
+                                <i class="fas fa-times me-1"></i> Hủy bỏ
+                            </a>
+                            @* Nút Cập nhật - Gửi form *@
+                            <button type="submit" class="btn btn-primary">
+                                @* Đổi màu thành Primary cho nút cập nhật *@
+                                <i class="fas fa-sync-alt me-1"></i> Cập nhật Kho Hàng
+                            </button>
+                        </div>
+                    </form>
+                </div> @* End card-body *@
+            </div> @* End card *@
+        </div> @* End Col *@
+    </div> @* End Row *@
+</div> @* End Main Content Area *@
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
