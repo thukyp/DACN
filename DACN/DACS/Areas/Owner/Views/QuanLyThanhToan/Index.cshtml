@@ -1,0 +1,348 @@
+﻿@model DACS.Areas.Owner.Models.OrderManagementViewModel
+@{
+    ViewData["Title"] = "Quản Lý Thanh Toán";
+    // Layout = "_AdminLayout"; // Đặt Layout của bạn ở đây
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="~/css/AdminLayout.css" /> @* Đường dẫn tới CSS layout của bạn *@
+	<style>
+		/* Basic CSS - move to external files if possible */
+		body, html {
+			height: 100%;
+		}
+
+		.container {
+			display: grid;
+			max-width: 100%;
+			width: 100%;
+			margin: 0;
+			padding: 0;
+			flex-direction: row;
+		}
+
+		.sidebar {
+			background-color: #212529;
+			color: #fff;
+			padding: 15px;
+			width: 250px;
+			flex-shrink: 0;
+			min-height: 100vh;
+			display: flex;
+			flex-direction: column;
+		}
+
+            .sidebar h2 {
+				border-bottom: 1px solid #495057;
+				padding-bottom: 10px;
+                font-size: 1.98rem;
+				margin-bottom: 1rem;
+				font-weight: 600;
+			}
+
+			.sidebar .nav {
+				flex-grow: 1;
+			}
+
+			.sidebar .nav-link {
+				color: #adb5bd;
+				padding: 8px 15px;
+				border-radius: 0.25rem;
+				margin-bottom: 5px;
+				font-size: 0.9rem;
+			}
+
+				.sidebar .nav-link.active, .sidebar .nav-link:hover {
+					color: #fff;
+					background-color: #495057;
+				}
+
+			.sidebar .nav-item.mt-auto {
+				margin-top: auto;
+				border-top: 1px solid #495057;
+				padding-top: 15px;
+			}
+
+			.sidebar .logout-form button {
+				padding: 8px 15px;
+				color: #dc3545;
+				background: none;
+				border: none;
+				width: 100%;
+				text-align: left;
+				font-size: 0.9rem;
+			}
+
+				.sidebar .logout-form button:hover {
+					background-color: rgba(220, 53, 69, 0.1);
+					color: #bd2130;
+				}
+
+		.main-content-area {
+			padding: 25px;
+			background-color: #f8f9fa;
+			flex-grow: 1;
+			overflow-y: auto;
+		}
+
+		.header {
+			font-size: 1.75rem;
+			font-weight: 500;
+			margin-bottom: 1rem;
+			color: #343a40;
+		}
+
+		.stat-card {
+			background-color: #fff;
+			border-radius: 0.375rem;
+			padding: 15px;
+			margin-bottom: 1rem;
+			box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+			text-align: center;
+		}
+
+			.stat-card .value {
+				font-size: 1.5rem;
+				font-weight: 600;
+			}
+
+			.stat-card .label {
+				font-size: 0.9rem;
+				color: #6c757d;
+			}
+
+		.filter-section {
+			background-color: #fff;
+			padding: 15px;
+			border-radius: 0.375rem;
+			margin-bottom: 1.5rem;
+			box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+		}
+
+		.table th {
+			font-weight: 600;
+			font-size: 0.85rem;
+		}
+
+		.table td {
+			font-size: 0.85rem;
+			vertical-align: middle;
+		}
+
+		.table .actions form, .table .actions a, .table .actions button {
+			margin-right: 3px;
+			display: inline-block;
+		}
+		/* Adjust spacing */
+		.table .actions .btn-sm {
+			padding: 0.2rem 0.4rem;
+			font-size: 0.75rem;
+		}
+		/* Smaller buttons */
+		.table .badge {
+			font-size: 0.75rem;
+			padding: 0.3em 0.5em;
+		}
+
+		.user-display span {
+			display: block;
+		}
+
+		.user-display small {
+			color: #6c757d;
+			font-size: 0.9em;
+		}
+	</style>
+</head>
+<body>
+
+
+	@* --- Main Layout Container --- *@
+	<div class="d-flex">
+		@* --- Sidebar --- *@
+		<div class="sidebar">
+			<h2>OWNER</h2>
+			<ul class="nav flex-column">
+				@* Điều chỉnh các asp-controller và asp-action cho phù hợp với cấu trúc của bạn *@
+				<li class="nav-item"><a asp-area="Owner" asp-controller="Owner" asp-action="Index" class="nav-link"><i class="fas fa-tachometer-alt me-2"></i> Dashboard</a></li>
+				<li class="nav-item"><a asp-area="Owner" asp-controller="DoanhThu" asp-action="Index" class="nav-link "><i class="fas fa-chart-line me-2"></i> Doanh thu</a></li>
+				<li class="nav-item"><a asp-area="Owner" asp-controller="QuanLyND" asp-action="Index" class="nav-link"><i class="fas fa-users me-2"></i> Quản lý Tài khoản</a></li>
+				<li class="nav-item"><a asp-area="Owner" asp-controller="QuanLySP" asp-action="Index" class="nav-link"><i class="fas fa-box-open me-2"></i> Quản lý Sản phẩm</a></li>
+				<li class="nav-item"><a asp-area="Owner" asp-controller="QuanLyXNK" asp-action="Index" class="nav-link"><i class="fas fa-truck-loading me-2"></i> Quản lý Thu gom</a></li>
+				<li class="nav-item"><a asp-area="Owner" asp-controller="QuanLyDonHang" asp-action="Index" class="nav-link "><i class="fas fa-receipt me-2"></i> Quản lý Đơn Hàng</a></li>
+				<li class="nav-item"><a asp-area="Owner" asp-controller="QuanLyThanhToan" asp-action="Index" class="nav-link active"><i class="fas fa-credit-card me-2"></i> Quản lý Thanh toán</a></li>
+				
+			</ul>
+            <div class="nav-item mt-auto ">
+                <button type="submit" class="text-danger border-0 bg-transparent p-0 w-100 text-start mt-1">
+                    @* Adjusted button style to better match list items *@
+                    <a href="/home/index" class="border-0 text-danger" style="text-decoration: none;"><i class="fas fa-sign-out-alt fa-fw me-2"></i> Về trang chủ</a>
+                </button>
+            </div>
+		</div>
+
+        <div class="main-content-area">
+            <div class="page-header">@ViewData["Title"]</div>
+
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">@TempData["SuccessMessage"] <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>
+            }
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">@TempData["ErrorMessage"] <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>
+            }
+            @if (TempData["InfoMessage"] != null)
+            {
+                <div class="alert alert-info alert-dismissible fade show" role="alert">@TempData["InfoMessage"] <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>
+            }
+
+            <div class="filter-card">
+                <form method="get" asp-action="QuanLyThanhToan" asp-controller="QuanLyDH" asp-area="QuanLyDH">
+                    <div class="row g-3 align-items-end">
+                        <div class="col-md-3">
+                            <label for="search-input" class="form-label form-label-sm">Tìm kiếm</label>
+                            <input type="text" id="search-input" name="search" class="form-control form-control-sm" placeholder="Mã đơn, tên KH, SĐT..." value="@Model.SearchInput">
+                        </div>
+                        <div class="col-md-2">
+                            <label for="date-from-filter" class="form-label form-label-sm">Từ ngày</label>
+                            <input type="date" id="date-from-filter" name="startDate" class="form-control form-control-sm" value="@Model.DateFromFilter?.ToString("yyyy-MM-dd")">
+                        </div>
+                        <div class="col-md-2">
+                            <label for="date-to-filter" class="form-label form-label-sm">Đến ngày</label>
+                            <input type="date" id="date-to-filter" name="endDate" class="form-control form-control-sm" value="@Model.DateToFilter?.ToString("yyyy-MM-dd")">
+                        </div>
+                        <div class="col-md-2">
+                            <label for="order-status-filter" class="form-label form-label-sm">Trạng thái ĐH</label>
+                            <select id="order-status-filter" name="orderStatus" class="form-select form-select-sm" asp-items="@Model.OrderStatusOptions"></select>
+                        </div>
+                        <div class="col-md-2">
+                            <label for="payment-status-filter" class="form-label form-label-sm">Trạng thái TT</label>
+                            <select id="payment-status-filter" name="paymentStatus" class="form-select form-select-sm" asp-items="@Model.PaymentStatusOptions"></select>
+                        </div>
+                        <div class="col-md-1">
+                            <button type="submit" class="btn btn-sm btn-primary w-100"><i class="fas fa-filter"></i> Lọc</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="table-container">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover table-sm align-middle">
+                        <thead>
+                            <tr>
+                                <th>Mã Đơn</th>
+                                <th>Khách Hàng</th>
+                                <th>Ngày Đặt</th>
+                                <th class="text-end">Tổng Tiền</th>
+                                <th>Phương thức TT</th>
+                                <th>Trạng Thái ĐH</th>
+                                <th>Trạng Thái TT</th>
+                                <th class="text-center">Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.Orders != null && Model.Orders.Any())
+                            {
+                                foreach (var order in Model.Orders)
+                                {
+                                    <tr>
+                                        <td><a asp-action="Details" asp-controller="QuanLyDH" asp-area="QuanLyDH" asp-route-id="@order.M_DonHang">@order.M_DonHang</a></td>
+                                        <td>@order.CustomerName</td>
+                                        <td>@order.OrderDate.ToString("dd/MM/yyyy HH:mm")</td>
+                                        <td class="text-end">@order.TotalAmount.ToString("N0") đ</td>
+                                        <td>@order.PaymentMethod</td>
+                                        <td><span class="badge @order.OrderStatusBadgeClass">@order.OrderStatusText</span></td>
+                                        <td><span class="badge @order.PaymentStatusBadgeClass">@order.PaymentStatusText</span></td>
+                                        <td class="actions text-center">
+                                            <a asp-action="Details" asp-controller="QuanLyDH" asp-area="QuanLyDH" asp-route-id="@order.M_DonHang" class="btn btn-sm btn-outline-info" title="Xem chi tiết"><i class="fas fa-eye"></i></a>
+
+                                            @* Nút Cập nhật TT Thanh toán chung (mở trang chọn trạng thái) *@
+                                            <a asp-action="UpdatePaymentStatus" asp-controller="QuanLyThanhToan" asp-area="QuanLyDH" asp-route-id="@order.M_DonHang" class="btn btn-sm btn-outline-secondary" title="Cập nhật TT Thanh toán"><i class="fas fa-edit"></i></a>
+
+                                            @* Nút Xác nhận Thanh toán trực tiếp *@
+                                            @if (order.PaymentStatusText == "Chưa thanh toán" || order.PaymentStatusText == "Chờ TT")
+                                            {
+                                                <form asp-action="ConfirmPayment" asp-controller="QuanLyDH" asp-area="QuanLyDH" method="post" style="display:inline;">
+                                                    @Html.AntiForgeryToken()
+                                                    <input type="hidden" name="id" value="@order.M_DonHang" />
+                                                    <button type="submit" class="btn btn-sm btn-outline-success" title="Xác nhận đã thanh toán"><i class="fas fa-check-circle"></i></button>
+                                                </form>
+                                            }
+
+                                            @* Nút Hoàn tiền trực tiếp *@
+                                            @if (order.PaymentStatusText == "Đã thanh toán" || order.PaymentStatusText == "Đã TT")
+                                            {
+                                                <form asp-action="RefundPayment" asp-controller="QuanLyDH" asp-area="QuanLyDH" method="post" style="display:inline;" onsubmit="return confirm('Bạn có chắc muốn hoàn tiền cho đơn hàng @order.M_DonHang?');">
+                                                    @Html.AntiForgeryToken()
+                                                    <input type="hidden" name="id" value="@order.M_DonHang" />
+                                                    <button type="submit" class="btn btn-sm btn-outline-warning" title="Thực hiện hoàn tiền"><i class="fas fa-hand-holding-usd"></i></button>
+                                                </form>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="8" class="text-center">Không tìm thấy đơn hàng nào phù hợp.</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                @* Pagination (giống như trang Index) *@
+                @if (Model.TotalPages > 0)
+                {
+                    <nav aria-label="Payment navigation" class="mt-3 d-flex justify-content-center">
+                        <ul class="pagination pagination-sm">
+                            <li class="page-item @(!Model.HasPreviousPage ? "disabled" : "")">
+                                <a class="page-link" asp-action="QuanLyThanhToan"
+                                   asp-route-page="@(Model.CurrentPage - 1)"
+                                   asp-route-search="@Model.SearchInput"
+                                   asp-route-startDate="@Model.DateFromFilter?.ToString("yyyy-MM-dd")"
+                                   asp-route-endDate="@Model.DateToFilter?.ToString("yyyy-MM-dd")"
+                                   asp-route-orderStatus="@Model.SelectedOrderStatus"
+                                   asp-route-paymentStatus="@Model.SelectedPaymentStatus">Trước</a>
+                            </li>
+                            @for (int i = 1; i <= Model.TotalPages; i++)
+                            {
+                                <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                                    <a class="page-link" asp-action="QuanLyThanhToan"
+                                       asp-route-page="@i"
+                                       asp-route-search="@Model.SearchInput"
+                                       asp-route-startDate="@Model.DateFromFilter?.ToString("yyyy-MM-dd")"
+                                       asp-route-endDate="@Model.DateToFilter?.ToString("yyyy-MM-dd")"
+                                       asp-route-orderStatus="@Model.SelectedOrderStatus"
+                                       asp-route-paymentStatus="@Model.SelectedPaymentStatus">@i</a>
+                                </li>
+                            }
+                            <li class="page-item @(!Model.HasNextPage ? "disabled" : "")">
+                                <a class="page-link" asp-action="QuanLyThanhToan"
+                                   asp-route-page="@(Model.CurrentPage + 1)"
+                                   asp-route-search="@Model.SearchInput"
+                                   asp-route-startDate="@Model.DateFromFilter?.ToString("yyyy-MM-dd")"
+                                   asp-route-endDate="@Model.DateToFilter?.ToString("yyyy-MM-dd")"
+                                   asp-route-orderStatus="@Model.SelectedOrderStatus"
+                                   asp-route-paymentStatus="@Model.SelectedPaymentStatus">Sau</a>
+                            </li>
+                        </ul>
+                    </nav>
+                }
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

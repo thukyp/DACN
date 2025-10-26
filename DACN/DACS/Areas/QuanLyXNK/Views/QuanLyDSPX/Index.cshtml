@@ -1,0 +1,348 @@
+﻿@model DACS.Models.ViewModels.PhieuXuatIndexViewModel
+@{
+    ViewData["Title"] = "Danh Sách Phiếu Xuất";
+    // Layout = "~/Views/Shared/_AdminLayout.cshtml"; // Hoặc layout của area nếu có
+}
+
+@* CSS Styles - Giữ nguyên như bạn cung cấp, hoặc tốt hơn là chuyển vào file CSS chung *@
+<style>
+    body, html {
+        height: 100%;
+    }
+
+    .container {
+        display: grid;
+        max-width: 100%;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        flex-direction: row;
+    }
+
+    .main-container {
+        display: flex;
+        width: 100%;
+        min-height: 100vh;
+        margin: 0;
+        padding: 0;
+    }
+    /* main-container thay cho .container của bạn */
+    .sidebar {
+        background-color: #212529;
+        color: #fff;
+        padding: 15px;
+        width: 250px;
+        flex-shrink: 0;
+        display: flex;
+        flex-direction: column;
+    }
+
+        .sidebar h2 {
+            border-bottom: 1px solid #495057;
+            padding-bottom: 10px;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .sidebar .nav {
+            flex-grow: 1;
+        }
+
+        .sidebar .nav-link {
+            color: #adb5bd;
+            padding: 8px 15px;
+            border-radius: 0.25rem;
+            margin-bottom: 5px;
+        }
+
+            .sidebar .nav-link.active, .sidebar .nav-link:hover {
+                color: #fff;
+                background-color: #495057;
+            }
+
+        .sidebar .nav-item.mt-auto {
+            margin-top: auto;
+        }
+
+        .sidebar .logout-form button {
+            padding: 8px 15px;
+            color: #dc3545;
+            background: none;
+            border: none;
+            width: 100%;
+            text-align: left;
+        }
+
+            .sidebar .logout-form button:hover {
+                background-color: rgba(220, 53, 69, 0.1);
+                color: #bd2130;
+            }
+
+    .main-content-area {
+        padding: 25px;
+        background-color: #f8f9fa;
+        flex-grow: 1;
+        overflow-y: auto;
+        height: 100vh;
+    }
+
+    .page-header {
+        font-size: 1.75rem;
+        font-weight: 500;
+        margin-bottom: 1.5rem;
+        color: #343a40;
+    }
+
+    .stat-card {
+        background-color: #fff;
+        border-radius: 0.375rem;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,.075);
+        text-align: center;
+    }
+
+        .stat-card .value {
+            font-size: 1.75rem;
+            font-weight: 600;
+        }
+
+        .stat-card .label {
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-top: 0.25rem;
+        }
+
+    .filter-card {
+        background-color: #fff;
+        padding: 1rem 1.5rem;
+        border-radius: 0.375rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,.075);
+    }
+
+    .table-container .card-header {
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    .table-container .card-footer {
+        border-top: 1px solid #dee2e6;
+    }
+
+    .badge {
+        font-size: 0.8em;
+        padding: 0.4em 0.6em;
+    }
+   
+</style>
+
+<div class="d-flex main-container">
+    @* --- SIDEBAR --- *@
+    <div class="sidebar">
+        <h2>Quản Lý XNK</h2>
+        <ul class="nav flex-column">
+            <li class="nav-item"><a asp-area="QuanLyXNK" asp-controller="QuanLyXNK" asp-action="Index" class="nav-link"><i class="fas fa-truck-loading me-2"></i> Quản lý Thu gom</a></li>
+            <li class="nav-item"><a asp-area="QuanLyXNK" asp-controller="QuanLyDSPX" asp-action="Index" class="nav-link active"><i class="fas fa-dolly-flatbed me-2"></i> DS Phiếu Xuất</a></li> @* Link mới *@
+            <li class="nav-item"><a asp-area="QuanLyXNK" asp-controller="QuanLyDSPX" asp-action="Create" class="nav-link"><i class="fas fa-plus-circle me-2"></i> Tạo Phiếu Xuất</a></li> @* Link mới *@
+            <li class="nav-item"><a asp-area="QuanLyXNK" asp-controller="KhoHang" asp-action="Index" class="nav-link"><i class="fas fa-warehouse me-2"></i> DS Kho hàng</a></li>
+            <li class="nav-item"><a asp-area="QuanLyXNK" asp-controller="TonKho" asp-action="Index" class="nav-link"><i class="fas fa-boxes-stacked me-2"></i> Tồn kho SP</a></li>
+            <li class="nav-item"><a asp-area="QuanLyXNK" asp-controller="ThongKe" asp-action="Index" class="nav-link"><i class="fas fa-chart-bar me-2"></i> Thống kê NX</a></li>
+        </ul>
+        <div class="nav-item mt-auto ">
+            <button type="submit" class="text-danger border-0 bg-transparent p-0 w-100 text-start mt-1">
+                @* Adjusted button style to better match list items *@
+                <a href="/home/index" class="border-0 text-danger" style="text-decoration: none;"><i class="fas fa-sign-out-alt fa-fw me-2"></i> Về trang chủ</a>
+            </button>
+        </div>
+    </div>
+
+    @* --- MAIN CONTENT --- *@
+    <div class="main-content-area">
+        <div class="page-header">@ViewData["Title"]</div>
+
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">@TempData["SuccessMessage"]<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+        }
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">@TempData["ErrorMessage"]<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+        }
+
+
+        @* --- STAT CARDS --- *@
+        <div class="row">
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-card">
+                    <div class="value text-primary">@Model.TongPhieuXuat.ToString("N0")</div>
+                    <div class="label">Tổng phiếu xuất</div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-card">
+                    <div class="value text-success">@Model.DaGiaoCount.ToString("N0")</div>
+                    <div class="label">Đã giao</div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-card">
+                    <div class="value text-warning">@Model.DangXuLyCount.ToString("N0")</div>
+                    <div class="label">Đang xử lý</div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-card">
+                    <div class="value text-danger">@Model.DaHuyCount.ToString("N0")</div>
+                    <div class="label">Đã hủy</div>
+                </div>
+            </div>
+        </div>
+
+        @* --- FILTER FORM --- *@
+        <div class="filter-card">
+            <form asp-action="Index" method="get" class="row g-3 align-items-end">
+                <div class="col-md-4">
+                    <label asp-for="SearchTerm" class="form-label form-label-sm"></label>
+                    <input asp-for="SearchTerm" class="form-control form-control-sm" placeholder="Tìm mã phiếu, người nhận...">
+                </div>
+                <div class="col-md-3">
+                    <label asp-for="StatusFilter" class="form-label form-label-sm"></label>
+                    <select asp-for="StatusFilter" asp-items="Model.StatusOptions" class="form-select form-select-sm"></select>
+                </div>
+                <div class="col-md-3">
+                    <label asp-for="DateFilter" class="form-label form-label-sm"></label>
+                    <input asp-for="DateFilter" type="date" class="form-control form-control-sm">
+                </div>
+                <div class="col-auto">
+                    <button type="submit" class="btn btn-sm btn-primary w-100"><i class="fas fa-filter me-1"></i> Lọc</button>
+                </div>
+                <div class="col-auto">
+                    <a asp-action="Index" asp-controller="PhieuXuat" class="btn btn-sm btn-outline-secondary w-100" title="Reset bộ lọc">
+                        <i class="fas fa-sync-alt me-1"></i> Reset
+                    </a>
+                </div>
+            </form>
+        </div>
+
+        @* --- DATA TABLE --- *@
+        <div class="table-container card shadow-sm">
+            <div class="card-header bg-light py-2 d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="fas fa-dolly-flatbed me-2"></i> Danh sách Phiếu Xuất</h5>
+                <a asp-action="Create" class="btn btn-sm btn-success"><i class="fas fa-plus me-1"></i> Tạo Phiếu Xuất Mới</a>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover table-sm align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>@Html.DisplayNameFor(model => model.PhieuXuatItems[0].MaPhieuXuatHienThi)</th>
+                                <th>@Html.DisplayNameFor(model => model.PhieuXuatItems[0].NguoiNhan)</th>
+                                <th>@Html.DisplayNameFor(model => model.PhieuXuatItems[0].TenKhoXuat)</th>
+                                <th>@Html.DisplayNameFor(model => model.PhieuXuatItems[0].NgayXuat)</th>
+                                <th class="text-end">@Html.DisplayNameFor(model => model.PhieuXuatItems[0].TongSoLuongItems)</th>
+                                @* <th>@Html.DisplayNameFor(model => model.PhieuXuatItems[0].TongGiaTri)</th> *@
+                                <th class="text-center">@Html.DisplayNameFor(model => model.PhieuXuatItems[0].TrangThai)</th>
+                                <th class="text-center">Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.PhieuXuatItems == null || !Model.PhieuXuatItems.Any())
+                            {
+                                <tr>
+                                    <td colspan="7" class="text-center text-muted py-3">Không tìm thấy phiếu xuất nào.</td>
+                                </tr>
+                            }
+                            else
+                            {
+                                @foreach (var item in Model.PhieuXuatItems)
+                                {
+                                    <tr>
+                                        <td>@Html.DisplayFor(modelItem => item.MaPhieuXuatHienThi)</td>
+                                        <td>@Html.DisplayFor(modelItem => item.NguoiNhan)</td>
+                                        <td>@Html.DisplayFor(modelItem => item.TenKhoXuat)</td>
+                                        <td>@Html.DisplayFor(modelItem => item.NgayXuat)</td>
+                                        <td class="text-end">@item.TongSoLuongItems.ToString("N0")</td>
+                                        @* <td class="text-end">@Html.DisplayFor(modelItem => item.TongGiaTri)</td> *@
+                                        <td class="text-center">
+                                            <span class="badge @GetPhieuXuatStatusBadgeClass(item.TrangThai)">
+                                                @Html.DisplayFor(modelItem => item.TrangThai)
+                                            </span>
+                                        </td>
+                                        <td class="text-center">
+                                            <a asp-action="Details" asp-route-id="@item.MaPhieuXuat" class="btn btn-sm btn-outline-info" title="Xem chi tiết"><i class="fas fa-eye"></i></a>
+                                            <a asp-action="Edit" asp-route-id="@item.MaPhieuXuat" class="btn btn-sm btn-outline-warning" title="Sửa"><i class="fas fa-edit"></i></a>
+                                            @* Thêm nút Xóa nếu cần, kèm xác nhận *@
+                                            @* <a asp-action="Delete" asp-route-id="@item.MaPhieuXuat" class="btn btn-sm btn-outline-danger" title="Xóa"><i class="fas fa-trash"></i></a> *@
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            @* --- PAGINATION --- *@
+            @if (Model.TotalPages > 1)
+            {
+                <div class="card-footer bg-light">
+                    <nav aria-label="Phiếu xuất page navigation">
+                        <ul class="pagination pagination-sm justify-content-center mb-0">
+                            <li class="page-item @(Model.HasPreviousPage ? "" : "disabled")">
+                                <a class="page-link" asp-action="Index"
+                                   asp-route-page="@(Model.PageIndex - 1)"
+                                   asp-route-searchTerm="@Model.SearchTerm"
+                                   asp-route-statusFilter="@Model.StatusFilter"
+                                   asp-route-dateFilter="@Model.DateFilter?.ToString("yyyy-MM-dd")"
+                                   aria-label="Previous">&laquo;</a>
+                            </li>
+
+                            @for (int i = Math.Max(1, Model.PageIndex - 2); i <= Math.Min(Model.TotalPages, Model.PageIndex + 2); i++)
+                            {
+                                <li class="page-item @(i == Model.PageIndex ? "active" : "")">
+                                    <a class="page-link" asp-action="Index"
+                                       asp-route-page="@i"
+                                       asp-route-searchTerm="@Model.SearchTerm"
+                                       asp-route-statusFilter="@Model.StatusFilter"
+                                       asp-route-dateFilter="@Model.DateFilter?.ToString("yyyy-MM-dd")">@i</a>
+                                </li>
+                            }
+
+                            <li class="page-item @(Model.HasNextPage ? "" : "disabled")">
+                                <a class="page-link" asp-action="Index"
+                                   asp-route-page="@(Model.PageIndex + 1)"
+                                   asp-route-searchTerm="@Model.SearchTerm"
+                                   asp-route-statusFilter="@Model.StatusFilter"
+                                   asp-route-dateFilter="@Model.DateFilter?.ToString("yyyy-MM-dd")"
+                                   aria-label="Next">&raquo;</a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            }
+        </div> @* End Table Container *@
+    </div> @* End Main Content Area *@
+</div> @* End Main Container *@
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    @* Thêm script nếu cần *@
+}
+
+@functions {
+    string GetPhieuXuatStatusBadgeClass(string? status)
+    {
+        string processedStatus = (status?.Trim().ToLower()) ?? "";
+        switch (processedStatus)
+        {
+            case "mới tạo": return "bg-info text-dark";
+            case "đang xử lý": return "bg-warning text-dark";
+            case "đã xuất": return "bg-success";
+            case "đã giao": return "bg-success";
+            case "đã hủy": return "bg-danger";
+            default: return "bg-secondary";
+        }
+    }
+}

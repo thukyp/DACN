@@ -1,0 +1,117 @@
+﻿@model DACS.Models.SanPham
+
+@{
+    ViewData["Title"] = "Chi Tiết Sản Phẩm";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<div>
+    <h4>Thông tin chi tiết cho: @Model.TenSanPham</h4>
+    <hr />
+    <div class="row">
+        <div class="col-md-8">
+            <dl class="row">
+                <dt class="col-sm-4">
+                    @Html.DisplayNameFor(model => model.M_SanPham)
+                </dt>
+                <dd class="col-sm-8">
+                    @Html.DisplayFor(model => model.M_SanPham)
+                </dd>
+
+                <dt class="col-sm-4">
+                    @Html.DisplayNameFor(model => model.TenSanPham)
+                </dt>
+                <dd class="col-sm-8">
+                    @Html.DisplayFor(model => model.TenSanPham)
+                </dd>
+
+                <dt class="col-sm-4">
+                    @Html.DisplayNameFor(model => model.LoaiSanPham)
+                </dt>
+                <dd class="col-sm-8">
+                    @* Hiển thị tên loại SP thông qua navigation property *@
+                    @Html.DisplayFor(model => model.LoaiSanPham.TenLoai)
+                    (@Html.DisplayFor(model => model.M_LoaiSP)) @* Có thể hiển thị cả mã nếu muốn *@
+                </dd>
+
+                <dt class="col-sm-4">
+                    @Html.DisplayNameFor(model => model.DonViTinh)
+                </dt>
+                <dd class="col-sm-8">
+                    @Html.DisplayFor(model => model.DonViTinh.TenLoaiTinh)
+                    (@Html.DisplayFor(model => model.M_DonViTinh))
+                </dd>
+
+
+                
+
+                <dt class="col-sm-4">
+                    @Html.DisplayNameFor(model => model.Gia)
+                </dt>
+                <dd class="col-sm-8">
+                    @* Định dạng giá tiền *@
+                    @Model.Gia.ToString("N0") đ
+                </dd>
+
+                <dt class="col-sm-4">
+                    @Html.DisplayNameFor(model => model.SoLuong)
+                </dt>
+                <dd class="col-sm-8">
+                    @Html.DisplayFor(model => model.SoLuong)
+                    @(Model.DonViTinh?.TenLoaiTinh) @* Thêm đơn vị tính *@
+                </dd>
+
+                <dt class="col-sm-4">
+                    @Html.DisplayNameFor(model => model.TrangThai)
+                </dt>
+                <dd class="col-sm-8">
+                    @Html.DisplayFor(model => model.TrangThai)
+                </dd>
+
+                <dt class="col-sm-4">
+                    @Html.DisplayNameFor(model => model.HanSuDung)
+                </dt>
+                <dd class="col-sm-8">
+                    @* Định dạng ngày tháng *@
+                    @Model.HanSuDung.ToString("dd/MM/yyyy")
+                </dd>
+
+                <dt class="col-sm-4">
+                    @Html.DisplayNameFor(model => model.NgayTao)
+                </dt>
+                <dd class="col-sm-8">
+                    @* Định dạng ngày giờ *@
+                    @Model.NgayTao.ToString("dd/MM/yyyy HH:mm:ss") (UTC)
+                </dd>
+
+                <dt class="col-sm-4">
+                    @Html.DisplayNameFor(model => model.MoTa)
+                </dt>
+                <dd class="col-sm-8">
+                    @Html.DisplayFor(model => model.MoTa)
+                </dd>
+
+                <dt class="col-sm-4">
+                    @Html.DisplayNameFor(model => model.AnhSanPham)
+                </dt>
+                <dd class="col-sm-8">
+                    @if (!string.IsNullOrEmpty(Model.AnhSanPham))
+                    {
+                        <img src="@Url.Content(Model.AnhSanPham)" alt="Ảnh sản phẩm @Model.TenSanPham" class="img-thumbnail" style="max-width: 200px; max-height: 200px;" />
+                    }
+                    else
+                    {
+                        <span>(Không có ảnh)</span>
+                    }
+                </dd>
+            </dl>
+        </div>
+        @* Có thể thêm cột khác để hiển thị ảnh lớn hơn hoặc thông tin khác *@
+    </div>
+
+</div>
+<div class="mt-3">
+    <a asp-action="Edit" asp-route-id="@Model.M_SanPham" class="btn btn-primary">Chỉnh Sửa</a> |
+    <a asp-action="Index" class="btn btn-secondary">Quay lại Danh sách</a>
+</div>

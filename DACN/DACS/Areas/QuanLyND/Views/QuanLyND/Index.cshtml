@@ -1,0 +1,573 @@
+﻿@model DACS.Models.ViewModels.UserManagementViewModel
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<ApplicationUser> UserManager 
+
+@{
+    ViewData["Title"] = "Quản Lý Tài Khoản";
+    var currentUserId = UserManager.GetUserId(User);
+}
+<style>
+    body, html {
+        height: 100%;
+    }
+    .container {
+        display: grid;
+        max-width: 100%;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        flex-direction: row;
+    }
+    .sidebar {
+        background-color: #212529;
+        color: #fff;
+        padding: 15px;
+        width: 250px;
+        flex-shrink: 0;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+    }
+
+        .sidebar h4 {
+            border-bottom: 1px solid #495057;
+            padding-bottom: 10px;
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .sidebar .nav {
+            flex-grow: 1;
+        }
+
+        .sidebar .nav-link {
+            color: #adb5bd;
+            padding: 8px 15px;
+            border-radius: 0.25rem;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+
+            .sidebar .nav-link.active, .sidebar .nav-link:hover {
+                color: #fff;
+                background-color: #495057;
+            }
+
+        .sidebar .nav-item.mt-auto {
+            margin-top: auto;
+            border-top: 1px solid #495057;
+            padding-top: 15px;
+        }
+
+        .sidebar .logout-form button {
+            padding: 8px 15px;
+            color: #dc3545;
+            background: none;
+            border: none;
+            width: 100%;
+            text-align: left;
+            font-size: 0.9rem;
+        }
+
+            .sidebar .logout-form button:hover {
+                background-color: rgba(220, 53, 69, 0.1);
+                color: #bd2130;
+            }
+
+    .main-content {
+        padding: 20px;
+        background-color: #f8f9fa;
+        width: 100%; /* Ensure it takes remaining space */
+    }
+
+    .header {
+        font-size: 1.75rem;
+        font-weight: 500;
+        margin-bottom: 1rem;
+        color: #343a40;
+    }
+
+    .stat-card {
+        background-color: #fff;
+        border-radius: 0.375rem;
+        padding: 15px;
+        margin-bottom: 1rem;
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        text-align: center;
+    }
+
+        .stat-card .value {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .stat-card .label {
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+
+    .filter-section {
+        background-color: #fff;
+        padding: 15px;
+        border-radius: 0.375rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    }
+
+    .table th {
+        font-weight: 600;
+        font-size: 0.85rem;
+    }
+
+    .table td {
+        font-size: 0.85rem;
+        vertical-align: middle;
+    }
+
+    .table .actions form, .table .actions a, .table .actions button {
+        margin-right: 3px;
+        display: inline-block;
+    }
+    /* Adjust spacing */
+    .table .actions .btn-sm {
+        padding: 0.2rem 0.4rem;
+        font-size: 0.75rem;
+    }
+    /* Smaller buttons */
+    .table .badge {
+        font-size: 0.75rem;
+        padding: 0.3em 0.5em;
+    }
+
+    .user-display span {
+        display: block;
+    }
+
+    .user-display small {
+        color: #6c757d;
+        font-size: 0.9em;
+    }
+</style>
+
+@* --- Main Layout Container --- *@
+<div class="d-flex">
+    @* --- Sidebar --- *@
+    <div class="sidebar">
+        <h4>Quản Lý ND</h4>
+        <ul class="nav flex-column">
+            @* Set the correct 'active' class based on the current page/controller *@
+            <li class="nav-item"><a asp-area="QuanlyND" asp-controller="QuanlyND" asp-action="Index" class="nav-link active"><i class="fas fa-users me-2"></i> Quản lý Tài khoản</a></li>
+            <li class="nav-item"><a asp-area="QuanlyND" asp-controller="QuanlyPhanHoi" asp-action="Index" class="nav-link"><i class="fas fa-comments me-2"></i> Phản hồi & Đánh giá</a></li>
+            <li class="nav-item"><a asp-area="QuanlyND" asp-controller="QuanlyHoTro" asp-action="Index" class="nav-link"><i class="fas fa-headset me-2"></i> Hỗ trợ người dùng</a></li>
+            @* Add other links as needed *@
+        </ul>
+        <div class="nav-item mt-auto ">
+            <button type="submit" class="text-danger border-0 bg-transparent p-0 w-100 text-start mt-1">
+				@* Adjusted button style to better match list items *@
+                <a href="/home/index" class="border-0 text-danger" style="text-decoration: none;"><i class="fas fa-sign-out-alt fa-fw me-2"></i> Về trang chủ</a>
+			</button>
+            </div>
+    </div>
+
+    @* --- Main Content --- *@
+    <div class="main-content flex-grow-1">
+        <div class="header">Quản Lý Tài Khoản Người Dùng</div>
+
+        @* Display TempData Messages *@
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">@TempData["SuccessMessage"]<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>
+        }
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">@TempData["ErrorMessage"]<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>
+        }
+        @if (TempData["WarningMessage"] != null)
+        {
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">@TempData["WarningMessage"]<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>
+        }
+        @if (TempData["InfoMessage"] != null)
+        {
+            <div class="alert alert-info alert-dismissible fade show" role="alert">@TempData["InfoMessage"]<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>
+        }
+
+
+        @* --- Statistics Cards (Data from Model.Statistics) --- *@
+        <div class="row mb-3">
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="value">@Model.Statistics.TotalUsers</div>
+                    <div class="label">Tổng số người dùng</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="value text-success">@Model.Statistics.ActiveUsers</div>
+                    <div class="label">Đang hoạt động</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="value text-warning">@Model.Statistics.PendingUsers</div>
+                    <div class="label">Chờ xác minh</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="value text-danger">@Model.Statistics.LockedUsers</div>
+                    <div class="label">Đã bị khóa</div>
+                </div>
+            </div>
+        </div>
+
+        @* --- Filter Section (Server-Side Filtering) --- *@
+        <div class="filter-section">
+            <form asp-action="Index" asp-controller="QuanlyND" method="get">
+                @* Use GET for filtering/searching *@
+                <div class="row g-2 align-items-center">
+                    <div class="col-md-4">
+                        <label asp-for="SearchTerm" class="visually-hidden">Tìm kiếm</label>
+                        <input asp-for="SearchTerm" class="form-control form-control-sm" placeholder="Tìm theo tên, sdt, email...">
+                    </div>
+                    <div class="col-md-2">
+                        <label asp-for="RoleFilter" class="visually-hidden">Vai trò</label>
+                        <select asp-for="RoleFilter" asp-items="Model.RoleOptions" class="form-select form-select-sm"></select>
+                    </div>
+                    <div class="col-md-2">
+                        <label asp-for="StatusFilter" class="visually-hidden">Trạng thái</label>
+                        <select asp-for="StatusFilter" asp-items="Model.StatusOptions" class="form-select form-select-sm"></select>
+                    </div>
+                    <div class="col-md-1">
+                        <button type="submit" class="btn btn-sm btn-primary w-100" title="Lọc"><i class="fas fa-filter"></i> Lọc</button>
+                    </div>
+                    <div class="col-md-1">
+                        <a asp-action="Index" asp-controller="QuanlyND" class="btn btn-sm btn-outline-secondary w-100" title="Bỏ lọc">
+                            <i class="fas fa-sync-alt"></i> Reset
+                        </a>
+                    </div>
+                    <div class="col-md-2 text-end">
+                        @* Button to trigger server-side create action (e.g., navigate to Create page or open modal via JS+AJAX) *@
+                        <a asp-action="Create" asp-controller="QuanlyND" class="btn btn-sm btn-success">
+                            @* Hoặc dùng data-bs-toggle="modal" data-bs-target="#addUserModal" nếu bạn xử lý create bằng AJAX/PartialView *@
+                            <i class="fas fa-plus me-1"></i> Thêm mới
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        @* --- User Table (Data from Model.Users) --- *@
+        <div class="table-responsive bg-white p-3 rounded shadow-sm">
+            <table class="table table-users table-striped table-hover table-sm caption-top" id="userTable">
+                <caption>Danh sách người dùng (@Model.TotalItems kết quả)</caption>
+                <thead>
+                    <tr>
+                        <th>@Html.DisplayNameFor(m => m.Users[0].FullName)</th>
+                        <th>@Html.DisplayNameFor(m => m.Users[0].Email)</th>
+                        <th>@Html.DisplayNameFor(m => m.Users[0].PhoneNumber)</th>
+                        <th>@Html.DisplayNameFor(m => m.Users[0].Roles)</th>
+                        <th>@Html.DisplayNameFor(m => m.Users[0].Status)</th>
+                        <th>@Html.DisplayNameFor(m => m.Users[0].CreatedDate)</th>
+                        <th class="text-center">Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!Model.Users.Any())
+                    {
+                        <tr>
+                            <td colspan="7" class="text-center text-muted py-3">Không tìm thấy người dùng nào phù hợp.</td>
+                        </tr>
+                    }
+                    else
+                    {
+                        @foreach (var user in Model.Users)
+                        {
+                            // Xác định CSS class cho badge trạng thái
+                            string statusBadgeClass = user.Status switch
+                            {
+                                "Hoạt động" => "bg-success",
+                                "Bị khóa" => "bg-danger",
+                                "Chờ xác minh" => "bg-warning text-dark",
+                                _ => "bg-secondary"
+                            };
+
+                            <tr>
+                                <td class="user-display">
+                                    <span>@user.FullName</span>
+                                    <small>@user.UserName</small>
+                                </td>
+                                <td>@user.Email</td>
+                                <td>@user.PhoneNumber</td>
+                                <td>@string.Join(", ", user.Roles)</td> @* Hiển thị các vai trò *@
+                                <td><span class="badge @statusBadgeClass">@user.Status</span></td>
+                                <td>@user.CreatedDate.ToString("dd/MM/yyyy")</td> @* Nên dùng CreatedDate thực tế *@
+                                <td class="actions text-center">
+                                    @* Nút Xem chi tiết (mở modal JS) *@
+                                    <button type="button" class="btn btn-sm btn-outline-info view-details-btn"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#viewUserModal"
+                                            data-user-name="@user.FullName (@user.UserName)"
+                                            data-user-email="@user.Email"
+                                            data-user-phone="@user.PhoneNumber"
+                                            data-user-roles="@string.Join(", ", user.Roles)"
+                                            data-user-status="@user.Status"
+                                            data-user-date="@user.CreatedDate.ToString("dd/MM/yyyy HH:mm")"
+                                            title="Xem chi tiết">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+
+                                    @* Nút Sửa (trỏ đến Action Edit) *@
+                                    <a asp-action="Edit" asp-controller="QuanlyND" asp-route-userId="@user.UserId" class="btn btn-sm btn-outline-primary" title="Chỉnh sửa">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+
+                                    @* Chỉ hiển thị nút Khóa/Mở khóa/Xác minh/Xóa nếu không phải là user hiện tại *@
+                                    @if (currentUserId != user.UserId)
+                                    {
+                                        @if (user.Status == "Hoạt động")
+                                        {
+                                            <form asp-action="ToggleLockout" asp-controller="QuanlyND" asp-route-userId="@user.UserId" method="post" onsubmit="return confirm('Bạn có chắc muốn KHÓA tài khoản @user.UserName không?');">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit" class="btn btn-sm btn-outline-warning" title="Khóa tài khoản"><i class="fas fa-lock"></i></button>
+                                            </form>
+                                            <form asp-action="DeleteUser" asp-controller="QuanlyND" asp-route-userId="@user.UserId" method="post" onsubmit="return confirm('CẢNH BÁO: Hành động này KHÔNG THỂ hoàn tác! Bạn có chắc muốn XÓA vĩnh viễn tài khoản @user.UserName không?');">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit" class="btn btn-sm btn-outline-danger" title="Xóa"><i class="fas fa-trash-alt"></i></button>
+                                            </form>
+                                        }
+                                        else if (user.Status == "Bị khóa")
+                                        {
+                                            <form asp-action="ToggleLockout" asp-controller="QuanlyND" asp-route-userId="@user.UserId" method="post">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit" class="btn btn-sm btn-outline-success" title="Mở khóa"><i class="fas fa-unlock"></i></button>
+                                            </form>
+                                            <form asp-action="DeleteUser" asp-controller="QuanlyND" asp-route-userId="@user.UserId" method="post" onsubmit="return confirm('CẢNH BÁO: Hành động này KHÔNG THỂ hoàn tác! Bạn có chắc muốn XÓA vĩnh viễn tài khoản @user.UserName không?');">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit" class="btn btn-sm btn-outline-danger" title="Xóa"><i class="fas fa-trash-alt"></i></button>
+                                            </form>
+                                        }
+                                        else if (user.Status == "Chờ xác minh")
+                                        {
+                                            <form asp-action="ConfirmEmail" asp-controller="QuanlyND" asp-route-userId="@user.UserId" method="post" onsubmit="return confirm('Bạn có chắc muốn XÁC MINH email cho tài khoản @user.UserName không?');">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit" class="btn btn-sm btn-outline-success" title="Xác minh Email"><i class="fas fa-check-circle"></i></button>
+                                            </form>
+                                            <form asp-action="DeleteUser" asp-controller="QuanlyND" asp-route-userId="@user.UserId" method="post" onsubmit="return confirm('CẢNH BÁO: Hành động này KHÔNG THỂ hoàn tác! Bạn có chắc muốn XÓA vĩnh viễn tài khoản @user.UserName không?');">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit" class="btn btn-sm btn-outline-danger" title="Xóa"><i class="fas fa-trash-alt"></i></button>
+                                            </form>
+                                            @* Có thể thêm nút Reset Password ở đây *@
+                                            @* <a asp-action="ResetPassword" asp-controller="QuanlyND" asp-route-userId="@user.UserId" class="btn btn-sm btn-outline-secondary" title="Đặt lại mật khẩu"><i class="fas fa-key"></i></a> *@
+                                        }
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        @* --- Pagination Controls (Server-Side) --- *@
+        @if (Model.TotalPages > 1)
+        {
+            <nav aria-label="User list navigation" class="mt-3 d-flex justify-content-center">
+                <ul class="pagination pagination-sm">
+                    @* Previous Page Link *@
+                    <li class="page-item @(Model.HasPreviousPage ? "" : "disabled")">
+                        <a class="page-link" asp-action="Index"
+                           asp-route-page="@(Model.PageIndex - 1)"
+                           asp-route-searchTerm="@Model.SearchTerm"
+                           asp-route-roleFilter="@Model.RoleFilter"
+                           asp-route-statusFilter="@Model.StatusFilter"
+                           aria-label="Previous">&laquo;</a>
+                    </li>
+
+                    @* Page Number Links (Example: show few pages around current) *@
+                    @* Logic to determine startPage and endPage based on Model.PageIndex and Model.TotalPages *@
+                    @{
+                        int startPage = Math.Max(1, Model.PageIndex - 2);
+                        int endPage = Math.Min(Model.TotalPages, Model.PageIndex + 2);
+                        if (endPage - startPage + 1 < 5)
+                        { // Adjust if near beginning or end
+                            if (startPage == 1) endPage = Math.Min(Model.TotalPages, 5);
+                            else if (endPage == Model.TotalPages) startPage = Math.Max(1, Model.TotalPages - 4);
+                        }
+                    }
+                    @if (startPage > 1)
+                    {
+                        <li class="page-item disabled"><span class="page-link">...</span></li>
+                    }
+
+                    @for (int i = startPage; i <= endPage; i++)
+                    {
+                        <li class="page-item @(i == Model.PageIndex ? "active" : "")">
+                            <a class="page-link" asp-action="Index"
+                               asp-route-page="@i"
+                               asp-route-searchTerm="@Model.SearchTerm"
+                               asp-route-roleFilter="@Model.RoleFilter"
+                               asp-route-statusFilter="@Model.StatusFilter">@i</a>
+                        </li>
+                    }
+
+                    @if (endPage < Model.TotalPages)
+                    {
+                        <li class="page-item disabled"><span class="page-link">...</span></li>
+                    }
+
+                    @* Next Page Link *@
+                    <li class="page-item @(Model.HasNextPage ? "" : "disabled")">
+                        <a class="page-link" asp-action="Index"
+                           asp-route-page="@(Model.PageIndex + 1)"
+                           asp-route-searchTerm="@Model.SearchTerm"
+                           asp-route-roleFilter="@Model.RoleFilter"
+                           asp-route-statusFilter="@Model.StatusFilter"
+                           aria-label="Next">&raquo;</a>
+                    </li>
+                </ul>
+            </nav>
+        }
+
+    </div> @* End main-content *@
+</div> @* End d-flex *@
+
+
+@* --- Modals --- *@
+
+@* Modal Thêm người dùng (Cần form này submit lên POST /QuanlyND/Create) *@
+<div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            @* Load partial view cho form thêm user bằng AJAX hoặc dùng form POST trực tiếp *@
+            @* Ví dụ dùng POST trực tiếp: *@
+            <form asp-action="Create" asp-controller="QuanlyND" method="post" id="add-user-modal-form">
+                @* Thêm ID để JS có thể target nếu cần reset *@
+                @Html.AntiForgeryToken() @* Thêm AntiForgeryToken *@
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addUserModalLabel">Thêm tài khoản mới</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                </div>
+                <div class="modal-body">
+                    @* Sử dụng các trường từ CreateUserViewModel *@
+                    @* Có thể dùng Partial View ở đây: @await Html.PartialAsync("_CreateUserModalPartial", new CreateUserViewModel { RoleOptions = Model.RoleOptions }) *@
+                    @* Hoặc định nghĩa form trực tiếp: *@
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div> @* Hiển thị lỗi chung *@
+
+                    <div class="mb-3">
+                        <label for="create-fullname" class="form-label">Họ tên</label>
+                        <input type="text" class="form-control form-control-sm" id="create-fullname" name="FullName" required> @* Name phải khớp ViewModel *@
+                        <span validation-for="FullName" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label for="create-username" class="form-label">Tên đăng nhập</label>
+                        <input type="text" class="form-control form-control-sm" id="create-username" name="UserName" required>
+                        <span validation-for="UserName" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label for="create-email" class="form-label">Email</label>
+                        <input type="email" class="form-control form-control-sm" id="create-email" name="Email" required>
+                        <span validation-for="Email" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label for="create-phone" class="form-label">Số điện thoại</label>
+                        <input type="tel" class="form-control form-control-sm" id="create-phone" name="PhoneNumber">
+                        <span validation-for="PhoneNumber" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label for="create-password" class="form-label">Mật khẩu</label>
+                        <input type="password" class="form-control form-control-sm" id="create-password" name="Password" required>
+                        <span validation-for="Password" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label for="create-confirm-password" class="form-label">Xác nhận mật khẩu</label>
+                        <input type="password" class="form-control form-control-sm" id="create-confirm-password" name="ConfirmPassword" required>
+                        <span validation-for="ConfirmPassword" class="text-danger"></span>
+                    </div>
+                   
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Hủy</button>
+                    <button type="submit" class="btn btn-success btn-sm">Thêm tài khoản</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@* Modal Xem Chi Tiết (Dùng JS để điền data) *@
+<div class="modal fade" id="viewUserModal" tabindex="-1" aria-labelledby="viewUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="viewUserModalLabel">Chi tiết người dùng</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+            </div>
+            <div class="modal-body">
+                @* Các span này sẽ được điền bằng JS *@
+                <p><strong>Người dùng:</strong> <span id="modal-user-name"></span></p>
+                <p><strong>Email:</strong> <span id="modal-user-email"></span></p>
+                <p><strong>Số điện thoại:</strong> <span id="modal-user-phone"></span></p>
+                <p><strong>Vai trò:</strong> <span id="modal-user-roles"></span></p>
+                <p><strong>Trạng thái:</strong> <span id="modal-user-status"></span></p>
+                <p><strong>Ngày tham gia:</strong> <span id="modal-user-date"></span></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        $(document).ready(function () {
+            // --- JS cho Modal Xem Chi Tiết ---
+            $('.view-details-btn').on('click', function () {
+                // Lấy dữ liệu từ data-* attributes của nút được click
+                var userName = $(this).data('user-name');
+                var userEmail = $(this).data('user-email');
+                var userPhone = $(this).data('user-phone');
+                var userRoles = $(this).data('user-roles');
+                var userStatus = $(this).data('user-status');
+                var userDate = $(this).data('user-date');
+
+                // Điền dữ liệu vào modal
+                $('#modal-user-name').text(userName || 'N/A');
+                $('#modal-user-email').text(userEmail || 'N/A');
+                $('#modal-user-phone').text(userPhone || 'N/A');
+                $('#modal-user-roles').text(userRoles || 'N/A');
+                $('#modal-user-status').text(userStatus || 'N/A');
+                 $('#modal-user-date').text(userDate || 'N/A');
+
+                 // Không cần new bootstrap.Modal(...).show() nếu đã dùng data-bs-toggle/target
+            });
+
+             // --- Optional: JS để reset form Add User khi modal đóng ---
+             var addUserModalElement = document.getElementById('addUserModal');
+             if(addUserModalElement) {
+                 addUserModalElement.addEventListener('hidden.bs.modal', function (event) {
+                      var form = document.getElementById('add-user-modal-form');
+                      if(form) {
+                          form.reset();
+                          // Optional: Clear validation messages if using client-side validation libraries extensively
+                          // $('.field-validation-error').text(''); // Example using jQuery if validation messages have this class
+                      }
+                 });
+             }
+
+            // --- JS cho phân trang (nếu dùng JS - KHÔNG KHUYẾN NGHỊ) ---
+            // var phantrangScript = document.createElement('script');
+            // phantrangScript.src = '~/js/phantrangtruocsau.js'; // Đảm bảo đường dẫn đúng
+            // document.body.appendChild(phantrangScript);
+
+            // --- BỎ JS client-side filtering, add user (trừ khi dùng AJAX), render actions, update stats ---
+            // Chức năng này giờ do server xử lý
+        });
+    </script>
+}

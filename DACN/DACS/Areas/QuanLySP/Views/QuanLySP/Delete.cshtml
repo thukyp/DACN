@@ -1,0 +1,36 @@
+﻿@model DACS.Models.SanPham
+
+@{
+    ViewData["Title"] = "Xác nhận Xóa Sản Phẩm";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<h3 class="text-danger">Bạn có chắc chắn muốn xóa sản phẩm này không?</h3>
+<div>
+    <h4>@Model.TenSanPham</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-3">Mã Sản Phẩm</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.M_SanPham)</dd>
+        <dt class="col-sm-3">Tên Sản Phẩm</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.TenSanPham)</dd>
+        <dt class="col-sm-3">Loại Sản Phẩm</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.LoaiSanPham.TenLoai)</dd>
+        <dt class="col-sm-3">Giá</dt>
+        <dd class="col-sm-9">@Model.Gia.ToString("N0") đ</dd>
+        <dt class="col-sm-3">Số lượng</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.SoLuong)</dd>
+        <dt class="col-sm-3">Ảnh</dt>
+        <dd class="col-sm-9">
+            <img src="@Url.Content(Model.AnhSanPham ?? "~/images/placeholder.png")" alt="Ảnh SP" width="150" class="img-thumbnail" />
+        </dd>
+        @* Thêm các thông tin khác nếu muốn hiển thị trước khi xóa *@
+    </dl>
+
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="M_SanPham" /> @* Gửi M_SanPham để Controller biết xóa cái nào *@
+        <input type="submit" value="Xóa" class="btn btn-danger" /> |
+        <a asp-action="Index" class="btn btn-secondary">Hủy</a>
+    </form>
+</div>

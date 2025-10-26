@@ -1,0 +1,431 @@
+﻿@model DACS.Models.SanPham
+@{
+    ViewData["Title"] = $"Chi tiết: {Model.TenSanPham}"; // Title can be set here or ensure Controller does it
+    // Layout = "_YourLayoutName";
+    
+    var soLuongTonKho = ViewData["SoLuongTonKho"] as float? ?? 0;
+
+
+
+
+    var relatedProducts = ViewData["RelatedProducts"] as List<DACS.Models.SanPham> ?? new List<DACS.Models.SanPham>();
+    int defaultQuantity = (int)(ViewData["DefaultQuantity"] ?? 1);
+    var reviewMessage = TempData["ReviewMessage"] as string;
+    var currentUserMKhachHang = ViewData["CurrentUser_M_KhachHang"] as string; // For pre-filling review form
+}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel='stylesheet' href='https://fonts.googleapis.com/css2?family=DM+Sans&amp;display=swap'>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap" rel="stylesheet">
+    <title>@ViewData["Title"] - Hahana</title>
+    <style>
+        :root {
+            --primary: #4CAF50;
+            --secondary: #8D6E63;
+            --light-bg: #F9FBE7;
+            --dark-text: #2E2E2E;
+            --card-border: #C8E6C9;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--light-bg);
+            color: var(--dark-text);
+        }
+
+        .product-image-main {
+            border: 1px solid #eee;
+            padding: 10px;
+            border-radius: 5px;
+            background-color: #f8f9fa;
+        }
+
+            .product-image-main img {
+                max-width: 100%;
+                height: auto;
+                object-fit: contain;
+                max-height: 400px;
+            }
+        /* Thumbnails simplified as SanPham model has one image */
+        .product-thumbnails img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border: 1px solid #ddd;
+            margin-right: 5px;
+            cursor: pointer;
+            border-radius: 3px;
+            opacity: 0.7;
+            transition: opacity 0.2s ease;
+        }
+
+            .product-thumbnails img.active {
+                border-color: #0d6efd;
+                opacity: 1;
+            }
+
+        .rating-stars .fa-star, .rating-stars .fa-solid.fa-star {
+            color: #ffc107;
+        }
+
+        .rating-stars .fa-regular.fa-star {
+            color: #e4e5e9;
+        }
+
+        .interactive-star {
+            cursor: pointer;
+        }
+
+        .quantity-input {
+            max-width: 70px;
+            text-align: center;
+        }
+
+        .review {
+            border-bottom: 1px solid #eee;
+            padding-bottom: 1rem;
+            margin-bottom: 1rem;
+        }
+
+            .review:last-child {
+                border-bottom: none;
+            }
+    </style>
+</head>
+<body>
+    <div class="container mt-5 mb-5">
+        @if (!string.IsNullOrEmpty(reviewMessage))
+        {
+            <div class="alert @(reviewMessage.StartsWith("Lỗi") || reviewMessage.StartsWith("Thông báo:") ? "alert-warning" : "alert-success")" role="alert">
+                @reviewMessage
+            </div>
+        }
+        <div class="row">
+            <div class="col-lg-6 mb-4 mb-lg-0">
+                <div class="product-image-main text-center mb-3">
+                    <img src="@Url.Content(Model.AnhSanPham ?? "~/images/placeholder.png")" alt="@Model.TenSanPham" id="mainProductImage">
+                </div>
+                @if (!string.IsNullOrEmpty(Model.AnhSanPham))
+                { // Simplified thumbnail display for single image
+                    <div class="product-thumbnails d-flex justify-content-center">
+                        <img src="@Url.Content(Model.AnhSanPham)" alt="Thumbnail Chính" class="active">
+                    </div>
+                }
+            </div>
+
+            <div class="col-lg-6">
+                <h1>@Model.TenSanPham</h1>
+                <div class="mb-2 rating-stars">
+                    @{
+                        double averageRating = 0;
+                        int reviewCount = 0;
+                        if (Model.ChiTietDanhGias != null && Model.ChiTietDanhGias.Any())
+                        {
+                            reviewCount = Model.ChiTietDanhGias.Count;
+                            double totalRating = 0;
+                            foreach (var review in Model.ChiTietDanhGias)
+                            {
+                                if (int.TryParse(review.MucDoHaiLong, out int ratingValue))
+                                {
+                                    totalRating += ratingValue;
+                                }
+                            }
+                            if (reviewCount > 0) { averageRating = totalRating / reviewCount; }
+                        }
+                    }
+                    @for (int i = 1; i <= 5; i++)
+                    {
+                        if (i <= averageRating)
+                        {
+                            <i class="fas fa-star"></i>
+                        }
+                        else if (i - 0.5 <= averageRating)
+                        {
+                            <i class="fas fa-star-half-alt"></i>
+                        }
+                        else
+                        {
+                            <i class="fa-regular fa-star"></i>
+                        }
+                    }
+                    @if (reviewCount > 0)
+                    {
+                        <a href="#reviews" class="ms-2 text-decoration-none">(Xem @reviewCount đánh giá)</a>
+                    }
+                    else
+                    {
+                        <span class="ms-2 text-muted">Chưa có đánh giá</span>
+                    }
+                </div>
+
+                <p class="mb-1"><small class="text-muted">Mã SP: @Model.M_SanPham</small></p>
+                <p class="mb-2"><small class="text-muted">Loại: @(Model.LoaiSanPham?.TenLoai ?? "N/A")</small> | <small class="text-muted">ĐVT: @(Model.DonViTinh?.TenLoaiTinh ?? "N/A")</small></p>
+                <p class="mb-2"><small class="text-muted">Hạn sử dụng: @Model.HanSuDung.ToString("dd/MM/yyyy")</small></p>
+
+                <p class="h3 text-danger fw-bold mb-3">Giá: @Model.Gia.ToString("N0")₫</p>
+
+                @if (@soLuongTonKho > 0 && Model.TrangThai.Equals("Còn hàng", StringComparison.OrdinalIgnoreCase)) // Check both SoLuong and TrangThai
+                {
+                    <p class="mb-3"><span class="badge bg-success">@Model.TrangThai</span> (@soLuongTonKho sản phẩm)</p>
+                }
+                else
+                {
+                    <p class="mb-3"><span class="badge bg-danger">Hết hàng</span></p>
+                }
+
+                @if (!string.IsNullOrEmpty(Model.MoTa)) // Using MoTa for short description here
+                {
+                    <p class="lead mb-3">
+                        @* You might want to truncate Model.MoTa if it's very long for this spot *@
+                        @(Model.MoTa.Length > 200 ? Model.MoTa.Substring(0, 200) + "..." : Model.MoTa)
+                    </p>
+                }
+
+                <form asp-controller="ShoppingCart" asp-action="AddToCart" method="post">
+                    <input type="hidden" name="productId" value="@Model.M_SanPham" />
+                    <div class="d-flex align-items-center mb-4">
+                        <label for="quantity" class="form-label me-3 mb-0">Khối lượng: 1kg</label>
+                        
+                        <button class="btn btn-outline-danger ms-3" type="button" title="Thêm vào yêu thích"><i class="fa-regular fa-heart"></i></button>
+                    </div>
+                    <div class="d-grid gap-2 d-sm-flex">
+                        @if (@soLuongTonKho > 0 && Model.TrangThai.Equals("Còn hàng", StringComparison.OrdinalIgnoreCase))
+                        {
+                            <button class="btn btn-primary btn-lg flex-grow-1 mb-2 mb-sm-0" type="submit">
+                                <i class="fas fa-cart-plus me-2"></i>Thêm vào giỏ
+                            </button>
+                        }
+                        else
+                        {
+                            <button class="btn btn-secondary btn-lg flex-grow-1 mb-2 mb-sm-0" type="button" disabled>
+                                <i class="fas fa-ban me-2"></i>Hết hàng
+                            </button>
+                        }
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="row mt-5">
+            <div class="col-12">
+                <ul class="nav nav-tabs" id="productTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="description-tab" data-bs-toggle="tab" data-bs-target="#description" type="button" role="tab" aria-controls="description" aria-selected="true">Mô tả chi tiết</button>
+                    </li>
+                    @* <li class="nav-item" role="presentation"> *@
+                    @* <button class="nav-link" id="specs-tab" data-bs-toggle="tab" data-bs-target="#specs" type="button" role="tab" aria-controls="specs" aria-selected="false">Thông số kỹ thuật</button> *@
+                    @* </li> *@
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="reviews-tab" data-bs-toggle="tab" data-bs-target="#reviews" type="button" role="tab" aria-controls="reviews" aria-selected="false">Đánh giá (@reviewCount)</button>
+                    </li>
+                </ul>
+                <div class="tab-content pt-4" id="productTabContent">
+                    <div class="tab-pane fade show active" id="description" role="tabpanel" aria-labelledby="description-tab">
+                        <h4>Mô tả sản phẩm</h4>
+                        @if (!string.IsNullOrEmpty(Model.MoTa))
+                        {
+                            @Html.Raw(Model.MoTa.Replace("\n", "<br />")) @* Assuming MoTa might have newlines *@
+                        }
+                        else
+                        {
+                            <p>Chưa có mô tả chi tiết cho sản phẩm này.</p>
+                        }
+                    </div>
+                    @* <div class="tab-pane fade" id="specs" role="tabpanel" aria-labelledby="specs-tab"> *@
+                    @* <h4>Thông số kỹ thuật</h4> *@
+                    @* <p>Phần này sẽ hiển thị thông số kỹ thuật nếu có.</p> *@
+                    @* </div> *@
+                    <div class="tab-pane fade" id="reviews" role="tabpanel" aria-labelledby="reviews-tab">
+                        <h4>Đánh giá từ khách hàng</h4>
+                        <div class="mb-4">
+                            @if (Model.ChiTietDanhGias != null && Model.ChiTietDanhGias.Any())
+                            {
+                                @foreach (var review in Model.ChiTietDanhGias.OrderByDescending(r => r.NgayDanhGia))
+                                {
+                                    <div class="review">
+                                        <div class="d-flex justify-content-between align-items-center mb-1">
+                                            <strong>@(review.KhachHang.User.Id ?? review.M_KhachHang)</strong> @* Display customer name or ID *@
+                                            <small class="text-muted">@review.NgayDanhGia.ToString("dd/MM/yyyy HH:mm")</small>
+                                        </div>
+                                        <div class="rating-stars mb-2">
+                                            @if (int.TryParse(review.MucDoHaiLong, out int reviewRating))
+                                            {
+                                                @for (int i = 1; i <= 5; i++)
+                                                {
+                                                    <i class="@(i <= reviewRating ? "fas" : "fa-regular") fa-star"></i>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">N/A</span>
+                                            }
+                                        </div>
+                                        <p>@review.MoTa_DanhGia</p>
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                <p>Chưa có đánh giá nào cho sản phẩm này.</p>
+                            }
+                        </div>
+                        <hr class="my-4">
+                        <h5>Viết đánh giá của bạn</h5>
+                        @if (User.Identity.IsAuthenticated) // Only show form if user is logged in
+                        {
+                            <form asp-action="SubmitReview" asp-controller="DS_SP" method="post">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="M_SanPham" value="@Model.M_SanPham" />
+                                @* M_KhachHang should ideally be set server-side based on authenticated user *@
+                                @* If you must have it in the form (e.g. for admin testing), ensure it's validated server-side *@
+                                @if (!string.IsNullOrEmpty(currentUserMKhachHang))
+                                {
+                                    <input type="hidden" name="M_KhachHang" value="@currentUserMKhachHang" />
+                                }
+                                else
+                                {
+                                    <div class="mb-3">
+                                        <label for="M_KhachHang_Input" class="form-label">Mã Khách Hàng Của Bạn</label>
+                                        <input type="text" class="form-control" id="M_KhachHang_Input" name="M_KhachHang" required placeholder="VD: KH001">
+                                        <small class="form-text text-muted">Mã này sẽ được sử dụng để gửi đánh giá. Đảm bảo bạn nhập đúng mã của mình.</small>
+                                    </div>
+                                }
+
+                                <div class="mb-3">
+                                    <label class="form-label">Mức độ hài lòng của bạn (chọn số sao)</label>
+                                    <div id="ratingInput" class="rating-stars">
+                                        <i class="fa-regular fa-star interactive-star" data-value="1"></i>
+                                        <i class="fa-regular fa-star interactive-star" data-value="2"></i>
+                                        <i class="fa-regular fa-star interactive-star" data-value="3"></i>
+                                        <i class="fa-regular fa-star interactive-star" data-value="4"></i>
+                                        <i class="fa-regular fa-star interactive-star" data-value="5"></i>
+                                        <input type="hidden" name="MucDoHaiLong" id="ratingValue" value="0" required /> @* Will store "1" to "5" as string *@
+                                    </div>
+                                    @Html.ValidationMessage("MucDoHaiLong", new { @class = "text-danger" })
+                                </div>
+                                <div class="mb-3">
+                                    <label for="reviewComment" class="form-label">Nhận xét</label>
+                                    <textarea class="form-control" id="reviewComment" name="MoTa_DanhGia" rows="3" required></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Gửi đánh giá</button>
+                            </form>
+                        }
+                        else
+                        {
+                            <p>Vui lòng <a asp-area="Identity" asp-page="/Account/Login" asp-route-returnUrl="@Url.Action("CT_SP", "DS_SP", new { id = Model.M_SanPham })">đăng nhập</a> để gửi đánh giá.</p>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @if (relatedProducts.Any())
+        {
+            <div class="row mt-5">
+                <div class="col-12"><h3 class="mb-4">Sản phẩm bạn có thể thích</h3></div>
+                <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-4">
+                    @foreach (var relatedProd in relatedProducts)
+                    {
+                        <div class="col">
+                            <div class="card h-100 shadow-sm">
+                                <a asp-controller="DS_SP" asp-action="CT_SP" asp-route-id="@relatedProd.M_SanPham">
+                                    <img src="@Url.Content(relatedProd.AnhSanPham ?? "~/images/placeholder.png")" class="card-img-top p-2" alt="@relatedProd.TenSanPham" style="object-fit: contain; height:180px;">
+                                </a>
+                                <div class="card-body d-flex flex-column">
+                                    <p class="card-text mb-1"><small class="text-muted">@relatedProd.LoaiSanPham?.TenLoai</small></p>
+                                    <h5 class="card-title fs-6 fw-bold">
+                                        <a asp-controller="DS_SP" asp-action="CT_SP" asp-route-id="@relatedProd.M_SanPham" class="text-decoration-none text-dark stretched-link">@relatedProd.TenSanPham</a>
+                                    </h5>
+                                    <p class="card-text mt-auto mb-2 fs-5 text-danger"><strong>@relatedProd.Gia.ToString("N0")₫</strong></p>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const quantityInput = document.getElementById('quantity');
+            const minusButton = document.getElementById('button-minus');
+            const plusButton = document.getElementById('button-plus');
+
+            if (quantityInput) {
+                const maxQuantity = parseInt(quantityInput.max);
+                const minQuantity = parseInt(quantityInput.min);
+
+                if (minusButton) {
+                    minusButton.addEventListener('click', () => {
+                        let currentValue = parseInt(quantityInput.value);
+                        if (currentValue > minQuantity) { quantityInput.value = currentValue - 1; }
+                    });
+                }
+                if (plusButton) {
+                    plusButton.addEventListener('click', () => {
+                        let currentValue = parseInt(quantityInput.value);
+                        if (currentValue < maxQuantity) { quantityInput.value = currentValue + 1; }
+                    });
+                }
+                quantityInput.addEventListener('change', () => {
+                     let currentValue = parseInt(quantityInput.value);
+                     if (isNaN(currentValue) || currentValue < minQuantity) { quantityInput.value = minQuantity; }
+                     else if (currentValue > maxQuantity) { quantityInput.value = maxQuantity; }
+                });
+            }
+
+            const ratingStarsInteractive = document.querySelectorAll('#ratingInput .interactive-star');
+            const ratingValueInput = document.getElementById('ratingValue');
+
+            ratingStarsInteractive.forEach(star => {
+                star.addEventListener('mouseover', function() {
+                    const hoverValue = parseInt(this.dataset.value);
+                    ratingStarsInteractive.forEach(s => {
+                        s.classList.remove('fas', 'fa-solid', 'fa-regular'); // Clear all states
+                        if (parseInt(s.dataset.value) <= hoverValue) { s.classList.add('fas'); } // fas is solid
+                        else { s.classList.add('fa-regular'); }
+                    });
+                });
+                star.addEventListener('mouseout', function() {
+                    const selectedValue = ratingValueInput.value === "0" ? 0 : parseInt(ratingValueInput.value);
+                    ratingStarsInteractive.forEach(s => {
+                        s.classList.remove('fas', 'fa-solid', 'fa-regular');
+                        if (parseInt(s.dataset.value) <= selectedValue) { s.classList.add('fas'); }
+                        else { s.classList.add('fa-regular'); }
+                    });
+                });
+                star.addEventListener('click', function() {
+                    const selectedValue = this.dataset.value; // Store as string "1" through "5"
+                    ratingValueInput.value = selectedValue;
+                    ratingStarsInteractive.forEach(s => { // Update visual state
+                        s.classList.remove('fas', 'fa-solid', 'fa-regular');
+                        if (parseInt(s.dataset.value) <= parseInt(selectedValue)) { s.classList.add('fas'); }
+                        else { s.classList.add('fa-regular'); }
+                    });
+                });
+            });
+            // Initial state for rating stars if a value is already set (e.g. validation error)
+            if (ratingValueInput && ratingValueInput.value !== "0") {
+                 const initialRating = parseInt(ratingValueInput.value);
+                 ratingStarsInteractive.forEach(s => {
+                    s.classList.remove('fas', 'fa-solid', 'fa-regular');
+                    if (parseInt(s.dataset.value) <= initialRating) { s.classList.add('fas'); }
+                    else { s.classList.add('fa-regular'); }
+                });
+            }
+        });
+        // No change needed for changeImage for single main image setup in thumbnails.
+        // function changeImage(newSrc, clickedThumbnail) { ... } // Not strictly needed if only 1 thumb
+    </script>
+</body>
+</html>

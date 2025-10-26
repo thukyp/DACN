@@ -1,0 +1,97 @@
+﻿@page
+@model RegisterModel
+@{
+    ViewData["Title"] = "Register";
+}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+    <link rel='stylesheet' href='https://fonts.googleapis.com/css2?family=DM+Sans&amp;display=swap'>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css">
+    <title>
+        Hahana
+    </title>
+    <style>
+        :root {
+            --primary: #4CAF50;
+            --secondary: #8D6E63;
+            --light-bg: #F9FBE7;
+            --dark-text: #2E2E2E;
+            --card-border: #C8E6C9;
+        }
+        h2, h4{
+            color: var(--primary);
+        }
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--light-bg);
+            color: var(--dark-text);
+        }
+        </style>
+        </head>
+        <body>
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+          
+                        <h2 class="text-center mb-4">@ViewData["Title"]</h2>
+                        <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+                            <h4 class="text-center mb-3">Tạo tài khoản mới</h4>
+                            <hr />
+                            <div asp-validation-summary="ModelOnly" class="text-danger mb-3" role="alert"></div>
+
+                            <div class="form-floating mb-3">
+                                <input asp-for="Input.FullName" class="form-control" autocomplete="fullname" aria-required="true" />
+                                <label asp-for="Input.FullName"></label>
+                                <span asp-validation-for="Input.FullName" class="text-danger"></span>
+                            </div>
+
+                            <div class="form-floating mb-3">
+                                <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
+                                <label asp-for="Input.Email">Email</label>
+                                <span asp-validation-for="Input.Email" class="text-danger"></span>
+                            </div>
+
+                            <div class="form-floating mb-3">
+                                <input asp-for="Input.Password" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
+                                <label asp-for="Input.Password">Mật khẩu</label>
+                                <span asp-validation-for="Input.Password" class="text-danger"></span>
+                            </div>
+
+                            <div class="form-floating mb-3">
+                                <input asp-for="Input.ConfirmPassword" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
+                                <label asp-for="Input.ConfirmPassword">Xác nhận mật khẩu</label>
+                                <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+                            </div>
+
+                            <div class="form-floating mb-4">
+                                <select asp-for="Input.Role" asp-items="@Model.Input.RoleList" class="form-control">
+                                    <option disabled selected>Chọn vai trò</option>
+                                </select>
+                                <label asp-for="Input.Role">Vai trò</label>
+                            </div>
+
+                            <button id="registerSubmit" type="submit" class="btn btn-primary w-100 py-2 rounded-pill">
+                                Đăng ký
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+       
+
+</body>
+</html>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

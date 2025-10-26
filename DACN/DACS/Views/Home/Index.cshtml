@@ -1,0 +1,212 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="~/css/trangchu.css">
+    <link rel='stylesheet' href='https://fonts.googleapis.com/css2?family=DM+Sans&amp;display=swap'>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+     <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css">
+    <title>
+        Hahana
+    </title>
+    <style>
+        :root {
+            --primary: #4CAF50;
+            --secondary: #8D6E63;
+            --light-bg: #F9FBE7;
+            --dark-text: #2E2E2E;
+            --card-border: #C8E6C9;
+        }
+
+
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--light-bg);
+            color: var(--dark-text);
+        }
+    </style>
+</head>
+<body>
+
+    <section>
+        <div id="demo" class="carousel slide" data-bs-ride="carousel" data-bs-interval="3000">
+
+
+
+
+            <!-- Indicators/dots -->
+            <div class="carousel-indicators">
+                <button type="button" data-bs-target="#demo" data-bs-slide-to="0" class="active"></button>
+                <button type="button" data-bs-target="#demo" data-bs-slide-to="1"></button>
+                <button type="button" data-bs-target="#demo" data-bs-slide-to="2"></button>
+            </div>
+
+            <!-- The slideshow/carousel -->
+            <div class="carousel-inner">
+
+                <div class="carousel-item active">
+                    <div class="carousel-img">
+                        <img src="~/images//Banner/ba_mia_khoi.png" alt="nguoi dep choi da" class="d-block">
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <div class="carousel-img">
+                        <img src="~/images/Banner/Banner_2.png" alt="nguoi dep choi da" class="d-block">
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <div class="carousel-img">
+                        <img src="~/images/Banner/NongNghiep.png" alt="nguoi dep choi da" class="d-block">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Left and right controls/icons -->
+            <button class="carousel-control-prev" type="button" data-bs-target="#demo" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon"></span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#demo" data-bs-slide="next">
+                <span class="carousel-control-next-icon"></span>
+            </button>
+        </div>
+    </section>
+    @* danh sach san pham *@
+    <div class="header-grid">Hệ Thống Thu Gom Phụ Phẩm Nông Nghiệp</div>
+
+    <div class="grid-container">
+        <div class="grid-item">
+            <img src="~/images/Products/rom_kho_bo.png" alt="Rơm rạ">
+            <h3>Rơm Rạ</h3>
+            <p><strong>Giá:</strong> 500đ/kg</p>
+            <a href="#" class="button">Xem chi tiết</a>
+        </div>
+        <div class="grid-item">
+            <img src="~/images/Products/vo_trau_xay.png" alt="Vỏ trấu">
+            <h3>Vỏ Trấu</h3>
+            <p><strong>Giá:</strong> 300đ/kg</p>
+            <a href="#" class="button">Xem chi tiết</a>
+        </div>
+        <div class="grid-item">
+            <img src="~/images/Products/Xo_dua.png" alt="Xơ dừa">
+            <h3>Xơ Dừa</h3>
+            <p><strong>Giá:</strong> 700đ/kg</p>
+            <a href="#" class="button">Xem chi tiết</a>
+        </div>
+        <div class="grid-item">
+            <img src="~/images/Products/Thancayngo.jpg" alt="Thân cây ngô">
+            <h3>Thân Cây Ngô</h3>
+            <p><strong>Giá:</strong> 600đ/kg</p>
+            <a href="#" class="button">Xem chi tiết</a>
+        </div>
+    </div>
+
+
+    <div class="transaction-process">
+        <h2>🔄 Quy Trình Giao Dịch</h2>
+        <div class="step"><strong>Bước 1:</strong> Nông dân đăng bán phụ phẩm lên hệ thống.</div>
+        <div class="step"><strong>Bước 2:</strong> Hệ thống kiểm duyệt sản phẩm và xác nhận thông tin.</div>
+        <div class="step"><strong>Bước 3:</strong> Doanh nghiệp hoặc khách hàng đặt mua sản phẩm.</div>
+        <div class="step"><strong>Bước 4:</strong> Hệ thống điều phối thu gom phụ phẩm từ nông dân.</div>
+        <div class="step"><strong>Bước 5:</strong> Giao hàng đến doanh nghiệp hoặc khách hàng.</div>
+        <div class="step"><strong>Bước 6:</strong> Thanh toán và xác nhận hoàn thành giao dịch.</div>
+    </div>
+
+
+    <div class="container-benefit">
+        <div class="section-benefit">
+            <h2>🌿 Lợi Ích Kinh Doanh</h2>
+        </div>
+
+        <div class="section-benefit flex-container">
+            <div class="box">
+                <h3>👨‍🌾 Cho Nông Dân</h3>
+                <p>✔ Tăng thu nhập từ phụ phẩm nông nghiệp.</p>
+                <p>✔ Dễ dàng đăng bán, không cần tìm khách hàng.</p>
+                <p>✔ Kết nối với doanh nghiệp lớn, bán hàng nhanh hơn.</p>
+            </div>
+
+            <div class="box">
+                <h3>🏢 Cho Doanh Nghiệp</h3>
+                <p>✔ Nguồn nguyên liệu ổn định với giá tốt.</p>
+                <p>✔ Tiết kiệm chi phí nhờ kết nối trực tiếp với nông dân.</p>
+                <p>✔ Hệ thống AI gợi ý nguồn hàng phù hợp.</p>
+            </div>
+
+            <div class="box">
+                <h3>🌎 Cho Môi Trường</h3>
+                <p>✔ Giảm lãng phí nông sản, bảo vệ môi trường.</p>
+                <p>✔ Hạn chế đốt rơm rạ, giảm ô nhiễm không khí.</p>
+                <p>✔ Thúc đẩy kinh tế tuần hoàn bền vững.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="preloader">
+        <svg class="cart" role="img" aria-label="Shopping cart line animation" viewBox="0 0 128 128" width="128px" height="128px" xmlns="http://www.w3.org/2000/svg">
+            <g fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="8">
+                <g class="cart__track" stroke="hsla(0,10%,10%,0.1)">
+                    <polyline points="4,4 21,4 26,22 124,22 112,64 35,64 39,80 106,80" />
+                    <circle cx="43" cy="111" r="13" />
+                    <circle cx="102" cy="111" r="13" />
+                </g>
+                <g class="cart__lines" stroke="currentColor">
+                    <polyline class="cart__top" points="4,4 21,4 26,22 124,22 112,64 35,64 39,80 106,80" stroke-dasharray="338 338" stroke-dashoffset="-338" />
+                    <g class="cart__wheel1" transform="rotate(-90,43,111)">
+                        <circle class="cart__wheel-stroke" cx="43" cy="111" r="13" stroke-dasharray="81.68 81.68" stroke-dashoffset="81.68" />
+                    </g>
+                    <g class="cart__wheel2" transform="rotate(90,102,111)">
+                        <circle class="cart__wheel-stroke" cx="102" cy="111" r="13" stroke-dasharray="81.68 81.68" stroke-dashoffset="81.68" />
+                    </g>
+                </g>
+            </g>
+        </svg>
+       
+    </div>
+    <script>
+        function delayRedirect() {
+            let preloader = document.querySelector(".preloader");
+
+            // Hiển thị preloader
+            preloader.style.display = "flex";
+            preloader.style.opacity = "1";
+
+            // Vô hiệu hóa nút bấm để tránh bấm nhiều lần
+            document.querySelector(".user-btn").style.pointerEvents = "none";
+            setTimeout(() => {
+                window.location.href = "/home/login";
+            }, 2000);
+
+
+        document.querySelector(".button-Signup").style.pointerEvents = "none";
+            setTimeout(() => {
+                window.location.href = "/home/login";
+            }, 2000);
+        }
+        // Ẩn preloader khi trang tải xong
+        window.onload = function () {
+            let preloader = document.querySelector(".preloader");
+            preloader.style.opacity = "0";
+            setTimeout(() => {
+                preloader.style.display = "none";
+            }, 500); // Đợi 0.5s để hiệu ứng mượt hơn
+        };
+    </script>
+    
+    
+    @* giúp dropdown cart và tim hoạt động *@
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+ 
+    <script type="text/javascript" src="js/script.js"></script>
+</body>
+</html>

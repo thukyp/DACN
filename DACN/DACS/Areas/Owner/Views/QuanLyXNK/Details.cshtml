@@ -1,0 +1,229 @@
+﻿@model DACS.Models.YeuCauThuGom
+
+@{
+    ViewData["Title"] = "Chi tiết Yêu cầu Thu gom";
+
+    // Helper function to format address (can be moved to a static class later)
+    Func<DACS.Models.KhachHang, string> FormatAddress = (kh) =>
+    {
+        if (kh == null) return "N/A";
+        var parts = new List<string?>();
+        if (!string.IsNullOrWhiteSpace(kh.DiaChi_DuongApThon)) parts.Add(kh.DiaChi_DuongApThon);
+        if (kh.XaPhuong != null && !string.IsNullOrWhiteSpace(kh.XaPhuong.TenXa)) parts.Add(kh.XaPhuong.TenXa);
+        if (kh.QuanHuyen != null && !string.IsNullOrWhiteSpace(kh.QuanHuyen.TenQuan)) parts.Add(kh.QuanHuyen.TenQuan);
+        if (kh.TinhThanhPho != null && !string.IsNullOrWhiteSpace(kh.TinhThanhPho.TenTinh)) parts.Add(kh.TinhThanhPho.TenTinh);
+        return string.Join(", ", parts.Where(s => !string.IsNullOrEmpty(s)));
+    };
+
+    // Helper function to format address from ChiTietThuGom (if different)
+    Func<DACS.Models.ChiTietThuGom, string> FormatDetailAddress = (ct) =>
+    {
+        if (ct == null) return "N/A";
+        var parts = new List<string?>();
+        if (!string.IsNullOrWhiteSpace(ct.DiaChi_DuongApThon)) parts.Add(ct.DiaChi_DuongApThon);
+        // Assuming TinhThanhPho, QuanHuyen, XaPhuong navigation properties exist on ChiTietThuGom
+        // Add null checks for these navigation properties as well
+        if (ct.XaPhuong != null && !string.IsNullOrWhiteSpace(ct.XaPhuong.TenXa)) parts.Add(ct.XaPhuong.TenXa);
+        if (ct.QuanHuyen != null && !string.IsNullOrWhiteSpace(ct.QuanHuyen.TenQuan)) parts.Add(ct.QuanHuyen.TenQuan);
+        if (ct.TinhThanhPho != null && !string.IsNullOrWhiteSpace(ct.TinhThanhPho.TenTinh)) parts.Add(ct.TinhThanhPho.TenTinh);
+        if (!parts.Any()) return "Như địa chỉ khách hàng"; // Or return empty/N/A
+        return string.Join(", ", parts.Where(s => !string.IsNullOrEmpty(s)));
+    };
+}
+
+<div class="container mt-4">
+    <h1 class="page-header">@ViewData["Title"]: @Model.M_YeuCau</h1>
+    <hr />
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card mb-3">
+                <div class="card-header">
+                    Thông tin Yêu cầu
+                </div>
+                <div class="card-body">
+                    <dl class="row">
+                        <dt class="col-sm-4">@Html.DisplayNameFor(model => model.M_YeuCau)</dt>
+                        <dd class="col-sm-8">@Html.DisplayFor(model => model.M_YeuCau)</dd>
+
+                        <dt class="col-sm-4">@Html.DisplayNameFor(model => model.NgayYeuCau)</dt>
+                        <dd class="col-sm-8">@Model.NgayYeuCau.ToString("dd/MM/yyyy HH:mm")</dd>
+
+                        <dt class="col-sm-4">@Html.DisplayNameFor(model => model.TrangThai)</dt>
+                        <dd class="col-sm-8"><span class="badge @GetStatusBadgeClass(Model.TrangThai ?? "")">@Html.DisplayFor(model => model.TrangThai)</span></dd>
+
+                        <dt class="col-sm-4">Thời gian sẵn sàng</dt>
+                        <dd class="col-sm-8">@(Model.ThoiGianSanSang != default ? Model.ThoiGianSanSang.ToString("dd/MM/yyyy HH:mm") : "Chưa đặt lịch")</dd>
+
+                        <dt class="col-sm-4">Thời gian hoàn thành</dt>
+                        <dd class="col-sm-8">@(Model.ThoiGianHoanThanh != default ? Model.ThoiGianHoanThanh.ToString("dd/MM/yyyy HH:mm") : "Chưa hoàn thành")</dd>
+
+                        <dt class="col-sm-4">@Html.DisplayNameFor(model => model.GhiChu)</dt>
+                        <dd class="col-sm-8">@Html.DisplayFor(model => model.GhiChu)</dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card mb-3">
+                <div class="card-header">
+                    Thông tin Khách hàng
+                </div>
+                <div class="card-body">
+                    @if (Model.KhachHang != null)
+                    {
+                        <dl class="row">
+                            <dt class="col-sm-4">@Html.DisplayNameFor(model => model.KhachHang.Ten_KhachHang)</dt>
+                            <dd class="col-sm-8">@Html.DisplayFor(model => model.KhachHang.Ten_KhachHang)</dd>
+
+                            <dt class="col-sm-4">@Html.DisplayNameFor(model => model.KhachHang.SDT_KhachHang)</dt>
+                            <dd class="col-sm-8">@Html.DisplayFor(model => model.KhachHang.SDT_KhachHang)</dd>
+
+                            <dt class="col-sm-4">@Html.DisplayNameFor(model => model.KhachHang.Email_KhachHang)</dt>
+                            <dd class="col-sm-8">@Html.DisplayFor(model => model.KhachHang.Email_KhachHang)</dd>
+
+                            <dt class="col-sm-4">Địa chỉ</dt>
+                            <dd class="col-sm-8">@FormatAddress(Model.KhachHang)</dd>
+
+                            @* Thêm các thông tin khác của KhachHang nếu cần *@
+                        </dl>
+                    }
+                    else
+                    {
+                        <p class="text-muted">Không có thông tin khách hàng.</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            Chi tiết Phụ phẩm Thu gom
+        </div>
+        <div class="card-body">
+            @if (Model.ChiTietThuGoms != null && Model.ChiTietThuGoms.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-sm table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Loại phụ phẩm</th>
+                                <th>Số lượng</th>
+                                <th>Đặc tính</th>
+                                <th>Mô tả</th>
+                                <th>Giá trị mong muốn</th>
+                                <th>Địa chỉ phụ phẩm (nếu khác)</th>
+                                <th>Hình ảnh</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.ChiTietThuGoms)
+                            {
+                                <tr>
+                                    <td>@(item.LoaiSanPham?.TenLoai?? "N/A")</td>
+                                    <td>@item.SoLuong @(item.DonViTinh?.TenLoaiTinh?? "")</td>
+                                    <td>
+                                        <ul class="list-unstyled mb-0 small">
+                                            @if (item.DacTinh_CongKenh)
+                                            {
+                                                <li>Cồng kềnh</li>
+                                            }
+                                            @if (item.DacTinh_AmUot)
+                                            {
+                                                <li>Ẩm/Ướt</li>
+                                            }
+                                            @if (item.DacTinh_Kho)
+                                            {
+                                                <li>Khô</li>
+                                            }
+                                            @if (item.DacTinh_DoAmCao)
+                                            {
+                                                <li>Độ ẩm cao</li>
+                                            }
+                                            @if (item.DacTinh_TapChat)
+                                            {
+                                                <li>Nhiều tạp chất</li>
+                                            }
+                                            @if (item.DacTinh_DaXuLy)
+                                            {
+                                                <li>Đã qua xử lý</li>
+                                            }
+                                        </ul>
+                                    </td>
+                                    <td>@Html.DisplayFor(modelItem => item.MoTa)</td>
+                                    <td>@item.GiaTriMongMuon?.ToString("N0")</td>
+                                    <td>@FormatDetailAddress(item)</td>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(item.DanhSachHinhAnh))
+                                        {
+                                            // Xử lý hiển thị hình ảnh (ví dụ: tách chuỗi, tạo link)
+                                            // Ví dụ đơn giản: hiển thị link ảnh đầu tiên nếu có
+                                            var images = item.DanhSachHinhAnh.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+                                            if (images.Length > 0)
+                                            {
+                                                <a href="@Url.Content(images[0])" target="_blank">Xem ảnh</a>
+                                                // Hoặc hiển thị thumbnail:
+                                                // <img src="@Url.Content(images[0])" alt="Hình ảnh phụ phẩm" style="max-width: 100px; max-height: 100px;" />
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <small class="text-muted">Không có</small>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <p class="text-muted">Không có chi tiết phụ phẩm nào cho yêu cầu này.</p>
+            }
+        </div>
+    </div>
+
+    <div class="mt-3">
+        <a asp-action="Index" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-1"></i> Quay lại Danh sách
+        </a>
+        @* Thêm các nút hành động khác nếu cần (VD: nút Sửa, Gán việc...) *@
+        @* Các nút này có thể được hiển thị dựa trên Model.TrangThai *@
+        @if (Model.TrangThai == "Chờ xử lý")
+        {
+            <a asp-action="Schedule" asp-route-id="@Model.M_YeuCau" class="btn btn-sm btn-outline-primary" title="Lên lịch"><i class="fas fa-calendar-alt"></i></a>            <form asp-action="AdminCancel" asp-route-id="@Model.M_YeuCau" method="post" style="display: inline;" onsubmit="return confirm('Bạn có chắc chắn muốn hủy yêu cầu này không?');">
+                @* Thêm token nếu cần ValidateAntiForgeryToken *@
+                <button type="submit" class="btn btn-danger"><i class="fas fa-times-circle me-1"></i> Hủy YC</button>
+            </form>
+        }
+        @* Thêm các nút cho trạng thái khác tương tự như trong Index view *@
+
+    </div>
+
+</div>
+
+@* Sao chép hàm GetStatusBadgeClass nếu Layout chưa có *@
+@functions {
+    string GetStatusBadgeClass(string status)
+    {
+        status = status?.Trim().ToLower() ?? "";
+        switch (status)
+        {
+            case "chờ xử lý": return "bg-secondary";
+            case "đã tiếp nhận": return "bg-info-subtle text-info-emphasis";
+            case "đã lên lịch": return "bg-info text-dark";
+            case "đang thu gom": return "bg-primary";
+            case "hoàn thành": case "thu gom thành công": return "bg-success";
+            case "đã hủy": return "bg-danger";
+            case "thu gom thất bại": return "bg-warning text-dark";
+            default: return "bg-light text-dark border";
+        }
+    }
+}
+
+@section Scripts {
+        @* Thêm script nếu cần cho trang chi tiết *@
+}

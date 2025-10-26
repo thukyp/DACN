@@ -1,0 +1,101 @@
+﻿@* File: Areas/KhachHang/Views/KhachHang/HoSoCaNhan.cshtml *@
+@model EditNguoiMuaProfile
+@using DACS.Models.ViewModels
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<ApplicationUser> UserManager
+
+@{
+    ViewData["Title"] = "Hồ sơ cá nhân";
+    // Layout = "~/Areas/KhachHang/Views/Shared/_UserAccountLayout.cshtml"; // Đặt Layout phù hợp
+
+    var currentUser = await UserManager.GetUserAsync(User);
+    var userFullName = Model?.Ten_NguoiMua ?? currentUser?.FullName ?? User.Identity?.Name;
+
+    var defaultAvatar = "/images/default-avatar.png";
+    var avatarPath = string.IsNullOrEmpty(Model?.AvatarUrl) ? defaultAvatar : Url.Content("~" + Model.AvatarUrl);
+}
+
+<div class="container mt-4 account-section">
+    <div class="row">
+        @* Cột Menu bên trái *@
+        <div class="col-lg-3 mb-4 mb-lg-0">
+            @* Added bottom margin for mobile *@
+            <div class="account-menu list-group">
+                <a asp-area="KhachHang" asp-controller="KhachHang" asp-action="Index" class="list-group-item list-group-item-action ">
+                    <i class="fas fa-tachometer-alt fa-fw me-2"></i> Tổng quan
+                </a>
+				<a asp-area="KhachHang" asp-controller="KhachHang" asp-action="HoSoCaNhan" class="list-group-item list-group-item-action active">
+                    <i class="fas fa-user-circle fa-fw me-2"></i> Hồ sơ cá nhân
+                </a>
+                <a asp-area="KhachHang" asp-controller="KhachHang" asp-action="LichSuDonHang" class="list-group-item list-group-item-action">
+                    <i class="fas fa-receipt fa-fw me-2"></i> Lịch sử Đơn hàng
+                </a>
+                <a asp-area="KhachHang" asp-controller="KhachHang" asp-action="LichSuYeuCauThuGom" class="list-group-item list-group-item-action">
+                    @* Added link to Collection History here for consistency *@
+                    <i class="fas fa-recycle fa-fw me-2"></i> Lịch sử Thu gom
+                </a>
+                <a asp-area="Identity" asp-page="/Account/Manage/ChangePassword" class="list-group-item list-group-item-action">
+                    <i class="fas fa-lock fa-fw me-2"></i> Đổi mật khẩu
+                </a>
+                @* <a asp-area="KhachHang" asp-controller="Address" asp-action="Index" class="list-group-item list-group-item-action">
+                    <i class="fas fa-map-marker-alt fa-fw me-2"></i> Sổ địa chỉ
+                   </a> *@
+                <button type="submit" class="list-group-item list-group-item-action text-danger border-0 bg-transparent p-0 w-100 text-start">
+                    @* Adjusted button style to better match list items *@
+                    <a href="/home/index" class="list-group-item list-group-item-action border-0 text-danger"><i class="fas fa-sign-out-alt fa-fw me-2"></i> Về trang chủ</a>
+                </button>
+            </div>
+            </div>
+
+        @* Cột Nội dung chính bên phải *@
+        <div class="col-lg-9">
+            <div class="account-content">
+                @* Hiển thị thông báo *@
+                @if (TempData["SuccessMessage"] != null)
+                {
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">@TempData["SuccessMessage"]<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>
+                }
+                @if (TempData["ErrorMessage"] != null)
+                {
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">@TempData["ErrorMessage"]<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>
+                }
+
+                @if (Model != null)
+                {
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h4 class="mb-0">Thông Tin Cá Nhân</h4>
+                        @* Nút này điều hướng đến Action Edit trong KhachHangController *@
+                        <a asp-action="Edit" asp-controller="KhachHang" asp-area="KhachHang" class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-edit me-1"></i> Chỉnh sửa hồ sơ
+                        </a>
+                    </div>
+
+                    @* Phần hiển thị thông tin *@
+                    <div id="profileDisplaySection">
+                        <div class="text-center mb-4">
+                            <img id="profileAvatarDisplay" alt="Ảnh đại diện" src="@avatarPath" class="profile-avatar-display" >
+                        </div>
+                        <dl class="row definition-list">
+                            <dt class="col-sm-4">Họ và Tên</dt>
+                            <dd class="col-sm-8">@Model.Ten_NguoiMua</dd>
+                            <dt class="col-sm-4">Email đăng nhập</dt>
+                            <dd class="col-sm-8">@(User.Identity?.Name ?? "N/A")</dd>
+                            <dt class="col-sm-4">Email liên hệ</dt>
+                            <dd class="col-sm-8">@Model.Email_NguoiMua</dd>
+                            <dt class="col-sm-4">Số điện thoại</dt>
+                            <dd class="col-sm-8">@Model.SDT_NguoiMua</dd>
+                            <dt class="col-sm-4">Địa chỉ</dt>
+                            <dd class="col-sm-8">@Model.HienThiDiaChiDayDu</dd>
+                            <dt class="col-sm-4">Giới tính</dt>
+                            <dd class="col-sm-8">@(string.IsNullOrEmpty(Model.Gender) ? "Chưa cập nhật" : Model.Gender)</dd>
+                        </dl>
+                    </div>
+                }
+                else if (TempData["ErrorMessage"] == null)
+                {
+                    <div class="alert alert-warning">Không thể tải thông tin hồ sơ.</div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

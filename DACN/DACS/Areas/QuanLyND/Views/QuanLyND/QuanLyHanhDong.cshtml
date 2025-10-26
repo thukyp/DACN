@@ -1,0 +1,138 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin - Lịch Sử Hoạt Động</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        .container {
+            display: grid;
+            max-width: 100%;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            flex-direction: row;
+        }
+
+        .sidebar {
+            background-color: #212529;
+            color: #fff;
+            padding: 15px;
+            width: 250px;
+            min-height: 100vh;
+        }
+
+            .sidebar .nav-link {
+                color: #adb5bd;
+                padding: 8px 15px;
+            }
+
+                .sidebar .nav-link.active, .sidebar .nav-link:hover {
+                    color: #fff;
+                    background-color: #495057;
+                    border-radius: 0.25rem;
+                }
+
+        .main-content {
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+
+        .filter-section {
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 0.375rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        }
+    </style>
+</head>
+<body>
+    <div class="d-flex">
+        <div class="sidebar">
+            <h4>Quản Lý ND</h4>
+            <ul class="nav flex-column">
+                <li class="nav-item"><a asp-area="QuanlyND" asp-controller="QuanlyND" asp-action="Index" class="nav-link "><i class="fas fa-users me-2"></i> Quản lý Tài khoản</a></li>
+                <li class="nav-item"><a asp-area="QuanlyND" asp-controller="QuanlyND" asp-action="QuanLyPhanHoi" class="nav-link "><i class="fas fa-comments me-2"></i> Phản hồi & Đánh giá</a></li>
+				<li class="nav-item"><a asp-area="QuanlyND" asp-controller="QuanlyND" asp-action="QuanLyHanhDong" class="nav-link active"><i class="fas fa-history me-2"></i> Lịch sử hoạt động</a></li>
+                <li class="nav-item"><a asp-area="QuanlyND" asp-controller="QuanlyND" asp-action="QuanLyHoTro" class="nav-link "><i class="fas fa-headset me-2"></i> Hỗ trợ người dùng</a></li>
+                <li class="nav-item"><a asp-area="QuanlyND" asp-controller="QuanlyND" asp-action="QuanLyBaoCao" class="nav-link "><i class="fas fa-chart-bar me-2"></i> Báo cáo người dùng</a></li>
+                <li class="nav-item"><a href="#" class="nav-link"><i class="fas fa-cog me-2"></i> Cài đặt</a></li>
+                <li class="nav-item"><a href="#" class="nav-link"><i class="fas fa-sign-out-alt me-2"></i> Đăng xuất</a></li>
+            </ul>
+        </div>
+
+        <div class="main-content flex-grow-1">
+            <h2 class="mb-4">Lịch sử hoạt động người dùng</h2>
+
+            <div class="filter-section">
+                <div class="row g-2 align-items-center">
+                    <div class="col-md-4">
+                        <input type="text" class="form-control form-control-sm" placeholder="Tìm theo tên người dùng, hành động...">
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-select form-select-sm">
+                            <option selected>Lọc theo hành động</option>
+                            <option>Tạo sản phẩm</option>
+                            <option>Chỉnh sửa hồ sơ</option>
+                            <option>Xóa bài đăng</option>
+                            <option>Đăng nhập</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <input type="date" class="form-control form-control-sm">
+                    </div>
+                    <div class="col-md-2">
+                        <button class="btn btn-sm btn-primary w-100">Lọc</button>
+                    </div>
+                </div>
+            </div>
+
+			<div class="table-responsive bg-white p-3 rounded shadow-sm">
+				
+                <table class="table table-users table-striped table-hover table-sm caption-top">
+					<caption>Lịch sử hoạt động</caption>
+                    <thead class="table-light">
+                        <tr>
+                            <th scope="col">Người dùng</th>
+                            <th scope="col">Hành động</th>
+                            <th scope="col">Chi tiết</th>
+                            <th scope="col">Thời gian</th>
+                            <th scope="col" class="text-center">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Nguyễn Văn A</td>
+                            <td><span class="badge bg-success">Đăng sản phẩm</span></td>
+                            <td>Đăng "Vỏ cà phê khô" tại khu vực Tây Nguyên</td>
+                            <td>10/04/2025 14:05</td>
+                            <td class="text-center"><button class="btn btn-sm btn-outline-info"><i class="fas fa-eye"></i></button></td>
+                        </tr>
+                        <tr>
+                            <td>Lê Thị B</td>
+                            <td><span class="badge bg-secondary">Đăng nhập</span></td>
+                            <td>IP: 192.168.1.101</td>
+                            <td>09/04/2025 09:30</td>
+                            <td class="text-center"><button class="btn btn-sm btn-outline-info"><i class="fas fa-eye"></i></button></td>
+                        </tr>
+                        <tr>
+                            <td>Trần Văn C</td>
+                            <td><span class="badge bg-warning text-dark">Chỉnh sửa</span></td>
+                            <td>Thay đổi ảnh đại diện và mô tả sản phẩm</td>
+                            <td>08/04/2025 16:20</td>
+                            <td class="text-center"><button class="btn btn-sm btn-outline-info"><i class="fas fa-eye"></i></button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

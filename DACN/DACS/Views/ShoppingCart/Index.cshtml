@@ -1,0 +1,197 @@
+﻿@using DACS.Extention
+@model ShoppingCart
+@Html.AntiForgeryToken()
+@if (ViewBag.CartErrors != null)
+{
+	<div class="alert alert-danger">
+		<ul>
+			@foreach (var error in ViewBag.CartErrors)
+			{
+				<li>@error</li>
+			}
+		</ul>
+	</div>
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+	<meta charset="utf-8">
+
+	<!-- Bootstrap CSS -->
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+	<link rel='stylesheet' href='https://fonts.googleapis.com/css2?family=DM+Sans&amp;display=swap'>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css">
+	<title>
+		Hahana
+	</title>
+	<style>
+		:root {
+			--primary: #4CAF50;
+			--secondary: #8D6E63;
+			--light-bg: #F9FBE7;
+			--dark-text: #2E2E2E;
+			--card-border: #C8E6C9;
+		}
+
+		h2, h4 {
+			color: var(--primary);
+		}
+
+		body {
+			font-family: 'Outfit', sans-serif;
+			background-color: var(--light-bg);
+			color: var(--dark-text);
+		}
+	</style>
+</head>
+<body>
+<div class="container my-5">
+	<h2 class="mb-4">Giỏ hàng của bạn</h2>
+	<div class="row">
+		<div class="col-md-12">
+			<table  class="table align-middle text-center">
+					<thead style="background-color:#4CAF50;" class="table-light">
+					<tr>
+						<th>Sản phẩm</th>
+						<th>Khối lượng</th>
+						<th>Giá</th>
+						<th>Tổng giá</th>
+						<th></th>
+					</tr>
+				</thead>
+				<tbody>
+					@foreach (var item in Model.Items)
+					{
+						var quantity = item.Quantity > 0 ? item.Quantity : 0.1M;
+						var lineTotal = item.Price * quantity;
+
+						<tr>
+							<td class="text-start">
+								<div class="d-flex align-items-center">
+									@item.Name
+
+
+								</div>
+							</td>
+							<td>
+								<div class="input-group input-group-sm justify-content-center">
+									<input type="number" class="form-control text-center soLuongInput"
+										   style="max-width: 60px;"
+										   min="1" max="1000" step="0.1"
+										   value="@item.Khoiluong"
+										   data-price="@item.Price"
+										   data-target="total-@item.ProductId"
+										   data-id="@item.ProductId">
+
+								</div>
+							</td>
+							<td>@item.Price.ToString("N0") ₫</td>
+							<td id="total-@item.ProductId">@lineTotal.ToString("N0") ₫</td>
+							<td>
+								<a asp-action="RemoveFromCart" asp-route-productId="@item.ProductId" class="btn btn-outline-danger btn-sm">🗑</a>
+							</td>
+						</tr>
+					}
+				</tbody>
+			</table>
+
+			<div class="d-flex justify-content-end">
+				<h4 class="text-danger">Tổng tiền: <span id="grandTotal">0 ₫</span></h4>
+			</div>
+
+			<div class="d-flex justify-content-between mt-4">
+				<a href="/DS_SP/Index" style="background-color:lightblue" class="btn btn-light">← Tiếp tục mua sắm</a>
+				<a asp-action="Checkout" class="btn btn-success">Tới trang thanh toán</a>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+	document.addEventListener('DOMContentLoaded', function () {
+		const inputs = document.querySelectorAll('.soLuongInput');
+
+		function updateLineTotal(input) {
+			const price = parseFloat(input.dataset.price);
+			const quantity = parseFloat(input.value) || 0;
+			const total = price * quantity;
+			const targetId = input.dataset.target;
+			const totalElement = document.getElementById(targetId);
+			if (totalElement) {
+				totalElement.textContent = total.toLocaleString('vi-VN') + " ₫";
+			}
+			return total;
+		}
+
+		function updateGrandTotal() {
+			let grandTotal = 0;
+			const seen = new Set();
+
+			inputs.forEach(input => {
+				const id = input.dataset.id;
+				if (!seen.has(id)) {
+					grandTotal += updateLineTotal(input);
+					seen.add(id);
+				}
+			});
+
+			const grandTotalElement = document.getElementById('grandTotal');
+			if (grandTotalElement) {
+				grandTotalElement.textContent = grandTotal.toLocaleString('vi-VN') + " ₫";
+			}
+		}
+
+		// Gửi Ajax khi người dùng đổi số lượng
+		inputs.forEach(input => {
+			input.addEventListener('change', function () {
+				const khoiluong = parseFloat(this.value);
+
+				// Kiểm tra giới hạn
+				if (khoiluong < 1 || khoiluong > 100) {
+					alert("Khối lượng phải từ 1 đến 100 kg.");
+					this.value = 1;
+					updateGrandTotal();
+					
+				}
+
+				const productId = this.dataset.id;
+
+				fetch('/ShoppingCart/UpdateCartItem', {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+						'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+					},
+					body: JSON.stringify({
+						productId: productId,
+							khoiluong: parseFloat(this.value)
+					})
+				}).then(response => {
+					if (response.ok) {
+						updateGrandTotal(); // Cập nhật tổng sau khi lưu
+					}
+				});
+			});
+
+			// Cập nhật tổng khi gõ
+			input.addEventListener('input', function () {
+				const value = parseFloat(this.value);
+				if (value >= 1 && value <= 100) {
+					updateGrandTotal();
+				}
+			});
+		});
+
+		updateGrandTotal(); // Cập nhật lúc load trang
+	});
+</script>
+</body>
+</html>
+
+

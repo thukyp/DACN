@@ -1,0 +1,106 @@
+﻿@model DACS.Models.SanPham
+
+@{
+    ViewData["Title"] = "Chỉnh Sửa Sản Phẩm";
+}
+
+<h1>@ViewData["Title"]: @Model.TenSanPham</h1>
+
+<hr />
+<div class="row">
+    <div class="col-md-8">
+        <form asp-action="Edit" asp-route-id="@Model.M_SanPham" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            @* Trường M_SanPham thường là ẩn hoặc chỉ đọc khi sửa *@
+            <input type="hidden" asp-for="M_SanPham" />
+            <input type="hidden" asp-for="NgayTao" /> @* Giữ lại ngày tạo *@
+
+            @* Các trường input giống như form Create, nhưng đã có sẵn giá trị *@
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label asp-for="M_SanPham" class="control-label">Mã Sản Phẩm (Không đổi)</label>
+                    <input asp-for="M_SanPham" class="form-control" readonly />
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label asp-for="TenSanPham" class="control-label"></label>
+                    <input asp-for="TenSanPham" class="form-control" />
+                    <span asp-validation-for="TenSanPham" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label asp-for="M_LoaiSP" class="control-label"></label>
+                    <select asp-for="M_LoaiSP" class="form-select" asp-items="ViewBag.M_LoaiSP">
+                        <option value="">-- Chọn Loại SP --</option>
+                    </select>
+                    <span asp-validation-for="M_LoaiSP" class="text-danger"></span>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label asp-for="M_DonViTinh" class="control-label"></label>
+                    <select asp-for="M_DonViTinh" class="form-select" asp-items="ViewBag.M_DonViTinh">
+                        <option value="">-- Chọn Đơn Vị Tính --</option>
+                    </select>
+                    <span asp-validation-for="M_DonViTinh" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label asp-for="Gia" class="control-label"></label>
+                    <input asp-for="Gia" type="number" class="form-control" />
+                    <span asp-validation-for="Gia" class="text-danger"></span>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label asp-for="SoLuong" class="control-label"></label>
+                    <input asp-for="SoLuong" type="number" class="form-control" />
+                    <span asp-validation-for="SoLuong" class="text-danger"></span>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label asp-for="TrangThai" class="control-label"></label>
+                    <select asp-for="TrangThai" class="form-select">
+                        <option value="Còn hàng">Còn hàng</option>
+                        <option value="Hết hàng">Hết hàng</option>
+                        <option value="Ngừng kinh doanh">Ngừng kinh doanh</option>
+                    </select>
+                    <span asp-validation-for="TrangThai" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="MoTa" class="control-label"></label>
+                <textarea asp-for="MoTa" class="form-control" rows="3"></textarea>
+                <span asp-validation-for="MoTa" class="text-danger"></span>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label asp-for="HanSuDung" class="control-label"></label>
+                    <input asp-for="HanSuDung" type="date" class="form-control" />
+                    <span asp-validation-for="HanSuDung" class="text-danger"></span>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="control-label">Ảnh Hiện Tại</label>
+                    <img src="@Url.Content(Model.AnhSanPham ?? "~/images/placeholder.png")" ... />
+
+                    <label for="ProductImageFile" class="form-label">Chọn Ảnh Mới (Để thay thế)</label>
+                    <input type="file" name="ProductImageFile" id="ProductImageFile" class="form-control" accept="image/*">
+                    <input type="hidden" asp-for="AnhSanPham" /> @* Giữ lại path cũ nếu không upload file mới *@
+                    @* <span asp-validation-for="AnhSanPham" class="text-danger"></span> *@
+                </div>
+               
+            </div>
+
+            <div class="form-group mt-3">
+                <input type="submit" value="Lưu thay đổi" class="btn btn-primary" />
+                <a asp-action="Index" class="btn btn-secondary">Quay lại Danh sách</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

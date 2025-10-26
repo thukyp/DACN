@@ -1,0 +1,257 @@
+﻿@* File: Areas/QuanLyXNK/Views/ThongKe/Index.cshtml *@
+@model DACS.Models.ViewModels.ThongKeNXViewModel
+@using DACS.Models.ViewModels;
+
+@{
+    ViewData["Title"] = "Thống kê Nhập – Xuất";
+    // Layout = "~/Views/Shared/_AdminLayout.cshtml"; // Comment nếu muốn layout trong view này
+}
+
+@* Hiển thị thông báo *@
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show mb-3" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show mb-3" role="alert">
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+
+@* ****** KHUYẾN NGHỊ: Chuyển CSS này vào file .css của Layout ****** *@
+<style>
+    /* Copy CSS từ các view trước vào đây */
+    /* (Đã lược bớt các style trùng lặp) */
+    html, body {
+        height: 100%;
+    }
+
+    .container {
+        display: grid;
+        max-width: 100%;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        flex-direction: row;
+    }
+    .main-container {
+        display: flex;
+        width: 100%;
+        min-height: 100vh;
+        margin: 0;
+        padding: 0;
+    }
+
+    .sidebar {
+        background-color: #212529;
+        color: #fff;
+        padding: 15px;
+        width: 250px;
+        flex-shrink: 0;
+        display: flex;
+        flex-direction: column;
+    }
+
+        .sidebar h2 {
+            border-bottom: 1px solid #495057;
+            padding-bottom: 10px;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .sidebar .nav {
+            flex-grow: 1;
+        }
+
+        .sidebar .nav-link {
+            color: #adb5bd;
+            padding: 8px 15px;
+            border-radius: 0.25rem;
+            margin-bottom: 5px;
+        }
+
+            .sidebar .nav-link.active, .sidebar .nav-link:hover {
+                color: #fff;
+                background-color: #495057;
+            }
+
+        .sidebar .nav-item.mt-auto {
+            margin-top: auto;
+        }
+
+        .sidebar .logout-form button {
+            padding: 8px 15px;
+            color: #dc3545;
+            background: none;
+            border: none;
+            width: 100%;
+            text-align: left;
+        }
+
+            .sidebar .logout-form button:hover {
+                background-color: rgba(220, 53, 69, 0.1);
+                color: #bd2130;
+            }
+
+    .main-content-area {
+        padding: 25px;
+        background-color: #f8f9fa;
+        flex-grow: 1;
+        overflow-y: auto;
+        height: 100vh;
+    }
+
+    .page-header {
+        font-size: 1.75rem;
+        font-weight: 500;
+        margin-bottom: 1.5rem;
+        color: #343a40;
+    }
+
+    .filter-card {
+        background-color: #fff;
+        padding: 1rem 1.5rem;
+        border-radius: 0.375rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,.075);
+    }
+    /* Style cho bảng thống kê */
+    .table-container .card-header {
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    .table-container .card-footer {
+        border-top: 1px solid #dee2e6;
+    }
+
+    .positive {
+        color: #198754;
+        font-weight: bold;
+    }
+    /* Bootstrap success color */
+    .negative {
+        color: #dc3545;
+        font-weight: bold;
+    }
+    /* Bootstrap danger color */
+    .zero {
+        color: #6c757d;
+    }
+    /* Bootstrap secondary color */
+
+</style>
+@* ****** KẾT THÚC KHUYẾN NGHỊ ****** *@
+
+
+<div class="d-flex main-container">
+    @* --- SIDEBAR --- *@
+    <div class="sidebar">
+        <h2>Quản Lý XNK</h2>
+        <ul class="nav flex-column">
+            <li class="nav-item"><a asp-area="QuanLyXNK" asp-controller="QuanLyXNK" asp-action="Index" class="nav-link"><i class="fas fa-truck-loading me-2"></i> Quản lý Thu gom</a></li>
+            <li class="nav-item"><a asp-area="QuanLyXNK" asp-controller="QuanLyDSPX" asp-action="Index" class="nav-link active"><i class="fas fa-dolly-flatbed me-2"></i> DS Phiếu Xuất</a></li> @* Link mới *@
+            <li class="nav-item"><a asp-area="QuanLyXNK" asp-controller="QuanLyDSPX" asp-action="Create" class="nav-link"><i class="fas fa-plus-circle me-2"></i> Tạo Phiếu Xuất</a></li> @* Link mới *@
+            <li class="nav-item"><a asp-area="QuanLyXNK" asp-controller="KhoHang" asp-action="Index" class="nav-link"><i class="fas fa-warehouse me-2"></i> DS Kho hàng</a></li>
+            <li class="nav-item"><a asp-area="QuanLyXNK" asp-controller="TonKho" asp-action="Index" class="nav-link"><i class="fas fa-boxes-stacked me-2"></i> Tồn kho SP</a></li>
+            <li class="nav-item"><a asp-area="QuanLyXNK" asp-controller="ThongKe" asp-action="Index" class="nav-link"><i class="fas fa-chart-bar me-2"></i> Thống kê NX</a></li>
+        </ul>
+        <div class="nav-item mt-auto ">
+            <button type="submit" class="text-danger border-0 bg-transparent p-0 w-100 text-start mt-1">
+                @* Adjusted button style to better match list items *@
+                <a href="/home/index" class="border-0 text-danger" style="text-decoration: none;"><i class="fas fa-sign-out-alt fa-fw me-2"></i> Về trang chủ</a>
+                </button>
+        </div>
+    </div>
+    @* --- MAIN CONTENT --- *@
+    <div class="main-content-area">
+        <div class="page-header">@ViewData["Title"]</div>
+
+        @* --- FILTER FORM --- *@
+        <div class="filter-card">
+            @* Sử dụng method="get" cho filter *@
+            <form asp-action="Index" asp-controller="ThongKe" method="get" class="row g-3 align-items-end">
+                <div class="col-md-4">
+                    <label asp-for="TuNgay" class="form-label form-label-sm">Từ ngày</label>
+                    <input asp-for="TuNgay" type="date" class="form-control form-control-sm">
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="DenNgay" class="form-label form-label-sm">Đến ngày</label>
+                    <input asp-for="DenNgay" type="date" class="form-control form-control-sm">
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-sm btn-primary w-100"><i class="fas fa-filter me-1"></i> Lọc</button>
+                </div>
+                <div class="col-md-2">
+                    <a asp-action="Index" asp-controller="ThongKe" class="btn btn-sm btn-outline-secondary w-100" title="Reset bộ lọc về mặc định">
+                        <i class="fas fa-sync-alt me-1"></i> Reset
+                    </a>
+                </div>
+            </form>
+        </div>
+
+        @* --- DATA TABLE --- *@
+        <div class="table-container card shadow-sm">
+            <div class="card-header bg-light py-2">
+                <h5 class="mb-0"><i class="fas fa-chart-bar me-2"></i> Kết quả thống kê từ @Model.TuNgay?.ToString("dd/MM/yyyy") đến @Model.DenNgay?.ToString("dd/MM/yyyy")</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover table-sm align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>@Html.DisplayNameFor(model => model.ThongKeItems[0].TenSanPham)</th>
+                                <th>@Html.DisplayNameFor(model => model.ThongKeItems[0].TenDonViTinh)</th>
+                                <th class="text-end">@Html.DisplayNameFor(model => model.ThongKeItems[0].TongNhap)</th>
+                                <th class="text-end">@Html.DisplayNameFor(model => model.ThongKeItems[0].TongXuat)</th>
+                                <th class="text-end">@Html.DisplayNameFor(model => model.ThongKeItems[0].TonHienTai)</th>
+                                <th class="text-end">@Html.DisplayNameFor(model => model.ThongKeItems[0].ChenhLech)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model == null || !Model.ThongKeItems.Any())
+                            {
+                                <tr>
+                                    <td colspan="6" class="text-center text-muted py-3">Không có dữ liệu thống kê cho khoảng thời gian đã chọn.</td>
+                                </tr>
+                            }
+                            else
+                            {
+                                @foreach (var item in Model.ThongKeItems)
+                                {
+                                    string chenhLechClass = item.ChenhLech > 0 ? "positive" : (item.ChenhLech < 0 ? "negative" : "zero");
+                                    string chenhLechPrefix = item.ChenhLech > 0 ? "+" : "";
+
+                                    <tr>
+                                        <td>@Html.DisplayFor(modelItem => item.TenSanPham)</td>
+                                        <td>@Html.DisplayFor(modelItem => item.TenDonViTinh)</td>
+                                        <td class="text-end">@item.TongNhap.ToString("N0")</td>
+                                        <td class="text-end">@item.TongXuat.ToString("N0")</td>
+                                        <td class="text-end">@item.TonHienTai.ToString("N0")</td>
+                                        <td class="text-end @chenhLechClass">@chenhLechPrefix@item.ChenhLech.ToString("N0")</td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            @* Có thể thêm Footer nếu cần (ví dụ: Tổng cộng) *@
+            @* <div class="card-footer"> ... </div> *@
+        </div> @* End Table Container *@
+
+    </div> @* End Main Content Area *@
+</div> @* End Main Container *@
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    @* Thêm các script tùy chỉnh nếu cần (ví dụ: date picker nâng cao) *@
+}

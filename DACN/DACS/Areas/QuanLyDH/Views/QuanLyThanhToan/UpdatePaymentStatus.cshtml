@@ -1,0 +1,105 @@
+﻿@* Không có model cụ thể được truyền từ action GET, sử dụng ViewBag *@
+@{
+    ViewData["Title"] = $"Cập nhật TT Thanh toán ĐH {ViewBag.M_DonHang}";
+    // Layout = "_AdminLayout";
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="~/css/AdminLayout.css" />
+    <style>
+        .container-fluid.d-flex {
+            height: 100vh;
+            padding: 0;
+        }
+
+        .sidebar {
+            background-color: #212529;
+            color: #fff;
+            padding: 15px;
+            width: 250px;
+            flex-shrink: 0;
+        }
+
+            .sidebar h2 {
+                border-bottom: 1px solid #495057;
+                padding-bottom: 10px;
+                font-size: 1.5rem;
+            }
+
+            .sidebar .nav-link {
+                color: #adb5bd;
+                padding: 8px 15px;
+            }
+
+                .sidebar .nav-link.active, .sidebar .nav-link:hover {
+                    color: #fff;
+                    background-color: #495057;
+                    border-radius: 0.25rem;
+                }
+
+        .main-content-area {
+            padding: 25px;
+            background-color: #f8f9fa;
+            flex-grow: 1;
+            overflow-y: auto;
+        }
+
+        .page-header {
+            font-size: 1.75rem;
+            font-weight: 500;
+            margin-bottom: 1.5rem;
+            color: #343a40;
+        }
+
+        .card-custom {
+            background-color: #fff;
+            padding: 1.5rem;
+            border-radius: 0.375rem;
+            box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.075);
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid d-flex p-0">
+        <div class="sidebar">
+            <h2>OWNER</h2>
+            <ul class="nav flex-column">
+                <li class="nav-item"><a asp-area="QuanLyDH" asp-controller="QuanLyDH" asp-action="Index" class="nav-link"><i class="fas fa-receipt me-2"></i> Quản lý Đơn Hàng</a></li>
+                <li class="nav-item"><a asp-area="QuanLyDH" asp-controller="QuanLyThanhToan" asp-action="Index" class="nav-link"><i class="fas fa-credit-card me-2"></i> Quản lý Thanh Toán</a></li>
+            </ul>
+        </div>
+
+        <div class="main-content-area">
+            <div class="page-header">@ViewData["Title"]</div>
+
+            <div class="card-custom">
+                <form asp-action="UpdatePaymentStatus" asp-controller="QuanLyThanhToan" asp-area="QuanLyDH" method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                    <input type="hidden" name="id" value="@ViewBag.M_DonHang" />
+
+                    <div class="mb-3">
+                        <label for="newPaymentStatus" class="form-label">Trạng Thái Thanh Toán Mới</label>
+                        <select name="newPaymentStatus" class="form-select" asp-items="@ViewBag.PaymentStatusOptions">
+                            @* ViewBag.PaymentStatusOptions được truyền từ Controller *@
+                        </select>
+                        @Html.ValidationMessage("newPaymentStatus", "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="mt-4">
+                        <button type="submit" class="btn btn-primary"><i class="fas fa-save me-2"></i> Cập Nhật Trạng Thái TT</button>
+                        <a asp-action="Details" asp-controller="QuanLyDH" asp-area="QuanLyDH" asp-route-id="@ViewBag.M_DonHang" class="btn btn-secondary"><i class="fas fa-arrow-left me-2"></i> Quay Lại Chi Tiết</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
