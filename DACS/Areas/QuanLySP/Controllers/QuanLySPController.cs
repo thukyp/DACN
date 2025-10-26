@@ -7,10 +7,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore; // Vẫn cần cho SelectList
 using Microsoft.Extensions.Logging;
+using OfficeOpenXml;
 using System;                      // <<< THÊM USING NÀY (cho Guid, Exception)
+using System.ComponentModel;
 using System.IO;                   // <<< THÊM USING NÀY (cho Path, File, FileStream)
 using System.Linq;
 using System.Threading.Tasks;
+using LicenseContext = OfficeOpenXml.LicenseContext;
 
 namespace DACS.Areas.QuanLySP.Controllers
 {
@@ -191,6 +194,181 @@ namespace DACS.Areas.QuanLySP.Controllers
             // Load lại dropdown nếu thất bại
             await LoadDropdownsAsync(sanPham);
             return View(sanPham);
+        }
+        [HttpPost]
+        public async Task<IActionResult> ImportExcel(IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+            {
+                TempData["ErrorMessage"] = "Vui lòng chọn file Excel hợp lệ!";
+                return RedirectToAction(nameof(Index));
+            }
+
+            try
+            {
+                ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+
+                using var package = new ExcelPackage(file.OpenReadStream());
+                var worksheet = package.Workbook.Worksheets.FirstOrDefault();
+                if (worksheet == null)
+                {
+                    TempData["ErrorMessage"] = "File Excel không có dữ liệu!";
+                    return RedirectToAction(nameof(Index));
+                }
+
+                var sanPhamList = new List<SanPham>();
+                var errorMessages = new List<string>();
+
+                for (int row = 2; row <= worksheet.Dimension.End.Row; row++)
+                {
+                    var maSP = worksheet.Cells[row, 1].Text?.Trim();
+                    var maLoaiSP = worksheet.Cells[row, 2].Text?.Trim();
+                    var donViText = worksheet.Cells[row, 3].Text?.Trim();
+                    var ten = worksheet.Cells[row, 4].Text?.Trim();
+                    var giaText = worksheet.Cells[row, 5].Text?.Trim();
+                    var moTa = worksheet.Cells[row, 6].Text?.Trim();
+                    var trangThai = worksheet.Cells[row, 7].Text?.Trim();
+                    var ngayNhapText = worksheet.Cells[row, 8].Text?.Trim();
+                    var hinhAnh = worksheet.Cells[row, 9].Text?.Trim();
+                    var soLuongText = worksheet.Cells[row, 10].Text?.Trim();
+                    var hanSuDungText = worksheet.Cells[row, 11].Text?.Trim();
+
+                    if (string.IsNullOrWhiteSpace(ten))
+                        continue;
+
+                    decimal.TryParse(giaText, out decimal gia);
+                    int.TryParse(soLuongText, out int soLuong);
+                    DateTime.TryParse(ngayNhapText, out DateTime ngayNhap);
+                    DateTime.TryParse(hanSuDungText, out DateTime hanSuDung);
+
+                    // 🔹 Kiểm tra đơn vị tính trong DB
+                    var donViTinh = _context.DonViTinhs.FirstOrDefault(d => d.M_DonViTinh == donViText);
+                    if (donViTinh == null)
+                    {
+                        errorMessages.Add($"Dòng {row} bị bỏ qua: không tìm thấy đơn vị tính '{donViText}'.");
+                        continue;
+                    }
+
+                    // 🔹 Kiểm tra loại sản phẩm trong DB
+                    var loaiSP = _context.LoaiSanPhams.FirstOrDefault(l => l.M_LoaiSP == maLoaiSP);
+                    if (loaiSP == null)
+                    {
+                        errorMessages.Add($"Dòng {row} bị bỏ qua: không tìm thấy loại sản phẩm '{maLoaiSP}'.");
+                        continue;
+                    }
+
+                    // 🔹 Xử lý sản phẩm trùng mã
+                    string newMaSP = maSP;
+                    int counter = 1;
+                    while (_context.SanPhams.Any(s => s.M_SanPham == newMaSP))
+                    {
+                        newMaSP = maSP + "_" + counter;
+                        counter++;
+                    }
+                    if (newMaSP != maSP)
+                        errorMessages.Add($"Dòng {row}: Mã sản phẩm trùng, tự tạo mới thành {newMaSP}.");
+
+                    // 🔹 Tạo sản phẩm
+                    var sanPham = new SanPham
+                    {
+                        M_SanPham = newMaSP,
+                        TenSanPham = ten,
+                        Gia = (long)gia,
+                        SoLuong = soLuong,
+                        MoTa = moTa,
+                        TrangThai = trangThai,
+                        NgayTao = ngayNhap == default ? DateTime.Now : ngayNhap,
+                        AnhSanPham = hinhAnh,
+                        HanSuDung = hanSuDung == default ? DateTime.Now.AddYears(1) : hanSuDung,
+                        M_DonViTinh = donViTinh.M_DonViTinh,
+                        M_LoaiSP = loaiSP.M_LoaiSP
+                    };
+
+                    sanPhamList.Add(sanPham);
+                }
+
+                if (sanPhamList.Any())
+                {
+                    _context.SanPhams.AddRange(sanPhamList);
+                    await _context.SaveChangesAsync();
+                    TempData["SuccessMessage"] = $"Đã nhập {sanPhamList.Count} sản phẩm thành công!";
+                }
+
+                if (errorMessages.Any())
+                    TempData["ErrorMessage"] = string.Join("<br/>", errorMessages);
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException != null)
+                    TempData["ErrorMessage"] = "Lỗi khi lưu dữ liệu: " + ex.InnerException.Message;
+                else
+                    TempData["ErrorMessage"] = "Lỗi khi lưu dữ liệu: " + ex.Message;
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
+
+
+
+        [HttpGet]
+        public IActionResult ExportExcel()
+        {
+            try
+            {
+                var sanPhams = _context.SanPhams
+                    .Select(sp => new
+                    {
+                        sp.TenSanPham,
+                        sp.Gia,
+                        sp.SoLuong,
+                        DonViTinh = sp.DonViTinh != null ? sp.DonViTinh.TenLoaiTinh : "",
+                        LoaiSanPham = sp.LoaiSanPham != null ? sp.LoaiSanPham.TenLoai : ""
+                    })
+                    .ToList();
+
+                ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+                using var package = new ExcelPackage();
+                var ws = package.Workbook.Worksheets.Add("DanhSachSanPham");
+
+                // Header
+                ws.Cells["A1"].Value = "Tên sản phẩm";
+                ws.Cells["B1"].Value = "Giá";
+                ws.Cells["C1"].Value = "Số lượng";
+                ws.Cells["D1"].Value = "Đơn vị tính";
+                ws.Cells["E1"].Value = "Loại sản phẩm";
+
+                using (var range = ws.Cells["A1:E1"])
+                {
+                    range.Style.Font.Bold = true;
+                    range.Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+                    range.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.LightGray);
+                }
+
+                int row = 2;
+                foreach (var sp in sanPhams)
+                {
+                    ws.Cells[row, 1].Value = sp.TenSanPham;
+                    ws.Cells[row, 2].Value = sp.Gia;
+                    ws.Cells[row, 3].Value = sp.SoLuong;
+                    ws.Cells[row, 4].Value = sp.DonViTinh;
+                    ws.Cells[row, 5].Value = sp.LoaiSanPham;
+                    row++;
+                }
+
+                ws.Cells.AutoFitColumns();
+
+                var excelBytes = package.GetAsByteArray();
+                var fileName = $"DanhSachSanPham_{DateTime.Now:yyyyMMddHHmmss}.xlsx";
+
+                return File(excelBytes,
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    fileName);
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = "Xuất Excel thất bại: " + ex.Message;
+                return RedirectToAction(nameof(Index));
+            }
         }
 
         // --- Edit GET giữ nguyên ---
