@@ -1,14 +1,17 @@
-﻿@model IEnumerable<DACS.Models.ChiTietLienHe>
-@using DACS.Models
+﻿@{
+    ViewData["Title"] = "Live Chat";
+    // Layout = ... (Nếu bạn dùng layout)
+}
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Admin - Quản Lý Hỗ Trợ</title>
-
+    <title>Admin - @ViewData["Title"]</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
     <style>
         .container {
             display: grid;
@@ -80,13 +83,146 @@
             padding: 20px;
             background-color: #f8f9fa;
         }
+    </style>
 
-        .filter-section {
-            background-color: #fff;
-            padding: 15px;
-            border-radius: 0.375rem;
-            margin-bottom: 1.5rem;
+    <style>
+        #chat-container {
+            display: flex;
+            height: calc(100vh - 120px); /* Chiều cao linh hoạt */
+            background: #fff;
+            border-radius: 8px;
             box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        }
+
+        #user-list-container {
+            width: 300px;
+            border-right: 1px solid #ddd;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #user-list-header {
+            padding: 15px;
+            font-weight: 600;
+            border-bottom: 1px solid #eee;
+            background: #f8f9fa;
+        }
+
+        #user-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            overflow-y: auto;
+            flex-grow: 1;
+        }
+
+            #user-list li {
+                padding: 15px;
+                cursor: pointer;
+                border-bottom: 1px solid #eee;
+                position: relative;
+            }
+
+                #user-list li:hover {
+                    background: #f5f5f5;
+                }
+
+                #user-list li.active {
+                    background: #e0e0e0;
+                }
+
+            #user-list .user-name {
+                font-weight: 500;
+            }
+
+            #user-list .last-message {
+                font-size: 0.9em;
+                color: #666;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            #user-list .unread-badge {
+                position: absolute;
+                right: 15px;
+                top: 50%;
+                transform: translateY(-50%);
+                background: #dc3545;
+                color: white;
+                font-size: 0.75em;
+                padding: 2px 6px;
+                border-radius: 10px;
+                display: none; /* Ẩn ban đầu */
+            }
+
+            #user-list li.has-unread .unread-badge {
+                display: block;
+            }
+
+
+        #chat-window {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #chat-window-header {
+            padding: 15px;
+            font-weight: 600;
+            border-bottom: 1px solid #eee;
+            background: #f8f9fa;
+        }
+
+        #messages {
+            flex-grow: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            background: #fdfdfd;
+        }
+
+        .chat-message {
+            padding: 8px 12px;
+            border-radius: 18px;
+            margin-bottom: 10px;
+            max-width: 70%;
+            line-height: 1.4;
+        }
+
+            .chat-message.user {
+                background: #e9ecef;
+                color: #333;
+                align-self: flex-start;
+            }
+
+            .chat-message.admin {
+                background: #0d6efd;
+                color: white;
+                align-self: flex-end;
+            }
+
+
+        #reply-area {
+            display: flex;
+            padding: 15px;
+            border-top: 1px solid #ddd;
+            background: #f8f9fa;
+        }
+
+        #reply-input {
+            flex-grow: 1;
+            border-radius: 20px;
+            border: 1px solid #ccc;
+            padding: 10px 15px;
+        }
+
+        #reply-send-btn {
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            margin-left: 10px;
         }
     </style>
 </head>
@@ -95,206 +231,186 @@
         <div class="sidebar">
             <h4>Quản Lý ND</h4>
             <ul class="nav flex-column">
-                @* Set the correct 'active' class based on the current page/controller *@
                 <li class="nav-item"><a asp-area="QuanlyND" asp-controller="QuanlyND" asp-action="Index" class="nav-link "><i class="fas fa-users me-2"></i> Quản lý Tài khoản</a></li>
                 <li class="nav-item"><a asp-area="QuanlyND" asp-controller="QuanlyPhanHoi" asp-action="Index" class="nav-link"><i class="fas fa-comments me-2"></i> Phản hồi & Đánh giá</a></li>
-                <li class="nav-item"><a asp-area="QuanlyND" asp-controller="QuanlyHoTro" asp-action="Index" class="nav-link active"><i class="fas fa-headset me-2"></i> Hỗ trợ người dùng</a></li>
-                @* Add other links as needed *@
+                <li class="nav-item"><a asp-area="QuanlyND" asp-controller="QuanlyHoTro" asp-action="Index" class="nav-link active"><i class="fas fa-comments-dollar me-2"></i> Live Chat</a></li>
             </ul>
             <div class="nav-item mt-auto ">
                 <button type="submit" class="text-danger border-0 bg-transparent p-0 w-100 text-start mt-1">
-                    @* Adjusted button style to better match list items *@
                     <a href="/home/index" class="border-0 text-danger" style="text-decoration: none;"><i class="fas fa-sign-out-alt fa-fw me-2"></i> Về trang chủ</a>
                 </button>
             </div>
         </div>
 
         <div class="main-content flex-grow-1">
-            <h2 class="mb-4">Quản lý hỗ trợ người dùng</h2>
+            <h2 class="mb-4">Live Chat</h2>
 
-            <div class="filter-section">
-                <div class="row g-2 align-items-center">
-                    <div class="col-md-4">
-                        <input type="text" id="searchInput" class="form-control form-control-sm" placeholder="Tìm theo tên, nội dung hỗ trợ...">
+            <div id="chat-container">
+                <div id="user-list-container">
+                    <div id="user-list-header">Khách đang chờ</div>
+                    <ul id="user-list">
+                    </ul>
+                </div>
+
+                <div id="chat-window">
+                    <div id="chat-window-header">
+                        Chọn một khách để bắt đầu...
                     </div>
-                    <div class="col-md-3">
-                        <select id="statusFilter" class="form-select form-select-sm">
-                            <option selected>Lọc theo trạng thái</option>
-                            <option>Đã xử lý</option>
-                            <option>Chưa xử lý</option>
-                        </select>
+                    <div id="messages">
+                    </div>
+                    <div id="reply-area">
+                        <input type="text" id="reply-input" class="form-control" placeholder="Nhập tin nhắn..." disabled>
+                        <button id="reply-send-btn" class="btn btn-primary" disabled><i class="fas fa-paper-plane"></i></button>
                     </div>
                 </div>
             </div>
 
-
-            <div class="table-responsive bg-white p-3 rounded shadow-sm">
-                <table class="table table-users table-striped table-hover table-sm caption-top" id="userTable">
-                    <caption>Danh sách yêu cầu hỗ trợ</caption>
-                    <thead class="table-light">
-                        <tr>
-                            <th scope="col">Người dùng</th>
-                            <th scope="col">Nội dung yêu cầu</th>
-                            <th scope="col">Thời gian gửi</th>
-                            <th scope="col">Trạng thái</th>
-                            <th scope="col" class="text-center">Thao tác</th>
-                        </tr>
-                    </thead>
-                    <tbody id="product-table-body">
-                        @foreach (var item in Model)
-                        {
-                            <tr>
-                                <td>@item.HoTen</td>
-                                <td>@item.NoiDung</td>
-                                <td>@item.NgayGui.ToString("dd/MM/yyyy HH:mm")</td>
-                                <td>
-                                    @if (item.TrangThai == "Đã xử lý")
-                                    {
-                                        <span class="badge bg-success">Đã xử lý</span>
-                                    }
-                                    else
-                                    {
-                                        <span class="badge bg-warning text-dark">Chưa xử lý</span>
-                                    }
-                                </td>
-                                <td class="actions text-center">
-                                    @if (item.TrangThai == "Đã xử lý")
-                                    {
-                                        <button class="btn btn-sm btn-outline-info" onclick="viewFeedback(this)"><i class="fas fa-eye"></i> Xem</button>
-                                    }
-                                    else
-                                    {
-                                        <button class="btn btn-sm btn-outline-primary" onclick="viewreply(this)">
-                                            <i class="fas fa-reply"></i> Phản hồi
-                                        </button>
-                                    }
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-            <nav aria-label="Product navigation" class="mt-3 d-flex justify-content-center">
-                <ul class="pagination pagination-sm" id="pagination"></ul>
-            </nav>
-        </div>
-    </div>
-    <!-- Modal Xem Chi Tiết -->
-    <div class="modal fade" id="feedbackModal" tabindex="-1" aria-labelledby="feedbackModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="feedbackModalLabel">Chi tiết phản hồi</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
-                </div>
-                <div class="modal-body">
-                    <p><strong>Người dùng:</strong> <span id="modal-user"></span></p>
-                    <p><strong>Đánh giá:</strong> <span id="modal-rating"></span></p>
-                    <p><strong>Nội dung:</strong> <span id="modal-content"></span></p>
-                    <p><strong>Ngày gửi:</strong> <span id="modal-date"></span></p>
-                    <p><strong>Trạng thái:</strong> <span id="modal-status"></span></p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- phản hồi -->
-    <div class="modal fade" id="reply" tabindex="-1" aria-labelledby="replyLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-lg">
-            <div class="modal-content shadow-sm">
-                <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title" id="replyLabel"><i class="fas fa-reply"></i> Gửi phản hồi đến người dùng</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Đóng"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="replyForm">
-
-                        <div class="mb-3">
-                            <label for="reply-content" class="form-label">Nội dung phản hồi:</label>
-                            <textarea class="form-control" id="reply-content" rows="5" placeholder="Nhập nội dung phản hồi..."></textarea>
-                        </div>
-
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                    <button type="button" class="btn btn-primary" onclick="sendReply()">Gửi phản hồi</button>
-                </div>
-            </div>
         </div>
     </div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-
-
-    @* modal phan hoi *@
-    <script>
-         function viewreply(button) {
-
-
-          var myModal = new bootstrap.Modal(document.getElementById('reply'));
-          myModal.show();
-        }
-    </script>
-
-    @* tim kiem va loc *@
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            const searchInput = document.getElementById("searchInput");
-            const statusSelect = document.getElementById("statusFilter");
-            const tableRows = document.querySelectorAll("table tbody tr");
 
-            function filterTable() {
-                const keyword = searchInput.value.toLowerCase().trim();
-                const selectedStatus = statusSelect.value;
+            // Lấy các phần tử
+            const userList = document.getElementById("user-list");
+            const chatHeader = document.getElementById("chat-window-header");
+            const messages = document.getElementById("messages");
+            const replyInput = document.getElementById("reply-input");
+            const sendButton = document.getElementById("reply-send-btn");
 
-                tableRows.forEach(row => {
-                    const username = row.cells[0].textContent.toLowerCase();
-                    const content = row.cells[1].textContent.toLowerCase();
-                    const time = row.cells[2].textContent.toLowerCase();
-                    const status = row.cells[3].textContent.trim();
+            let activeConnectionId = null; // ID của user đang được admin chọn
+            let chatData = {}; // Lưu trữ lịch sử chat: { connectionId: [ {user, message}, ... ] }
 
-                    const matchKeyword =
-                        username.includes(keyword) ||
-                        content.includes(keyword) ||
-                        time.includes(keyword);
+            // 1. Tạo kết nối tới Hub
+            const connection = new signalR.HubConnectionBuilder()
+                .withUrl("/chatHub") // Phải trùng với tên Hub bạn đăng ký
+                .build();
 
-                    const matchStatus =
-                        selectedStatus === "Lọc theo trạng thái" ||
-                        status === selectedStatus;
+            // 2. Lắng nghe tin nhắn TỪ USER (sự kiện "ReceiveUserMessage")
+            connection.on("ReceiveUserMessage", (connectionId, user, message) => {
 
-                    row.style.display = (matchKeyword && matchStatus) ? "" : "none";
-                });
+                // A. Lưu tin nhắn vào kho
+                if (!chatData[connectionId]) {
+                    chatData[connectionId] = []; // Tạo mảng tin nhắn mới
+                }
+                chatData[connectionId].push({ sender: 'user', name: user, text: message });
+
+                // B. Cập nhật danh sách User
+                let userLi = document.getElementById(`user-${connectionId}`);
+                if (!userLi) {
+                    // Nếu user này chưa có, tạo mới
+                    userLi = document.createElement("li");
+                    userLi.id = `user-${connectionId}`;
+                    userLi.dataset.connectionId = connectionId; // Lưu ID
+                    userLi.dataset.userName = user;
+
+                    userLi.innerHTML = `
+                        <div class="user-name">${user}</div>
+                        <div class="last-message">${message}</div>
+                        <span class="unread-badge">!</span>
+                    `;
+
+                    // Thêm sự kiện click để chọn chat
+                    userLi.addEventListener("click", () => selectUserChat(connectionId));
+                    userList.prepend(userLi); // Thêm user mới lên đầu
+                } else {
+                    // Nếu user đã có, cập nhật tin nhắn cuối
+                    userLi.querySelector(".last-message").textContent = message;
+                }
+
+                // C. Xử lý thông báo
+                if (connectionId !== activeConnectionId) {
+                    // Nếu user gửi tin không phải user đang chat, bật thông báo
+                    userLi.classList.add("has-unread");
+                } else {
+                    // Nếu là user đang chat, hiển thị tin nhắn ngay
+                    addMessageToBox('user', user, message);
+                }
+            });
+
+            // 3. Hàm chọn User để chat
+            function selectUserChat(connectionId) {
+                activeConnectionId = connectionId; // Đặt user này là active
+
+                // Bỏ active của user cũ
+                const oldActive = userList.querySelector("li.active");
+                if (oldActive) {
+                    oldActive.classList.remove("active");
+                }
+
+                // Active user mới
+                const userLi = document.getElementById(`user-${connectionId}`);
+                userLi.classList.add("active");
+                userLi.classList.remove("has-unread"); // Tắt thông báo
+
+                // Cập nhật header
+                const userName = userLi.dataset.userName;
+                chatHeader.textContent = `Đang chat với: ${userName}`;
+
+                // Kích hoạt ô nhập
+                replyInput.disabled = false;
+                sendButton.disabled = false;
+
+                // Tải lịch sử chat
+                messages.innerHTML = ""; // Xóa chat cũ
+                if (chatData[connectionId]) {
+                    chatData[connectionId].forEach(msg => {
+                        addMessageToBox(msg.sender, msg.name, msg.text);
+                    });
+                }
             }
 
-            searchInput.addEventListener("input", filterTable);
-            statusSelect.addEventListener("change", filterTable);
+            // 4. Hàm GỬI tin nhắn trả lời (gọi hàm "SendReplyToUser" trên Hub)
+            function sendReply() {
+                const message = replyInput.value.trim();
+                if (!message || !activeConnectionId) return;
+
+                // Gửi tin nhắn trả lời LÊN server
+                connection.invoke("SendReplyToUser", activeConnectionId, message)
+                    .catch(err => console.error(err.toString()));
+
+                // A. Lưu tin nhắn của admin
+                chatData[activeConnectionId].push({ sender: 'admin', name: 'Admin', text: message });
+
+                // B. Hiển thị tin nhắn của admin
+                addMessageToBox('admin', 'Admin', message);
+
+                replyInput.value = "";
+                replyInput.focus();
+            }
+
+            sendButton.addEventListener("click", sendReply);
+            replyInput.addEventListener("keypress", (e) => e.key === "Enter" && sendReply());
+
+            // 5. Hàm thêm tin nhắn vào UI
+            function addMessageToBox(senderType, name, text) {
+                const msgDiv = document.createElement("div");
+                msgDiv.className = `chat-message ${senderType}`; // "user" hoặc "admin"
+
+                // Thêm tên cho tin nhắn của User
+                if(senderType === 'user') {
+                     msgDiv.innerHTML = `<strong class="d-block" style="font-size: 0.9em;">${name}</strong>${text}`;
+                } else {
+                     msgDiv.textContent = text;
+                }
+
+                messages.appendChild(msgDiv);
+                messages.scrollTop = messages.scrollHeight; // Cuộn xuống
+            }
+
+            // 6. Bắt đầu kết nối và GIA NHẬP NHÓM ADMIN
+            connection.start()
+                .then(() => {
+                    console.log("Admin connected.");
+                    // SAU KHI KẾT NỐI, BÁO CHO SERVER TÔI LÀ ADMIN
+                    connection.invoke("JoinAdminGroup")
+                              .catch(err => console.error(err.toString()));
+                })
+                .catch(err => console.error(err.toString()));
         });
     </script>
-
-    <script>
-        function viewFeedback(button) {
-          const row = button.closest('tr');
-          const user = row.cells[0].textContent;
-          const rating = row.cells[1].innerHTML;
-          const content = row.cells[2].textContent;
-          const date = row.cells[3].textContent;
-          const status = row.cells[4].textContent;
-
-          document.getElementById('modal-user').textContent = user;
-          document.getElementById('modal-rating').innerHTML = rating;
-          document.getElementById('modal-content').textContent = content;
-          document.getElementById('modal-date').textContent = date;
-          document.getElementById('modal-status').textContent = status;
-
-          var myModal = new bootstrap.Modal(document.getElementById('feedbackModal'));
-          myModal.show();
-        }
-    </script>
-
-    <script src="~/js/phantrangtruocsau.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

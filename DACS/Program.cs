@@ -16,7 +16,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddScoped<HomeController>();//kết nối chat
 builder.Services.AddSingleton<SocketServer>();//kết nối chat
 builder.Services.AddControllersWithViews();
-
+builder.Services.AddSignalR();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddDistributedMemoryCache();
@@ -60,6 +60,7 @@ if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
 }
+app.MapHub<ChatHub>("/chatHub");
 app.UseSession();
 app.UseStaticFiles();
 app.UseRouting();
