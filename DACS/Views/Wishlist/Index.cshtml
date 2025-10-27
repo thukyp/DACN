@@ -1,0 +1,135 @@
+﻿@model IEnumerable<DACS.Models.SanPham>
+@{
+    ViewData["Title"] = "Danh sách yêu thích";
+}
+
+<div class="container mt-5 mb-5">
+    <h1 class="mb-4">@ViewData["Title"]</h1>
+
+    @if (ViewBag.ErrorMessage != null)
+    {
+        <div class="alert alert-warning">@ViewBag.ErrorMessage</div>
+    }
+
+    @if (!Model.Any())
+    {
+        <div class="text-center p-5 border rounded" style="background-color: #f8f9fa;">
+            <p class="lead">Bạn chưa có sản phẩm yêu thích nào.</p>
+            <p>Hãy khám phá thêm các sản phẩm của chúng tôi!</p>
+            <a href="@Url.Action("Index", "DS_SP")" class="btn btn-primary">
+                <i class="fa-solid fa-store"></i> Đến cửa hàng
+            </a>
+        </div>
+    }
+    else
+    {
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4" id="wishlist-container">
+            @foreach (var item in Model)
+            {
+                <div class="col" id="wishlist-item-@item.M_SanPham">
+                    <div class="card h-100 shadow-sm product-card">
+                        <a href="@Url.Action("CT_SP", "DS_SP", new { id = item.M_SanPham })">
+                            <img src="@Url.Content(item.AnhSanPham ?? "~/images/placeholder.png")" class="card-img-top" alt="@item.TenSanPham" style="height: 200px; object-fit: cover;">
+                        </a>
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title" style="min-height: 48px;">
+                                <a href="@Url.Action("CT_SP", "DS_SP", new { id = item.M_SanPham })" class="text-dark text-decoration-none product-name-link">
+                                    @item.TenSanPham
+                                </a>
+                            </h5>
+                            <p class="card-text text-danger fw-bold h5">@item.Gia.ToString("N0")₫</p>
+                            <small class="text-muted mb-2">ĐVT: @(item.DonViTinh?.TenLoaiTinh ?? "N/A")</small>
+
+                            <div class="mt-auto pt-2">
+                                <form asp-controller="ShoppingCart" asp-action="AddToCart" method="post" class="d-grid mb-2">
+                                    <input type="hidden" name="productId" value="@item.M_SanPham" />
+                                    <input type="hidden" name="quantity" value="1" />
+                                    <button type="submit" class="btn btn-success btn-sm">
+                                        <i class="fa-solid fa-cart-plus"></i> Thêm vào giỏ
+                                    </button>
+                                </form>
+
+                                <button class="btn btn-outline-danger btn-sm w-100 btn-remove-wishlist" data-id="@item.M_SanPham">
+                                    <i class="fa-solid fa-trash"></i> Xóa khỏi yêu thích
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@* Form ẩn để chứa AntiForgeryToken cho Ajax *@
+<form id="antiForgeryForm" style="display:none;">
+    @Html.AntiForgeryToken()
+</form>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+
+            // Lắng nghe sự kiện click trên các nút xóa
+            $('#wishlist-container').on('click', '.btn-remove-wishlist', function () {
+                var button = $(this);
+                var productId = button.data('id');
+                var card = $('#wishlist-item-' + productId);
+
+                // Lấy token từ form ẩn
+                var token = $('#antiForgeryForm input[name="__RequestVerificationToken"]').val();
+
+                if(!token) {
+                     console.error("Không tìm thấy AntiForgeryToken!");
+                     alert("Lỗi: Không thể xác thực. Vui lòng tải lại trang.");
+                     return;
+                }
+
+                if (!confirm("Bạn có chắc muốn xóa sản phẩm này khỏi danh sách yêu thích?")) {
+                    return;
+                }
+
+                button.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Đang xóa...');
+
+                // Gọi đến Action `ToggleWishlist` mà bạn đã có ở DS_SPController
+                $.post('/DS_SP/ToggleWishlist', { m_SanPham: productId, __RequestVerificationToken: token })
+                    .done(function (res) {
+                        // Nếu server trả về là "không còn yêu thích" (isFavorite: false)
+                        if (res.success && !res.isFavorite) {
+
+                            // 1. Xóa card sản phẩm khỏi giao diện
+                            card.fadeOut(500, function() {
+                                $(this).remove();
+
+                                // 2. Cập nhật lại số lượng trên mini-wishlist (header)
+                                if (typeof loadWishlistMini === 'function') {
+                                    loadWishlistMini();
+                                }
+
+                                // 3. Kiểm tra nếu không còn sản phẩm nào
+                                if ($('#wishlist-container .col').length === 0) {
+                                    $('#wishlist-container').replaceWith(
+                                        '<div class="text-center p-5 border rounded" style="background-color: #f8f9fa;">' +
+                                        '  <p class="lead">Bạn chưa có sản phẩm yêu thích nào.</p>' +
+                                        '  <p>Hãy khám phá thêm các sản phẩm của chúng tôi!</p>' +
+                                        '  <a href="@Url.Action("Index", "DS_SP")" class="btn btn-primary">' +
+                                        '    <i class="fa-solid fa-store"></i> Đến cửa hàng' +
+                                        '  </a>' +
+                                        '</div>'
+                                    );
+                                }
+                            });
+                        } else {
+                            // Có lỗi hoặc logic bị ngược (lỡ tay "thêm" lại)
+                            alert(res.message || "Đã xảy ra lỗi. Sản phẩm chưa được xóa.");
+                            button.prop('disabled', false).html('<i class="fa-solid fa-trash"></i> Xóa khỏi yêu thích');
+                        }
+                    })
+                    .fail(function () {
+                        alert("Lỗi kết nối. Vui lòng thử lại.");
+                        button.prop('disabled', false).html('<i class="fa-solid fa-trash"></i> Xóa khỏi yêu thích');
+                    });
+            });
+        });
+    </script>
+}
