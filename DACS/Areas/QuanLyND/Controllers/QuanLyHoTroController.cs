@@ -1,4 +1,5 @@
-﻿using System.Net.Mail;
+﻿// File: Areas/QuanLyND/Controllers/QuanLyHoTroController.cs
+using System.Net.Mail;
 using DACS.Models;
 using DACS.Repositories;
 using Microsoft.AspNetCore.Authorization;
@@ -7,6 +8,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DACS.Areas.QuanLyND.Controllers
 {
+    [Area("QuanLyND")] // Phải có
+    [Authorize(Roles = SD.Role_Owner + "," + SD.Role_QuanLyND)]
     public class QuanLyHoTroController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -15,17 +18,16 @@ namespace DACS.Areas.QuanLyND.Controllers
             _context = context;
 
         }
-        [Area("QuanLyND")]
-        [Authorize(Roles = SD.Role_Owner + "," + SD.Role_QuanLyND)] // Thêm phân quyền
+
+        // --- SỬA HÀM NÀY ---
         public IActionResult Index()
         {
-            var danhSach = _context.ChiTietLienHe
-        .OrderByDescending(x => x.NgayGui)
-        .ToList();
+            // XÓA HẾT CODE CŨ LẤY TỪ DATABASE
+            // var danhSach = _context.ChiTietLienHe... (XÓA DÒNG NÀY)
 
-            return View(danhSach);
+            // CHỈ CẦN DÒNG NÀY:
+            return View();
         }
-
-
+        // --- KẾT THÚC SỬA ---
     }
 }
