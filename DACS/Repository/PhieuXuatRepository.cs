@@ -47,18 +47,18 @@ namespace DACS.Repositories
                 {
                     if (detail.SoLuong <= 0)
                     {
-                        throw new InvalidOperationException($"Số lượng xuất của sản phẩm {detail.M_LoaiSP} phải lớn hơn 0.");
+                        throw new InvalidOperationException($"Số lượng xuất của sản phẩm {detail.M_SanPham} phải lớn hơn 0.");
                     }
 
                     // Tìm bản ghi tồn kho tương ứng
                     var tonKhoRecord = await _context.TonKhos
                         .FirstOrDefaultAsync(tk => tk.MaKho == phieuXuat.MaKho && // Lấy từ MaKho của PhieuXuat
-                                               tk.M_LoaiSP == detail.M_LoaiSP &&
+                                               tk.M_SanPham == detail.M_SanPham &&
                                                tk.M_DonViTinh == detail.M_DonViTinh);
 
                     if (tonKhoRecord == null)
                     {
-                        throw new InvalidOperationException($"Không tìm thấy tồn kho cho sản phẩm {detail.M_LoaiSP} ({detail.M_DonViTinh}) tại kho {phieuXuat.MaKho}.");
+                        throw new InvalidOperationException($"Không tìm thấy tồn kho cho sản phẩm {detail.M_SanPham} ({detail.M_DonViTinh}) tại kho {phieuXuat.MaKho}.");
                     }
 
                     // Kiểm tra số lượng tồn
@@ -66,17 +66,17 @@ namespace DACS.Repositories
                     {
                         // Lấy tên SP để báo lỗi rõ ràng hơn
                         var tenSP = await _context.LoaiSanPhams
-                                           .Where(sp => sp.M_LoaiSP == detail.M_LoaiSP)
+                                           .Where(sp => sp.M_LoaiSP == detail.M_SanPham)
                                            .Select(sp => sp.TenLoai)
                                            .FirstOrDefaultAsync();
-                        throw new InvalidOperationException($"Không đủ số lượng tồn kho cho '{tenSP ?? detail.M_LoaiSP}' ({detail.M_DonViTinh}) tại kho {phieuXuat.MaKho}. Tồn: {tonKhoRecord.KhoiLuong}, Xuất: {detail.SoLuong}.");
+                        throw new InvalidOperationException($"Không đủ số lượng tồn kho cho '{tenSP ?? detail.M_SanPham}' ({detail.M_DonViTinh}) tại kho {phieuXuat.MaKho}. Tồn: {tonKhoRecord.KhoiLuong}, Xuất: {detail.SoLuong}.");
                     }
 
                     // Giảm số lượng tồn kho
                     tonKhoRecord.KhoiLuong -= detail.SoLuong;
                     _context.TonKhos.Update(tonKhoRecord); // Đánh dấu để cập nhật
                     _logger.LogInformation("Chuẩn bị cập nhật TonKho: Kho={MaKho}, SP={MaSP}, DVT={MaDVT}. Số lượng -{SoLuong}. Tồn mới: {TonMoi}",
-                                           phieuXuat.MaKho, detail.M_LoaiSP, detail.M_DonViTinh, detail.SoLuong, tonKhoRecord.KhoiLuong);
+                                           phieuXuat.MaKho, detail.M_SanPham, detail.M_DonViTinh, detail.SoLuong, tonKhoRecord.KhoiLuong);
                 }
 
                 // 3. Lưu tất cả thay đổi vào DB (Add PhieuXuat, Add ChiTiet, Update TonKho)
@@ -104,7 +104,7 @@ namespace DACS.Repositories
             if (includeDetails)
             {
                 query = query.Include(px => px.ChiTietPhieuXuats)! // Dùng ! để báo EF Core biết sẽ có details
-                           .ThenInclude(ct => ct.LoaiSanPham)
+                           .ThenInclude(ct => ct.SanPham)
                        .Include(px => px.ChiTietPhieuXuats)!
                            .ThenInclude(ct => ct.DonViTinh)
                        .Include(px => px.KhoHang); // Include Kho hàng xuất

@@ -50,7 +50,7 @@ namespace DACS.Areas.QuanLyXNK.Controllers
                                             .Include(ct => ct.YeuCauThuGom)
                                             .Where(ct => (ct.YeuCauThuGom.TrangThai == "Hoàn thành" || ct.YeuCauThuGom.TrangThai == "Thu gom thất bại") && // ĐÃ SỬA
                                                           ct.YeuCauThuGom.ThoiGianHoanThanh >= startDate && ct.YeuCauThuGom.ThoiGianHoanThanh < endDateForQuery)
-                                            .Select(ct => new { ct.M_LoaiSP, ct.M_DonViTinh })
+                                            .Select(ct => new { ct.M_SanPham, ct.M_DonViTinh })
                                             .Distinct()
                                             .ToListAsync();
                 _logger.LogInformation("Số lượng productsInImports (sau distinct): {Count}", productsInImports.Count);
@@ -58,13 +58,13 @@ namespace DACS.Areas.QuanLyXNK.Controllers
                 var productsInExports = await _context.ChiTietPhieuXuats
                                             .Include(ct => ct.PhieuXuat)
                                             .Where(ct => ct.PhieuXuat.NgayXuat >= startDate && ct.PhieuXuat.NgayXuat < endDateForQuery)
-                                            .Select(ct => new { ct.M_LoaiSP, ct.M_DonViTinh })
+                                            .Select(ct => new { ct.M_SanPham, ct.M_DonViTinh })
                                             .Distinct()
                                             .ToListAsync();
                 _logger.LogInformation("Số lượng productsInExports (sau distinct): {Count}", productsInExports.Count);
 
                 var productsInStock = await _context.TonKhos
-                                            .Select(tk => new { tk.M_LoaiSP, tk.M_DonViTinh })
+                                            .Select(tk => new { tk.M_SanPham, tk.M_DonViTinh })
                                             .Distinct()
                                             .ToListAsync();
                 _logger.LogInformation("Số lượng productsInStock (sau distinct): {Count}", productsInStock.Count);
@@ -83,7 +83,7 @@ namespace DACS.Areas.QuanLyXNK.Controllers
                 }
 
                 // --- Lấy thông tin chi tiết Sản phẩm và Đơn vị tính ---
-                var productCodes = allRelevantProducts.Select(p => p.M_LoaiSP).Distinct().ToList();
+                var productCodes = allRelevantProducts.Select(p => p.M_SanPham).Distinct().ToList();
                 var unitCodes = allRelevantProducts.Select(p => p.M_DonViTinh).Distinct().ToList();
 
                 var productDetails = await _context.LoaiSanPhams
@@ -111,8 +111,8 @@ namespace DACS.Areas.QuanLyXNK.Controllers
                 var exportsGrouped = await _context.ChiTietPhieuXuats
                     .Include(ct => ct.PhieuXuat)
                     .Where(ct => ct.PhieuXuat.NgayXuat >= startDate && ct.PhieuXuat.NgayXuat < endDateForQuery)
-                    .GroupBy(ct => new { ct.M_LoaiSP, ct.M_DonViTinh })
-                    .Select(g => new { g.Key.M_LoaiSP, g.Key.M_DonViTinh, TongXuat = g.Sum(ct => ct.SoLuong) })
+                    .GroupBy(ct => new { ct.M_SanPham, ct.M_DonViTinh })
+                    .Select(g => new { g.Key.M_SanPham, g.Key.M_DonViTinh, TongXuat = g.Sum(ct => ct.SoLuong) })
                     .ToListAsync();
                 _logger.LogInformation("Số lượng exportsGrouped: {Count}", exportsGrouped.Count);
 
@@ -126,14 +126,14 @@ namespace DACS.Areas.QuanLyXNK.Controllers
                 // --- Tạo ViewModel List ---
                 foreach (var productInfo in allRelevantProducts)
                 {
-                    var importData = importsGrouped.FirstOrDefault(i => i.M_LoaiSP == productInfo.M_LoaiSP && i.M_DonViTinh == productInfo.M_DonViTinh);
-                    var exportData = exportsGrouped.FirstOrDefault(e => e.M_LoaiSP == productInfo.M_LoaiSP && e.M_DonViTinh == productInfo.M_DonViTinh);
-                    var stockData = stockGrouped.FirstOrDefault(s => s.M_LoaiSP == productInfo.M_LoaiSP && s.M_DonViTinh == productInfo.M_DonViTinh);
+                    var importData = importsGrouped.FirstOrDefault(i => i.M_LoaiSP == productInfo.M_SanPham && i.M_DonViTinh == productInfo.M_DonViTinh);
+                    var exportData = exportsGrouped.FirstOrDefault(e => e.M_SanPham  == productInfo.M_SanPham && e.M_DonViTinh == productInfo.M_DonViTinh);
+                    var stockData = stockGrouped.FirstOrDefault(s => s.M_LoaiSP == productInfo.M_SanPham && s.M_DonViTinh == productInfo.M_DonViTinh);
 
                     viewModel.ThongKeItems.Add(new ThongKeItemViewModel
                     {
-                        MaSanPham = productInfo.M_LoaiSP,
-                        TenSanPham = productDetails.TryGetValue(productInfo.M_LoaiSP, out var tenSP) ? tenSP ?? productInfo.M_LoaiSP : productInfo.M_LoaiSP,
+                        MaSanPham = productInfo.M_SanPham,
+                        TenSanPham = productDetails.TryGetValue(productInfo.M_SanPham, out var tenSP) ? tenSP ?? productInfo.M_SanPham : productInfo.M_SanPham,
                         MaDonViTinh = productInfo.M_DonViTinh,
                         TenDonViTinh = unitDetails.TryGetValue(productInfo.M_DonViTinh, out var tenDVT) ? tenDVT ?? productInfo.M_DonViTinh : productInfo.M_DonViTinh,
                         TongNhap = importData?.TongNhap ?? 0,

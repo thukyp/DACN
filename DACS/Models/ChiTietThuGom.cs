@@ -94,6 +94,9 @@ namespace DACS.Models
         [ForeignKey("MaXa")]
         public virtual XaPhuong? XaPhuong { get; set; }
         public string? MoTa { get;  set; }
+        public string M_SanPham { get; set; }
+        [ForeignKey("M_SanPham")] // Link to the FK property
+        public virtual SanPham SanPham { get; set; }
         public string M_LoaiSP { get;  set; }
         [ForeignKey("M_LoaiSP")] // Link to the FK property
         public virtual LoaiSanPham LoaiSanPham { get; set; } // Add the navigation property

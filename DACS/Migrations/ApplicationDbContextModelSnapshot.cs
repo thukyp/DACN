@@ -309,7 +309,7 @@ namespace DACS.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(10)");
 
-                    b.Property<string>("M_LoaiSP")
+                    b.Property<string>("M_SanPham")
                         .IsRequired()
                         .HasMaxLength(10)
                         .HasColumnType("nvarchar(10)");
@@ -324,7 +324,7 @@ namespace DACS.Migrations
 
                     b.HasIndex("M_DonViTinh");
 
-                    b.HasIndex("M_LoaiSP");
+                    b.HasIndex("M_SanPham");
 
                     b.HasIndex("MaPhieuXuat");
 
@@ -382,6 +382,10 @@ namespace DACS.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(10)");
 
+                    b.Property<string>("M_SanPham")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(10)");
+
                     b.Property<string>("M_YeuCau")
                         .IsRequired()
                         .HasMaxLength(10)
@@ -408,9 +412,6 @@ namespace DACS.Migrations
                     b.Property<string>("QuanLyM_QuanLy")
                         .HasColumnType("nvarchar(10)");
 
-                    b.Property<string>("SanPhamM_SanPham")
-                        .HasColumnType("nvarchar(10)");
-
                     b.Property<int>("SoLuong")
                         .HasColumnType("int");
 
@@ -424,6 +425,8 @@ namespace DACS.Migrations
 
                     b.HasIndex("M_LoaiSP");
 
+                    b.HasIndex("M_SanPham");
+
                     b.HasIndex("M_YeuCau");
 
                     b.HasIndex("MaQuan");
@@ -433,8 +436,6 @@ namespace DACS.Migrations
                     b.HasIndex("MaXa");
 
                     b.HasIndex("QuanLyM_QuanLy");
-
-                    b.HasIndex("SanPhamM_SanPham");
 
                     b.ToTable("ChiTietThuGoms");
                 });
@@ -1333,9 +1334,9 @@ namespace DACS.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("DACS.Models.LoaiSanPham", "LoaiSanPham")
+                    b.HasOne("DACS.Models.SanPham", "SanPham")
                         .WithMany()
-                        .HasForeignKey("M_LoaiSP")
+                        .HasForeignKey("M_SanPham")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -1347,9 +1348,9 @@ namespace DACS.Migrations
 
                     b.Navigation("DonViTinh");
 
-                    b.Navigation("LoaiSanPham");
-
                     b.Navigation("PhieuXuat");
+
+                    b.Navigation("SanPham");
                 });
 
             modelBuilder.Entity("DACS.Models.ChiTietThuGom", b =>
@@ -1374,6 +1375,12 @@ namespace DACS.Migrations
                         .WithMany()
                         .HasForeignKey("M_LoaiSP")
                         .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("DACS.Models.SanPham", "SanPham")
+                        .WithMany("ChiTietThuGoms")
+                        .HasForeignKey("M_SanPham")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("DACS.Models.YeuCauThuGom", "YeuCauThuGom")
@@ -1404,10 +1411,6 @@ namespace DACS.Migrations
                         .WithMany("ChiTietThuGoms")
                         .HasForeignKey("QuanLyM_QuanLy");
 
-                    b.HasOne("DACS.Models.SanPham", null)
-                        .WithMany("ChiTietThuGoms")
-                        .HasForeignKey("SanPhamM_SanPham");
-
                     b.Navigation("DonViTinh");
 
                     b.Navigation("KhachHang");
@@ -1415,6 +1418,8 @@ namespace DACS.Migrations
                     b.Navigation("LoaiSanPham");
 
                     b.Navigation("QuanHuyen");
+
+                    b.Navigation("SanPham");
 
                     b.Navigation("TinhThanhPho");
 

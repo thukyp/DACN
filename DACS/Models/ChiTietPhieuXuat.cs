@@ -15,9 +15,9 @@ namespace DACS.Models
 
         [Required]
         [StringLength(10)]
-        public string M_LoaiSP { get; set; } // FK
-        [ForeignKey("M_LoaiSP")]
-        public virtual LoaiSanPham LoaiSanPham { get; set; }
+        public string M_SanPham { get; set; } // FK
+        [ForeignKey("M_SanPham")]
+        public virtual SanPham SanPham { get; set; }
 
 
         [Required]

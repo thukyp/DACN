@@ -124,9 +124,9 @@ namespace DACS.Areas.QuanLyXNK.Controllers
                 .Select(kh => new SelectListItem { Value = kh.MaKho, Text = kh.TenKho + " (" + kh.MaKho + ")" })
                 .ToListAsync();
 
-            viewModel.LoaiSanPhamOptions = await _context.LoaiSanPhams
-                .OrderBy(lsp => lsp.TenLoai)
-                .Select(lsp => new SelectListItem { Value = lsp.M_LoaiSP, Text = lsp.TenLoai + " (" + lsp.M_LoaiSP + ")" })
+            viewModel.SanPhamOptions = await _context.SanPhams
+                .OrderBy(lsp => lsp.TenSanPham)
+                .Select(lsp => new SelectListItem { Value = lsp.M_SanPham, Text = lsp.TenSanPham + " (" + lsp.M_SanPham + ")" })
                 .ToListAsync();
 
             // Đơn vị tính có thể được lọc dựa trên sản phẩm được chọn (nếu cần, phức tạp hơn)
@@ -178,13 +178,13 @@ namespace DACS.Areas.QuanLyXNK.Controllers
                         .AsNoTracking() // Chỉ đọc, không theo dõi thay đổi ở bước này
                         .FirstOrDefaultAsync(tk =>
                             tk.MaKho == viewModel.MaKho &&
-                            tk.M_LoaiSP == ctItemVM.M_LoaiSP &&
+                            tk.M_SanPham == ctItemVM.M_LoaiSP &&
                             tk.M_DonViTinh == ctItemVM.M_DonViTinh); // Sử dụng MaDonViTinh
 
                     if (tonKhoHienTai == null || tonKhoHienTai.KhoiLuong < ctItemVM.SoLuong)
                     {
                         await transaction.RollbackAsync();
-                        string tenSP = _context.LoaiSanPhams.FirstOrDefault(l => l.M_LoaiSP == ctItemVM.M_LoaiSP)?.TenLoai ?? ctItemVM.M_LoaiSP;
+                        string tenSP = _context.SanPhams.FirstOrDefault(l => l.M_SanPham == ctItemVM.M_LoaiSP)?.M_SanPham ?? ctItemVM.M_LoaiSP;
                         _logger.LogWarning("Rollback transaction do không đủ tồn kho cho SP {MaSP} ({TenSP}) tại Kho {MaKho}. Tồn: {Ton}, Xuất: {Xuat}",
                             ctItemVM.M_LoaiSP, tenSP, viewModel.MaKho, tonKhoHienTai?.KhoiLuong ?? 0, ctItemVM.SoLuong);
                         ModelState.AddModelError("", $"Không đủ tồn kho cho sản phẩm '{tenSP}'. Tồn hiện tại: {tonKhoHienTai?.KhoiLuong ?? 0}, Yêu cầu xuất: {ctItemVM.SoLuong}.");
@@ -208,7 +208,7 @@ namespace DACS.Areas.QuanLyXNK.Controllers
                 {
                     var chiTiet = new ChiTietPhieuXuat
                     {
-                        M_LoaiSP = ctItemVM.M_LoaiSP,
+                        M_SanPham = ctItemVM.M_LoaiSP,
                         M_DonViTinh = ctItemVM.M_DonViTinh, // Đảm bảo M_DonViTinh này khớp với TonKho.MaDonViTinh
                         SoLuong = ctItemVM.SoLuong
                         // PhieuXuatId sẽ được EF Core tự gán khi Add phieuXuat
@@ -220,7 +220,7 @@ namespace DACS.Areas.QuanLyXNK.Controllers
                     var tonKhoItemToUpdate = await _context.TonKhos
                         .FirstOrDefaultAsync(tk =>
                             tk.MaKho == phieuXuat.MaKho &&
-                            tk.M_LoaiSP == chiTiet.M_LoaiSP &&
+                            tk.M_SanPham == chiTiet.M_SanPham &&
                             tk.M_DonViTinh == chiTiet.M_DonViTinh); // Sử dụng MaDonViTinh
 
                     if (tonKhoItemToUpdate != null) // Điều này luôn đúng do đã kiểm tra ở trên
@@ -228,7 +228,7 @@ namespace DACS.Areas.QuanLyXNK.Controllers
                         tonKhoItemToUpdate.KhoiLuong -= chiTiet.SoLuong;
                         _context.Update(tonKhoItemToUpdate);
                         _logger.LogInformation("Chuẩn bị trừ kho cho SP {MaSP} tại Kho {MaKho}, số lượng trừ: {SoLuongTru}. Tồn mới dự kiến: {TonMoi}",
-                            tonKhoItemToUpdate.M_LoaiSP, tonKhoItemToUpdate.MaKho, chiTiet.SoLuong, tonKhoItemToUpdate.KhoiLuong);
+                            tonKhoItemToUpdate.M_SanPham, tonKhoItemToUpdate.MaKho, chiTiet.SoLuong, tonKhoItemToUpdate.KhoiLuong);
                     }
                 }
                 _context.PhieuXuats.Add(phieuXuat); // Thêm phiếu xuất (và các chi tiết của nó) vào context
