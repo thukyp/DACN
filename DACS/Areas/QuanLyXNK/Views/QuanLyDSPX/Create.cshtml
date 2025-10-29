@@ -208,7 +208,7 @@
                 <div class="row item-row align-items-end">
                     <div class="col-md-4">
                         <label asp-for="ChiTietItems[i].M_LoaiSP" class="form-label"></label>
-                        <select asp-for="ChiTietItems[i].M_LoaiSP" asp-items="Model.LoaiSanPhamOptions" class="form-select chi-tiet-san-pham">
+                        <select asp-for="ChiTietItems[i].M_LoaiSP" asp-items="Model.SanPhamOptions" class="form-select chi-tiet-san-pham">
                             <option value="">-- Chọn sản phẩm --</option>
                         </select>
                         <span asp-validation-for="ChiTietItems[i].M_LoaiSP" class="text-danger"></span>
@@ -263,10 +263,10 @@
                     const newItemRow = `
                         <div class="row item-row align-items-end">
                             <div class="col-md-4">
-                                <label for="ChiTietItems_${itemIndex}__M_LoaiSP" class="form-label">Sản phẩm</label>
-                                <select name="ChiTietItems[${itemIndex}].M_LoaiSP" id="ChiTietItems_${itemIndex}__M_LoaiSP" class="form-select chi-tiet-san-pham">
+                                <label for="ChiTietItems_${itemIndex}__MaSanPham" class="form-label">Sản phẩm</label>
+                                <select name="ChiTietItems[${itemIndex}].MaSanPham" id="ChiTietItems_${itemIndex}__MaSanPham" class="form-select chi-tiet-san-pham">
                                     <option value="">-- Chọn sản phẩm --</option>
-        @foreach (var option in Model.LoaiSanPhamOptions ?? Enumerable.Empty<SelectListItem>())
+            @foreach (var option in Model.SanPhamOptions ?? Enumerable.Empty<SelectListItem>())
         {
                                             <option value="@option.Value">@option.Text</option>
         }

@@ -26,7 +26,7 @@ namespace DACS.Models.ViewModels
 
         // Dùng để đổ dữ liệu cho các DropdownList trên View
         public IEnumerable<SelectListItem>? KhoHangOptions { get; set; }
-        public IEnumerable<SelectListItem>? LoaiSanPhamOptions { get; set; }
+        public IEnumerable<SelectListItem>? SanPhamOptions { get; set; }
         public IEnumerable<SelectListItem>? DonViTinhOptions { get; set; }
 
         public PhieuXuatCreateViewModel()
