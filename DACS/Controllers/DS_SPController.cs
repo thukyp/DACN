@@ -1,4 +1,5 @@
 ﻿using DACS.Models;
+using DACS.Models.ViewModels;
 using DACS.Repositories;
 using Microsoft.AspNetCore.Identity; // <-- thêm
 using Microsoft.AspNetCore.Mvc;
@@ -128,14 +129,18 @@ namespace DACS.Controllers
             if (product == null)
                 return NotFound("Không tìm thấy sản phẩm.");
 
-            var tonKho = await _context.LoTonKhos
-                .Where(tk => tk.M_SanPham == id)
-                .Select(tk => tk.KhoiLuongConLai)
-                .FirstOrDefaultAsync();
+            // <<< LOGIC MỚI: LẤY DANH SÁCH LÔ HÀNG >>>
+            // Lấy tất cả các lô còn hàng, sắp xếp theo FIFO (Ngày nhập cũ nhất trước)
+            var availableLots = await _context.LoTonKhos
+                .Where(l => l.M_SanPham == id && l.KhoiLuongConLai > 0)
+                .OrderBy(l => l.NgayNhapKho)
+                .ToListAsync();
 
-            ViewData["SoLuongTonKho"] = tonKho;
-            ViewData["Title"] = $"Chi tiết: {product.TenSanPham}";
+            // <<< LOGIC MỚI: TÍNH TỔNG TỒN KHO >>>
+            // Tính tổng tồn kho từ tất cả các lô trên
+            decimal totalStock = availableLots.Sum(l => l.KhoiLuongConLai);
 
+            // (Code lấy sản phẩm liên quan của bạn)
             var relatedProducts = await _context.SanPhams
                 .Where(sp => sp.M_LoaiSP == product.M_LoaiSP && sp.M_SanPham != id)
                 .Include(sp => sp.LoaiSanPham)
@@ -143,10 +148,7 @@ namespace DACS.Controllers
                 .Take(4)
                 .ToListAsync();
 
-            ViewData["RelatedProducts"] = relatedProducts;
-            ViewData["DefaultQuantity"] = 1;
-
-            // Xác định sản phẩm này có trong danh sách yêu thích của user không
+            // (Code kiểm tra Yêu thích của bạn)
             bool isFavorite = false;
             if (User.Identity.IsAuthenticated)
             {
@@ -154,9 +156,21 @@ namespace DACS.Controllers
                 isFavorite = await _context.SanPhamYeuThichs
                     .AnyAsync(y => y.UserId == userId && y.M_SanPham == id);
             }
-            ViewData["IsFavorite"] = isFavorite;
 
-            return View(product);
+            // Tạo ViewModel mới để chứa tất cả dữ liệu
+            var viewModel = new SanPhamDetailsViewModel
+            {
+                SanPham = product,
+                AvailableLots = availableLots,
+                TotalStock = totalStock
+            };
+
+            // Gửi dữ liệu cũ qua ViewData
+            ViewData["IsFavorite"] = isFavorite;
+            ViewData["RelatedProducts"] = relatedProducts;
+            // ViewData["SoLuongTonKho"] = tonKho; // <<< XÓA DÒNG CŨ NÀY
+
+            return View(viewModel); // Gửi ViewModel mới ra View
         }
 
         // =========================================
