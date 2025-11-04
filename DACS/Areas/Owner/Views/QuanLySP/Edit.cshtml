@@ -11,11 +11,9 @@
     <div class="col-md-8">
         <form asp-action="Edit" asp-route-id="@Model.M_SanPham" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            @* Trường M_SanPham thường là ẩn hoặc chỉ đọc khi sửa *@
             <input type="hidden" asp-for="M_SanPham" />
-            <input type="hidden" asp-for="NgayTao" /> @* Giữ lại ngày tạo *@
+            <input type="hidden" asp-for="NgayTao" />
 
-            @* Các trường input giống như form Create, nhưng đã có sẵn giá trị *@
             <div class="row">
                 <div class="col-md-6 mb-3">
                     <label asp-for="M_SanPham" class="control-label">Mã Sản Phẩm (Không đổi)</label>
@@ -51,11 +49,13 @@
                     <input asp-for="Gia" type="number" class="form-control" />
                     <span asp-validation-for="Gia" class="text-danger"></span>
                 </div>
-                <div class="col-md-4 mb-3">
-                    <label asp-for="SoLuong" class="control-label"></label>
-                    <input asp-for="SoLuong" type="number" class="form-control" />
-                    <span asp-validation-for="SoLuong" class="text-danger"></span>
+
+                @* <div class="col-md-4 mb-3">
+                     <label asp-for="SoLuong" class="control-label"></label>
+                     <input asp-for="SoLuong" type="number" class="form-control" />
+                     <span asp-validation-for="SoLuong" class="text-danger"></span>
                 </div>
+                *@
                 <div class="col-md-4 mb-3">
                     <label asp-for="TrangThai" class="control-label"></label>
                     <select asp-for="TrangThai" class="form-select">
@@ -79,16 +79,15 @@
                     <input asp-for="HanSuDung" type="date" class="form-control" />
                     <span asp-validation-for="HanSuDung" class="text-danger"></span>
                 </div>
-                <div class="col-md-6 mb-3">
-                    <label class="control-label">Ảnh Hiện Tại</label>
-                    <img src="@Url.Content(Model.AnhSanPham ?? "~/images/placeholder.png")" ... />
 
-                    <label for="ProductImageFile" class="form-label">Chọn Ảnh Mới (Để thay thế)</label>
-                    <input type="file" name="ProductImageFile" id="ProductImageFile" class="form-control" accept="image/*">
-                    <input type="hidden" asp-for="AnhSanPham" /> @* Giữ lại path cũ nếu không upload file mới *@
-                    @* <span asp-validation-for="AnhSanPham" class="text-danger"></span> *@
+                <div class="col-md-6 mb-3">
+                    <label class="control-label">Ảnh Hiện Tại</label><br />
+                    <img src="@Url.Content(Model.AnhSanPham ?? "~/images/placeholder.png")" alt="Ảnh SP" class="img-thumbnail" style="max-width: 150px; margin-bottom: 10px;" />
+
+                    <label for="ImageFile" class="form-label">Chọn Ảnh Mới (Để thay thế)</label>
+                    <input type="file" name="ImageFile" id="ImageFile" class="form-control" accept="image/*">
+                    <input type="hidden" asp-for="AnhSanPham" />
                 </div>
-               
             </div>
 
             <div class="form-group mt-3">

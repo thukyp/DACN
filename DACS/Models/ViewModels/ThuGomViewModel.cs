@@ -84,15 +84,11 @@ namespace DACS.Models.ViewModels // <<< Thay namespace cho đúng với project 
 
 
 
-        [Display(Name = "Loại sản phẩm")]
-
+        [Display(Name = "Loại sản phẩm")]
         [Required(ErrorMessage = "Vui lòng chọn loại sản phẩm.")]
+        public string M_LoaiSP { get; set; }
 
-        public string ByproductType { get; set; } // Lưu Mã Loại SP được chọn
-
-
-
-        [Display(Name = "Mô tả chi tiết phụ phẩm")]
+        [Display(Name = "Mô tả chi tiết phụ phẩm")]
 
         public string? ByproductDescription { get; set; }
 
@@ -138,7 +134,9 @@ namespace DACS.Models.ViewModels // <<< Thay namespace cho đúng với project 
 
         public bool CharProcessed { get; set; }
 
-
+        [Display(Name = "Sản phẩm cụ thể")]
+        [Required(ErrorMessage = "Vui lòng chọn sản phẩm.")]
+        public string M_SanPham { get; set; } // <<< THÊM MỚI
 
         [Display(Name = "Ảnh chụp phụ phẩm")]
 
@@ -150,7 +148,8 @@ namespace DACS.Models.ViewModels // <<< Thay namespace cho đúng với project 
 
         public IEnumerable<SelectListItem>? LoaiSanPhamOptions { get; set; }
 
-
+        [NotMapped]
+        public IEnumerable<SelectListItem>? SanPhamOptions { get; set; } // <<< THÊM MỚI
 
         [NotMapped]
 
@@ -173,9 +172,17 @@ namespace DACS.Models.ViewModels // <<< Thay namespace cho đúng với project 
         [NotMapped]
 
         public IEnumerable<SelectListItem>? WardOptions { get; set; }
+        [Display(Name = "Tôi đã đọc và đồng ý với các Điều Khoản Cam Kết Cung Cấp Phụ Phẩm.")]
+        [Compare(nameof(DieuKienPhaiBangTrue), ErrorMessage = "Bạn phải đồng ý với cam kết để gửi yêu cầu.")]
+        public bool DaDongYCamKet { get; set; }
 
-
-
+        // 2. Thêm thuộc tính "giả" này
+        // Thuộc tính này luôn trả về 'true' để so sánh
+        [NotMapped]
+        public bool DieuKienPhaiBangTrue
+        {
+            get { return true; }
+        }
     }
 
 }

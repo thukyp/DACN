@@ -130,12 +130,12 @@
                                 </div>
                                 <div class="card-body">
                                     <div class="mb-3">
-                                        <label asp-for="ByproductType" class="form-label">Loại Sản Phẩm</label> <span class="text-danger">*</span>
+                                        <label asp-for="M_LoaiSP" class="form-label">Loại Sản Phẩm</label> <span class="text-danger">*</span>
                                         @* Controller GET phải load và chọn sẵn giá trị cho Model.LoaiSanPhamOptions *@
-                                        <select asp-for="ByproductType" class="form-select" asp-items="Model.LoaiSanPhamOptions">
+                                        <select asp-for="M_LoaiSP" class="form-select" asp-items="Model.LoaiSanPhamOptions">
                                             <option value="">Chọn loại sản phẩm...</option>
                                         </select>
-                                        <span asp-validation-for="ByproductType" class="text-danger field-validation-error"></span>
+                                        <span asp-validation-for="M_LoaiSP" class="text-danger field-validation-error"></span>
                                     </div>
 
                                     <div class="mb-3">

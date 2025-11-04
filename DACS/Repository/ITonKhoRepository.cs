@@ -10,7 +10,7 @@ namespace DACS.Repository // Hoặc DACS.Interfaces
     public interface ITonKhoRepository
     {
         // Lấy dữ liệu tồn kho phân trang và lọc
-        Task<(IEnumerable<TonKho> Items, int TotalCount)> GetPagedTonKhoAsync(
+        Task<(IEnumerable<LoTonKho> Items, int TotalCount)> GetPagedTonKhoAsync(
             string? searchTerm,
             string? maKhoFilter,
             int pageIndex,
@@ -20,14 +20,6 @@ namespace DACS.Repository // Hoặc DACS.Interfaces
         // Lấy danh sách Kho hàng cho dropdown filter
         Task<IEnumerable<SelectListItem>> GetKhoHangOptionsAsync();
         Task UpdateTonKhoKhoiLuongAsync(string productId, float newKhoiLuong);
-        Task<TonKho?> GetTonKhoByProductIdAsync(string productId);
-        // Có thể thêm các phương thức khác nếu cần (GetById, Add, Update, Delete...)
-        // Task<TonKho?> GetByIdAsync(int id, bool trackChanges = false);
-        // Task AddAsync(TonKho tonKho);
-        // Task UpdateAsync(TonKho tonKho);
-        // Task DeleteAsync(int id);
-
-        // Có thể thêm phương thức lấy Định Mức Tối Thiểu (nếu bạn lưu nó ở bảng khác)
-        // Task<long?> GetDinhMucToiThieuAsync(string maLoaiSP);
+        Task<LoTonKho?> GetTonKhoByProductIdAsync(string productId);
     }
 }

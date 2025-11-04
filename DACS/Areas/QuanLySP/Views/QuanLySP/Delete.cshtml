@@ -19,17 +19,18 @@
         <dd class="col-sm-9">@Html.DisplayFor(model => model.LoaiSanPham.TenLoai)</dd>
         <dt class="col-sm-3">Giá</dt>
         <dd class="col-sm-9">@Model.Gia.ToString("N0") đ</dd>
-        <dt class="col-sm-3">Số lượng</dt>
-        <dd class="col-sm-9">@Html.DisplayFor(model => model.SoLuong)</dd>
+
+        @* <dt class="col-sm-3">Số lượng</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.SoLuong)</dd> 
+        *@
         <dt class="col-sm-3">Ảnh</dt>
         <dd class="col-sm-9">
             <img src="@Url.Content(Model.AnhSanPham ?? "~/images/placeholder.png")" alt="Ảnh SP" width="150" class="img-thumbnail" />
         </dd>
-        @* Thêm các thông tin khác nếu muốn hiển thị trước khi xóa *@
     </dl>
 
     <form asp-action="Delete">
-        <input type="hidden" asp-for="M_SanPham" /> @* Gửi M_SanPham để Controller biết xóa cái nào *@
+        <input type="hidden" asp-for="M_SanPham" />
         <input type="submit" value="Xóa" class="btn btn-danger" /> |
         <a asp-action="Index" class="btn btn-secondary">Hủy</a>
     </form>

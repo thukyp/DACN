@@ -31,7 +31,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 
     public DbSet<KhoHang> KhoHangs { get; set; }
 
-    public DbSet<TonKho> TonKhos { get; set; } 
+    public DbSet<LoTonKho> LoTonKhos { get; set; } 
 
     public DbSet<SanPham> SanPhams { get; set; }
 
@@ -160,8 +160,57 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
      .HasColumnType("decimal(18, 2)");
 
 
+        builder.Entity<LoTonKho>(entity =>
+        {
+            // 1. Sửa lỗi cảnh báo (warning) về decimal
+            // Chỉ định rõ ràng kiểu dữ liệu SQL, ví dụ: decimal(18, 2)
+            entity.Property(lo => lo.KhoiLuongBanDau).HasColumnType("decimal(18, 2)");
+            entity.Property(lo => lo.KhoiLuongConLai).HasColumnType("decimal(18, 2)");
 
+            // 2. Sửa lỗi ERROR (Multiple Cascade Paths)
+            // Báo cho EF Core KHÔNG được phép xóa cascade
 
+            // Khóa ngoại từ LoTonKho -> SanPham
+            entity.HasOne(lo => lo.SanPham)
+                  .WithMany() // Giả sử SanPham không có ICollection<LoTonKho>
+                  .HasForeignKey(lo => lo.M_SanPham)
+                  .OnDelete(DeleteBehavior.Restrict); // <-- Quan trọng
+
+            // Khóa ngoại từ LoTonKho -> KhoHang
+            entity.HasOne(lo => lo.KhoHang)
+                  .WithMany() // Giả sử KhoHang không có ICollection<LoTonKho>
+                  .HasForeignKey(lo => lo.MaKho)
+                  .OnDelete(DeleteBehavior.Restrict); // <-- Quan trọng
+
+            // Khóa ngoại từ LoTonKho -> DonViTinh
+            entity.HasOne(lo => lo.DonViTinh)
+                  .WithMany() // Giả sử DonViTinh không có ICollection<LoTonKho>
+                  .HasForeignKey(lo => lo.M_DonViTinh)
+                  .OnDelete(DeleteBehavior.Restrict); // <-- Quan trọng
+        });
+        builder.Entity<ChiTietPhieuXuat>(entity =>
+        {
+            // 1. Sửa lỗi chính (SanPham):
+            // Quan hệ ChiTietPhieuXuat (Nhiều) -> SanPham (Một)
+            entity.HasOne(ctpx => ctpx.SanPham)
+                  .WithMany() // Giả sử SanPham không có ICollection<ChiTietPhieuXuat>
+                  .HasForeignKey(ctpx => ctpx.M_SanPham)
+                  .OnDelete(DeleteBehavior.Restrict); // <-- THE FIX: Cấm xóa SanPham nếu còn ChiTietPhieuXuat
+
+            // 2. Cài đặt cho các FK khác (để an toàn):
+            // Quan hệ ChiTietPhieuXuat (Nhiều) -> DonViTinh (Một)
+            entity.HasOne(ctpx => ctpx.DonViTinh)
+                  .WithMany() // Giả sử DonViTinh không có ICollection
+                  .HasForeignKey(ctpx => ctpx.M_DonViTinh)
+                  .OnDelete(DeleteBehavior.Restrict); // <-- THE FIX: Cấm xóa DonViTinh nếu còn ChiTietPhieuXuat
+
+            // 3. Quan hệ với PhieuXuat (Cha-Con)
+            // (Khóa ngoại này nên để Cascade, là mặc định, nên không cần ghi)
+            // entity.HasOne(ctpx => ctpx.PhieuXuat)
+            //       .WithMany(px => px.ChiTietPhieuXuats) // Giả sử PhieuXuat có ICollection
+            //       .HasForeignKey(ctpx => ctpx.MaPhieuXuat)
+            //       .OnDelete(DeleteBehavior.Cascade); 
+        });
         builder.Entity<ChiTietThuGom>(entity =>
 
         {

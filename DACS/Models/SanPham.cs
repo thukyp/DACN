@@ -40,9 +40,6 @@ namespace DACS.Models
         public string? AnhSanPham { get; set; }
 
         [Required]
-        public int SoLuong { get; set; } // Integer
-
-        [Required]
         public DateTime HanSuDung { get; set; }
 
         // Navigation Properties

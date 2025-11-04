@@ -1,7 +1,7 @@
 ﻿// File: Repositories/PhieuXuatRepository.cs
 using DACS.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging; // Thêm using cho ILogger
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,6 +20,7 @@ namespace DACS.Repositories
             _logger = logger;
         }
 
+        // <<< ================= VIẾT LẠI HOÀN TOÀN HÀM NÀY ================= >>>
         public async Task AddPhieuXuatAsync(PhieuXuat phieuXuat)
         {
             if (phieuXuat == null) throw new ArgumentNullException(nameof(phieuXuat));
@@ -32,7 +33,6 @@ namespace DACS.Repositories
                 throw new InvalidOperationException("Chưa chọn kho xuất hàng cho phiếu xuất.");
             }
 
-            // Bắt đầu Transaction để đảm bảo tính toàn vẹn
             using var transaction = await _context.Database.BeginTransactionAsync();
             _logger.LogInformation("Bắt đầu transaction thêm Phiếu xuất ngày {NgayXuat} từ kho {MaKho}.", phieuXuat.NgayXuat, phieuXuat.MaKho);
 
@@ -40,9 +40,8 @@ namespace DACS.Repositories
             {
                 // 1. Thêm Phiếu xuất chính vào context (chưa lưu DB)
                 _context.PhieuXuats.Add(phieuXuat);
-                // EF Core sẽ tự động thêm các ChiTietPhieuXuats nếu chúng có trong collection của phieuXuat
 
-                // 2. Kiểm tra và Cập nhật Tồn kho cho từng chi tiết
+                // 2. Kiểm tra và Cập nhật Tồn kho (FIFO) cho từng chi tiết
                 foreach (var detail in phieuXuat.ChiTietPhieuXuats)
                 {
                     if (detail.SoLuong <= 0)
@@ -50,48 +49,67 @@ namespace DACS.Repositories
                         throw new InvalidOperationException($"Số lượng xuất của sản phẩm {detail.M_SanPham} phải lớn hơn 0.");
                     }
 
-                    // Tìm bản ghi tồn kho tương ứng
-                    var tonKhoRecord = await _context.TonKhos
-                        .FirstOrDefaultAsync(tk => tk.MaKho == phieuXuat.MaKho && // Lấy từ MaKho của PhieuXuat
-                                               tk.M_SanPham == detail.M_SanPham &&
-                                               tk.M_DonViTinh == detail.M_DonViTinh);
+                    decimal soLuongCanXuat = (decimal)detail.SoLuong; // Dùng decimal cho nhất quán
 
-                    if (tonKhoRecord == null)
+                    // --- Logic FIFO Bắt đầu ---
+
+                    // A. Kiểm tra tổng tồn kho trước
+                    var tongTonKho = await _context.LoTonKhos
+                        .Where(tk => tk.MaKho == phieuXuat.MaKho &&
+                                     tk.M_SanPham == detail.M_SanPham &&
+                                     tk.M_DonViTinh == detail.M_DonViTinh &&
+                                     tk.KhoiLuongConLai > 0)
+                        .SumAsync(tk => tk.KhoiLuongConLai);
+
+                    if (tongTonKho < soLuongCanXuat)
                     {
-                        throw new InvalidOperationException($"Không tìm thấy tồn kho cho sản phẩm {detail.M_SanPham} ({detail.M_DonViTinh}) tại kho {phieuXuat.MaKho}.");
+                        var tenSP = await _context.SanPhams // <<< SỬA: Lấy từ SanPhams
+                                     .Where(sp => sp.M_SanPham == detail.M_SanPham) // <<< SỬA
+                                     .Select(sp => sp.TenSanPham) // <<< SỬA
+                                     .FirstOrDefaultAsync();
+                        throw new InvalidOperationException($"Không đủ số lượng tồn kho cho '{tenSP ?? detail.M_SanPham}' ({detail.M_DonViTinh}) tại kho {phieuXuat.MaKho}. Tồn: {tongTonKho}, Xuất: {soLuongCanXuat}.");
                     }
 
-                    // Kiểm tra số lượng tồn
-                    if (tonKhoRecord.KhoiLuong < detail.SoLuong)
-                    {
-                        // Lấy tên SP để báo lỗi rõ ràng hơn
-                        var tenSP = await _context.LoaiSanPhams
-                                           .Where(sp => sp.M_LoaiSP == detail.M_SanPham)
-                                           .Select(sp => sp.TenLoai)
-                                           .FirstOrDefaultAsync();
-                        throw new InvalidOperationException($"Không đủ số lượng tồn kho cho '{tenSP ?? detail.M_SanPham}' ({detail.M_DonViTinh}) tại kho {phieuXuat.MaKho}. Tồn: {tonKhoRecord.KhoiLuong}, Xuất: {detail.SoLuong}.");
-                    }
+                    // B. Lấy các lô hàng theo FIFO (Cũ nhất trước)
+                    var availableLots = await _context.LoTonKhos
+                        .Where(tk => tk.MaKho == phieuXuat.MaKho &&
+                                     tk.M_SanPham == detail.M_SanPham &&
+                                     tk.M_DonViTinh == detail.M_DonViTinh &&
+                                     tk.KhoiLuongConLai > 0)
+                        .OrderBy(tk => tk.NgayNhapKho) // Sắp xếp FIFO
+                        .ToListAsync();
 
-                    // Giảm số lượng tồn kho
-                    tonKhoRecord.KhoiLuong -= detail.SoLuong;
-                    _context.TonKhos.Update(tonKhoRecord); // Đánh dấu để cập nhật
-                    _logger.LogInformation("Chuẩn bị cập nhật TonKho: Kho={MaKho}, SP={MaSP}, DVT={MaDVT}. Số lượng -{SoLuong}. Tồn mới: {TonMoi}",
-                                           phieuXuat.MaKho, detail.M_SanPham, detail.M_DonViTinh, detail.SoLuong, tonKhoRecord.KhoiLuong);
+                    // C. Trừ kho lần lượt
+                    foreach (var lot in availableLots)
+                    {
+                        if (soLuongCanXuat <= 0) break; // Đã lấy đủ
+
+                        decimal soLuongLayTuLoNay = Math.Min(soLuongCanXuat, lot.KhoiLuongConLai);
+
+                        lot.KhoiLuongConLai -= soLuongLayTuLoNay;
+                        soLuongCanXuat -= soLuongLayTuLoNay;
+
+                        _context.LoTonKhos.Update(lot); // <<< SỬA: Dùng LoTonKhos
+                        _logger.LogInformation("Trừ kho FIFO: Kho={MaKho}, SP={MaSP}, Lô={MaLo}, Số lượng -{SoLuong}. Tồn lô mới: {TonMoi}",
+                                               phieuXuat.MaKho, detail.M_SanPham, lot.MaLoTonKho, soLuongLayTuLoNay, lot.KhoiLuongConLai);
+
+                        // (Nếu cần truy vết chi tiết: "Phiếu xuất A lấy 50kg từ Lô X và 20kg từ Lô Y", 
+                        // bạn cần thêm một bảng trung gian ChiTietPhieuXuat_LoTonKho ở đây)
+                    }
+                    // --- Logic FIFO Kết thúc ---
                 }
 
-                // 3. Lưu tất cả thay đổi vào DB (Add PhieuXuat, Add ChiTiet, Update TonKho)
-                await _context.SaveChangesAsync(); // Chỉ gọi SaveChanges một lần ở cuối
+                // 3. Lưu tất cả thay đổi vào DB
+                await _context.SaveChangesAsync();
 
-                // 4. Commit transaction nếu mọi thứ thành công
+                // 4. Commit transaction
                 await transaction.CommitAsync();
                 _logger.LogInformation("Đã commit transaction thành công cho Phiếu xuất ngày {NgayXuat} từ kho {MaKho}.", phieuXuat.NgayXuat, phieuXuat.MaKho);
             }
             catch (Exception ex)
             {
-                // Nếu có lỗi, rollback transaction
                 await transaction.RollbackAsync();
                 _logger.LogError(ex, "Lỗi khi thêm Phiếu xuất ngày {NgayXuat} từ kho {MaKho}. Transaction đã được rollback.", phieuXuat.NgayXuat, phieuXuat.MaKho);
-                // Ném lại lỗi để Controller hoặc lớp gọi có thể xử lý
                 throw;
             }
         }
@@ -103,11 +121,14 @@ namespace DACS.Repositories
 
             if (includeDetails)
             {
-                query = query.Include(px => px.ChiTietPhieuXuats)! // Dùng ! để báo EF Core biết sẽ có details
-                           .ThenInclude(ct => ct.SanPham)
-                       .Include(px => px.ChiTietPhieuXuats)!
-                           .ThenInclude(ct => ct.DonViTinh)
-                       .Include(px => px.KhoHang); // Include Kho hàng xuất
+                // <<< SỬA: Sửa lại logic Include cho ChiTietPhieuXuat
+                query = query
+                    .Include(px => px.KhoHang) // Include Kho hàng xuất
+                    .Include(px => px.ChiTietPhieuXuats)
+                        .ThenInclude(ct => ct.SanPham) // Nối đến SanPham (dựa trên M_SanPham)
+                            .ThenInclude(sp => sp.LoaiSanPham) // Nối tiếp đến LoaiSanPham
+                    .Include(px => px.ChiTietPhieuXuats)
+                        .ThenInclude(ct => ct.DonViTinh); // Nối đến DonViTinh (dựa trên M_DonViTinh)
             }
 
             return await query.FirstOrDefaultAsync(px => px.MaPhieuXuat == maPhieuXuat);
@@ -116,6 +137,7 @@ namespace DACS.Repositories
         public async Task<(IEnumerable<PhieuXuat> Items, int TotalCount)> GetPagedPhieuXuatAsync(
             DateTime? tuNgay, DateTime? denNgay, int pageIndex, int pageSize, bool trackChanges = false)
         {
+            // (Logic phân trang của bạn đã đúng, giữ nguyên)
             var query = _context.PhieuXuats.AsQueryable();
 
             if (!trackChanges)
@@ -123,28 +145,24 @@ namespace DACS.Repositories
                 query = query.AsNoTracking();
             }
 
-            // Áp dụng bộ lọc ngày
             if (tuNgay.HasValue)
             {
                 query = query.Where(px => px.NgayXuat.Date >= tuNgay.Value.Date);
             }
             if (denNgay.HasValue)
             {
-                // Bao gồm cả ngày kết thúc
                 DateTime endDateValue = denNgay.Value.Date.AddDays(1);
                 query = query.Where(px => px.NgayXuat < endDateValue);
             }
 
-            // Lấy tổng số lượng trước khi phân trang
             var totalItems = await query.CountAsync();
 
-            // Sắp xếp và Phân trang
             var items = await query
-               .Include(px => px.KhoHang) // Lấy tên kho
-               .OrderByDescending(px => px.NgayXuat) // Mới nhất lên đầu
-               .Skip((pageIndex - 1) * pageSize)
-               .Take(pageSize)
-               .ToListAsync();
+                .Include(px => px.KhoHang)
+                .OrderByDescending(px => px.NgayXuat)
+                .Skip((pageIndex - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
 
             return (items, totalItems);
         }

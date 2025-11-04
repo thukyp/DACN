@@ -176,7 +176,7 @@ namespace DACS.Areas.Identity.Pages.Account
                                 UserId = user.Id,
                                 Ten_KhachHang = user.FullName ?? user.UserName ?? "Chưa đặt tên",
                                 Email_KhachHang = user.Email ?? "None",
-                                SDT_KhachHang =  "None",
+                                SDT_KhachHang = "None",
                                 MaTinh = "T00",
                                 MaQuan = "Q0100",
                                 MaXa = "X010100",

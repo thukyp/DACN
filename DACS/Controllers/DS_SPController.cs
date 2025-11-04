@@ -128,9 +128,9 @@ namespace DACS.Controllers
             if (product == null)
                 return NotFound("Không tìm thấy sản phẩm.");
 
-            var tonKho = await _context.TonKhos
+            var tonKho = await _context.LoTonKhos
                 .Where(tk => tk.M_SanPham == id)
-                .Select(tk => tk.KhoiLuong)
+                .Select(tk => tk.KhoiLuongConLai)
                 .FirstOrDefaultAsync();
 
             ViewData["SoLuongTonKho"] = tonKho;

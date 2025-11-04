@@ -707,7 +707,7 @@ namespace DACS.Areas.KhachHang.Controllers
 
                 {
 
-                    M_LoaiSP = model.ByproductType,
+                    M_LoaiSP = model.M_LoaiSP,
 
                     M_DonViTinh = model.ByproductUnit,
 
@@ -1219,7 +1219,7 @@ namespace DACS.Areas.KhachHang.Controllers
 
                     M_YeuCau = yeuCau.M_YeuCau, // Gán FK
 
-                    M_LoaiSP = model.ByproductType, // <<< Lưu Mã Loại Sản Phẩm
+                    M_LoaiSP = model.M_LoaiSP, // <<< Lưu Mã Loại Sản Phẩm
 
                     M_DonViTinh = model.ByproductUnit,
 
@@ -1393,7 +1393,7 @@ namespace DACS.Areas.KhachHang.Controllers
 
 
 
-                ByproductType = firstDetail.M_LoaiSP, // Map từ M_LoaiSP
+                M_LoaiSP = firstDetail.M_LoaiSP, // Map từ M_LoaiSP
 
                 ByproductDescription = firstDetail.MoTa,
 
@@ -1540,7 +1540,7 @@ namespace DACS.Areas.KhachHang.Controllers
 
                 yeuCauGoc.GhiChu = model.SupplierNotes;
 
-                chiTietGoc.M_LoaiSP = model.ByproductType; // Cập nhật loại SP
+                chiTietGoc.M_LoaiSP = model.M_LoaiSP; // Cập nhật loại SP
                 chiTietGoc.M_DonViTinh = model.ByproductUnit;
 
                 chiTietGoc.SoLuong = (int)model.ByproductQuantity.Value;
@@ -1638,7 +1638,7 @@ namespace DACS.Areas.KhachHang.Controllers
             {
                 // Load Loại Sản Phẩm
                 var loaiSpList = await _context.LoaiSanPhams.OrderBy(lsp => lsp.TenLoai).ToListAsync();
-                model.LoaiSanPhamOptions = new SelectList(loaiSpList, "M_LoaiSP", "TenLoai", model.ByproductType);
+                model.LoaiSanPhamOptions = new SelectList(loaiSpList, "M_LoaiSP", "TenLoai", model.M_LoaiSP);
 
                 // Load Đơn vị tính
                 var donViTinhList = await _context.DonViTinhs.OrderBy(dvt => dvt.TenLoaiTinh).ToListAsync();
@@ -1714,7 +1714,7 @@ namespace DACS.Areas.KhachHang.Controllers
         {
             var sanPhamList = await _context.LoaiSanPhams.OrderBy(sp => sp.TenLoai).ToListAsync(); // Dùng LoaiSanPham theo yêu cầu cuối
 
-            ViewData["LoaiSanPhamOptions"] = new SelectList(sanPhamList, "M_LoaiSP", "TenLoai", model?.ByproductType); // Giữ giá trị chọn nếu có
+            ViewData["LoaiSanPhamOptions"] = new SelectList(sanPhamList, "M_LoaiSP", "TenLoai", model?.M_LoaiSP); // Giữ giá trị chọn nếu có
 
 
 

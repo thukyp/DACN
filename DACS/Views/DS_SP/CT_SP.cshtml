@@ -50,7 +50,18 @@
             <form asp-controller="ShoppingCart" asp-action="AddToCart" method="post">
                 <input type="hidden" name="productId" value="@Model.M_SanPham" />
                 <div class="d-flex align-items-center mb-4">
-                    <label class="form-label me-3 mb-0">Khối lượng: 1kg</label>
+
+                    <label for="khoiluongInput" class="form-label me-3 mb-0">Khối lượng (@(Model.DonViTinh?.TenLoaiTinh ?? "kg")):</label>
+
+                    <input type="number"
+                           name="khoiluong"
+                           id="khoiluongInput"
+                           value="1"
+                           min="1"
+                           max="@soLuongTonKho.ToString("F0")"
+                           class="form-control"
+                           style="width: 100px;"
+                           @(soLuongTonKho > 0 ? "" : "disabled") />
                     <button type="button" id="btnWishlist" class="btn btn-outline-danger ms-3" data-id="@Model.M_SanPham" title="Thêm/Xóa yêu thích">
                         <i id="wishlistIcon" class="fa @heartIconClass"></i>
                     </button>

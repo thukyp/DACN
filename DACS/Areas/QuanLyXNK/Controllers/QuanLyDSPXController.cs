@@ -174,20 +174,20 @@ namespace DACS.Areas.QuanLyXNK.Controllers
                 foreach (var ctItemVM in viewModel.ChiTietItems.Where(ct => !string.IsNullOrEmpty(ct.M_LoaiSP) && ct.SoLuong > 0))
                 {
                     // Giả sử MaDonViTinh trong TonKho.cs là FK và đã được sửa đúng
-                    var tonKhoHienTai = await _context.TonKhos
+                    var tonKhoHienTai = await _context.LoTonKhos
                         .AsNoTracking() // Chỉ đọc, không theo dõi thay đổi ở bước này
                         .FirstOrDefaultAsync(tk =>
                             tk.MaKho == viewModel.MaKho &&
                             tk.M_SanPham == ctItemVM.M_LoaiSP &&
                             tk.M_DonViTinh == ctItemVM.M_DonViTinh); // Sử dụng MaDonViTinh
 
-                    if (tonKhoHienTai == null || tonKhoHienTai.KhoiLuong < ctItemVM.SoLuong)
+                    if (tonKhoHienTai == null || tonKhoHienTai.KhoiLuongConLai < ctItemVM.SoLuong)
                     {
                         await transaction.RollbackAsync();
                         string tenSP = _context.SanPhams.FirstOrDefault(l => l.M_SanPham == ctItemVM.M_LoaiSP)?.M_SanPham ?? ctItemVM.M_LoaiSP;
                         _logger.LogWarning("Rollback transaction do không đủ tồn kho cho SP {MaSP} ({TenSP}) tại Kho {MaKho}. Tồn: {Ton}, Xuất: {Xuat}",
-                            ctItemVM.M_LoaiSP, tenSP, viewModel.MaKho, tonKhoHienTai?.KhoiLuong ?? 0, ctItemVM.SoLuong);
-                        ModelState.AddModelError("", $"Không đủ tồn kho cho sản phẩm '{tenSP}'. Tồn hiện tại: {tonKhoHienTai?.KhoiLuong ?? 0}, Yêu cầu xuất: {ctItemVM.SoLuong}.");
+                            ctItemVM.M_LoaiSP, tenSP, viewModel.MaKho, tonKhoHienTai?.KhoiLuongConLai ?? 0, ctItemVM.SoLuong);
+                        ModelState.AddModelError("", $"Không đủ tồn kho cho sản phẩm '{tenSP}'. Tồn hiện tại: {tonKhoHienTai?.KhoiLuongConLai ?? 0}, Yêu cầu xuất: {ctItemVM.SoLuong}.");
                         await PopulateDropdownsAsync(viewModel);
                         return View(viewModel);
                     }
@@ -217,7 +217,7 @@ namespace DACS.Areas.QuanLyXNK.Controllers
 
                     // 3. CHUẨN BỊ CẬP NHẬT (TRỪ) TỒN KHO
                     // Lấy lại bản ghi TonKho để theo dõi và cập nhật (không dùng AsNoTracking)
-                    var tonKhoItemToUpdate = await _context.TonKhos
+                    var tonKhoItemToUpdate = await _context.LoTonKhos
                         .FirstOrDefaultAsync(tk =>
                             tk.MaKho == phieuXuat.MaKho &&
                             tk.M_SanPham == chiTiet.M_SanPham &&
@@ -225,10 +225,10 @@ namespace DACS.Areas.QuanLyXNK.Controllers
 
                     if (tonKhoItemToUpdate != null) // Điều này luôn đúng do đã kiểm tra ở trên
                     {
-                        tonKhoItemToUpdate.KhoiLuong -= chiTiet.SoLuong;
+                        tonKhoItemToUpdate.KhoiLuongConLai -= chiTiet.SoLuong;
                         _context.Update(tonKhoItemToUpdate);
                         _logger.LogInformation("Chuẩn bị trừ kho cho SP {MaSP} tại Kho {MaKho}, số lượng trừ: {SoLuongTru}. Tồn mới dự kiến: {TonMoi}",
-                            tonKhoItemToUpdate.M_SanPham, tonKhoItemToUpdate.MaKho, chiTiet.SoLuong, tonKhoItemToUpdate.KhoiLuong);
+                            tonKhoItemToUpdate.M_SanPham, tonKhoItemToUpdate.MaKho, chiTiet.SoLuong, tonKhoItemToUpdate.KhoiLuongConLai);
                     }
                 }
                 _context.PhieuXuats.Add(phieuXuat); // Thêm phiếu xuất (và các chi tiết của nó) vào context

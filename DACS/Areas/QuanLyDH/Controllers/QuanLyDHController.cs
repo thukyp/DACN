@@ -18,7 +18,7 @@ namespace DACS.Areas.QuanLyDH.Controllers
     public class QuanLyDHController : Controller
     {
         private readonly ApplicationDbContext _context;
-
+        private readonly ILogger<QuanLyDHController> _logger;
         // --- ĐỊNH NGHĨA CÁC CHUỖI TRẠNG THÁI ĐƠN HÀNG TRONG DATABASE ---
         private const string StatusPendingDbValue = "Chờ xác nhận"; // Hoặc "Chưa xử lý" nếu bạn dùng nó làm giá trị DB ban đầu
         private const string StatusConfirmedDbValue = "Đã xác nhận";
@@ -28,9 +28,10 @@ namespace DACS.Areas.QuanLyDH.Controllers
         private const string StatusCancelledDbValue = "Đã hủy";
         // --- KẾT THÚC ĐỊNH NGHĨA ---
 
-        public QuanLyDHController(ApplicationDbContext context)
+        public QuanLyDHController(ApplicationDbContext context, ILogger<QuanLyDHController> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
         // GET: QuanLyDH/QuanLyDH (Index)
@@ -155,106 +156,135 @@ namespace DACS.Areas.QuanLyDH.Controllers
             if (string.IsNullOrEmpty(id) || string.IsNullOrEmpty(newStatusKey))
                 return BadRequest("Thông tin không hợp lệ.");
 
-            var donHang = await _context.DonHangs.FirstOrDefaultAsync(m => m.M_DonHang == id);
-            if (donHang == null)
-                return NotFound($"Không tìm thấy đơn hàng {id}.");
-            
-            string actualNewStatusInDb = "";
-            string successMessagePart = "";
-            bool canUpdate = false;
+            // Bắt đầu Transaction
+            using var transaction = await _context.Database.BeginTransactionAsync();
 
-            switch (newStatusKey.ToLower())
+            try
             {
-                case "confirm":
-                    if (donHang.TrangThai == StatusPendingDbValue || donHang.TrangThai == "Chưa xử lý") // Cho phép từ "Chưa xử lý"
-                    {
-                        actualNewStatusInDb = StatusConfirmedDbValue;
-                        successMessagePart = "xác nhận.";
-                        canUpdate = true;
-                    }
-                    break;
-                case "process": // THÊM CASE "PROCESS"
-                    if (donHang.TrangThai == StatusConfirmedDbValue)
-                    {
-                        actualNewStatusInDb = StatusProcessingDbValue;
-                        successMessagePart = "chuyển sang đang xử lý.";
-                        canUpdate = true;
-                        // TODO: Có thể có logic thêm ở đây (ví dụ: kiểm tra tồn kho,...)
-                    }
-                    break;
-                case "ship":
-                    if (donHang.TrangThai == StatusConfirmedDbValue || donHang.TrangThai == StatusProcessingDbValue)
-                    {
-                        // TODO: Kiểm tra xem đã có thông tin vận đơn (M_VanDon) chưa? Nếu chưa có thể không cho ship hoặc chuyển tới trang nhập TT vận đơn.
-                        // For now, we assume it can be shipped.
-                        actualNewStatusInDb = StatusShippingDbValue;
-                        successMessagePart = "chuyển sang đang giao.";
-                        canUpdate = true;
-                    }
-                    break;
-                case "complete":
-                    
-                    if (donHang.TrangThai == StatusShippingDbValue)
-                    {
-                        actualNewStatusInDb = StatusCompletedDbValue;
-                        successMessagePart = "hoàn thành.";
-                        canUpdate = true;
-                        
-                        // TODO: Logic khi hoàn thành (VD: ghi nhận doanh thu, cập nhật trạng thái thanh toán nếu là COD,...)
-                    }
-                    break;
-                    
-                case "cancel":
-                    // Cho phép hủy từ nhiều trạng thái hơn (tùy theo logic nghiệp vụ)
-                    if (donHang.TrangThai == StatusPendingDbValue || donHang.TrangThai == "Chưa xử lý" || donHang.TrangThai == StatusConfirmedDbValue)
-                    {
-                        actualNewStatusInDb = StatusCancelledDbValue;
-                        successMessagePart = "hủy.";
-                        canUpdate = true;
-                        // TODO: Logic khi hủy (VD: hoàn kho, hoàn tiền nếu đã thanh toán,...)
-                        // Nếu đã thanh toán, cân nhắc việc chuyển trạng thái thanh toán sang "Đã hoàn tiền"
-                        if (!string.IsNullOrEmpty(donHang.TrangThaiThanhToan) && donHang.TrangThaiThanhToan == "Đã thanh toán")
-                        {
-                            // donHang.TrangThaiThanhToan = "Đã hoàn tiền"; // Cần xem xét kỹ
-                        }
+                var donHang = await _context.DonHangs.FirstOrDefaultAsync(m => m.M_DonHang == id);
+                if (donHang == null)
+                    return NotFound($"Không tìm thấy đơn hàng {id}.");
 
-                    }
-                    if (donHang.TrangThai == StatusConfirmedDbValue)
-                    {
-                        await CapNhatTonKhoAsync(truKho: false);
-                    }
-                    break;
-            }
+                string actualNewStatusInDb = "";
+                string successMessagePart = "";
+                bool canUpdate = false;
+                string inventoryError = null; // Biến giữ lỗi tồn kho
 
-            if (canUpdate && !string.IsNullOrEmpty(actualNewStatusInDb))
-            {
-                donHang.TrangThai = actualNewStatusInDb;
-                // donHang.ThoiGianCapNhat = DateTime.Now; // Nếu có trường này
-                _context.Update(donHang);
-                await _context.SaveChangesAsync();
-                var chiTietItems = await _context.ChiTietDatHangs
-                              .Where(ct => ct.M_DonHang == donHang.M_DonHang)
-                              .ToListAsync();
-                foreach (var item in chiTietItems)
+                switch (newStatusKey.ToLower())
                 {
-                    item.TrangThaiDonHang = actualNewStatusInDb; // Cập nhật trạng thái cho từng chi tiết đơn hàng
-                    _context.Update(item);
+                    case "confirm":
+                        if (donHang.TrangThai == StatusPendingDbValue || donHang.TrangThai == "Chưa xử lý")
+                        {
+                            // <<< LOGIC MỚI: Trừ kho FIFO
+                            inventoryError = await ApplyInventoryChangesForOrderAsync(donHang, truKho: true);
+                            if (inventoryError != null)
+                            {
+                                // Nếu có lỗi (hết hàng), rollback và báo lỗi
+                                await transaction.RollbackAsync();
+                                TempData["ErrorMessage"] = $"Không thể xác nhận ĐH {donHang.M_DonHang}: {inventoryError}";
+                                return RedirectToAction(nameof(Details), new { id = id });
+                            }
+
+                            actualNewStatusInDb = StatusConfirmedDbValue;
+                            successMessagePart = "xác nhận và đã trừ tồn kho.";
+                            canUpdate = true;
+                        }
+                        break;
+
+                    case "process":
+                        if (donHang.TrangThai == StatusConfirmedDbValue)
+                        {
+                            actualNewStatusInDb = StatusProcessingDbValue;
+                            successMessagePart = "chuyển sang đang xử lý.";
+                            canUpdate = true;
+                        }
+                        break;
+
+                    case "ship":
+                        if (donHang.TrangThai == StatusConfirmedDbValue || donHang.TrangThai == StatusProcessingDbValue)
+                        {
+                            actualNewStatusInDb = StatusShippingDbValue;
+                            successMessagePart = "chuyển sang đang giao.";
+                            canUpdate = true;
+                        }
+                        break;
+
+                    case "complete":
+                        if (donHang.TrangThai == StatusShippingDbValue)
+                        {
+                            actualNewStatusInDb = StatusCompletedDbValue;
+                            successMessagePart = "hoàn thành.";
+                            canUpdate = true;
+                        }
+                        break;
+
+                    case "cancel":
+                        if (donHang.TrangThai == StatusPendingDbValue || donHang.TrangThai == "Chưa xử lý")
+                        {
+                            // Đơn hàng chưa xác nhận -> chưa trừ kho -> chỉ cần hủy
+                            actualNewStatusInDb = StatusCancelledDbValue;
+                            successMessagePart = "hủy (chưa trừ kho).";
+                            canUpdate = true;
+                        }
+                        else if (donHang.TrangThai == StatusConfirmedDbValue || donHang.TrangThai == StatusProcessingDbValue)
+                        {
+                            // Đơn hàng đã xác nhận/xử lý -> đã trừ kho -> phải hoàn kho
+                            // <<< LOGIC MỚI: Hoàn kho (giả định)
+                            inventoryError = await ApplyInventoryChangesForOrderAsync(donHang, truKho: false);
+                            if (inventoryError != null)
+                            {
+                                // Vẫn cho hủy nhưng báo lỗi hoàn kho
+                                _logger.LogError("Lỗi khi hoàn kho cho ĐH {DonHangId}: {Error}", donHang.M_DonHang, inventoryError);
+                                successMessagePart = $"hủy. (CẢNH BÁO: Lỗi tự động hoàn kho: {inventoryError})";
+                            }
+                            else
+                            {
+                                successMessagePart = "hủy và đã hoàn tồn kho.";
+                            }
+                            actualNewStatusInDb = StatusCancelledDbValue;
+                            canUpdate = true;
+                        }
+                        break;
                 }
-                await _context.SaveChangesAsync();
 
-                TempData["SuccessMessage"] = $"Đơn hàng {donHang.M_DonHang} đã được {successMessagePart}";
+                if (canUpdate && !string.IsNullOrEmpty(actualNewStatusInDb))
+                {
+                    donHang.TrangThai = actualNewStatusInDb;
+                    _context.Update(donHang);
+
+                    // Cập nhật trạng thái cho ChiTietDatHang
+                    var chiTietItems = await _context.ChiTietDatHangs
+                                    .Where(ct => ct.M_DonHang == donHang.M_DonHang)
+                                    .ToListAsync();
+                    foreach (var item in chiTietItems)
+                    {
+                        item.TrangThaiDonHang = actualNewStatusInDb;
+                        _context.Update(item);
+                    }
+
+                    await _context.SaveChangesAsync(); // Lưu tất cả thay đổi (ĐH, CTĐH, LoTonKho)
+                    await transaction.CommitAsync(); // Hoàn thành transaction
+
+                    TempData["SuccessMessage"] = $"Đơn hàng {donHang.M_DonHang} đã được {successMessagePart}";
+                }
+                else
+                {
+                    await transaction.RollbackAsync(); // Không có gì thay đổi, rollback
+                    TempData["ErrorMessage"] = $"Không thể cập nhật trạng thái cho đơn hàng {donHang.M_DonHang} từ '{donHang.TrangThai}' sang '{newStatusKey}'.";
+                }
+
+                // <<< XÓA: Bỏ hàm gọi CapNhatTonKhoAsync sai
+                // await CapNhatTonKhoAsync(truKho: true); 
             }
-            else
+            catch (Exception ex)
             {
-                TempData["ErrorMessage"] = $"Không thể cập nhật trạng thái cho đơn hàng {donHang.M_DonHang} từ '{donHang.TrangThai}' sang '{newStatusKey}'.";
+                await transaction.RollbackAsync();
+                _logger.LogError(ex, "Lỗi nghiêm trọng khi cập nhật trạng thái đơn hàng {DonHangId}", id);
+                TempData["ErrorMessage"] = "Lỗi nghiêm trọng: " + ex.Message;
             }
 
-                await CapNhatTonKhoAsync(truKho: true);
-             
-            return RedirectToAction(nameof(Index)); // Hoặc RedirectToAction(nameof(Details), new { id = id });
-            
+            return RedirectToAction(nameof(Details), new { id = id });
         }
-
         // --- CÁC ACTION METHOD MỚI ---
 
         // GET: QuanLyDH/QuanLyDH/EditOrder/DH00001
@@ -798,23 +828,85 @@ namespace DACS.Areas.QuanLyDH.Controllers
         }
 
 
-        public async Task CapNhatTonKhoAsync(bool truKho)
+        private async Task<string?> ApplyInventoryChangesForOrderAsync(DonHang donHang, bool truKho)
         {
-            var danhSachTonKho = await _context.TonKhos.ToListAsync();
+            // 1. Lấy tất cả chi tiết của đơn hàng
+            var chiTietItems = await _context.ChiTietDatHangs
+                .Where(ct => ct.M_DonHang == donHang.M_DonHang)
+                .ToListAsync();
 
-            foreach (var tk in danhSachTonKho)
+            if (!chiTietItems.Any())
             {
-                var khoiLuongDonHang = await _context.ChiTietDatHangs
-                    .Where(ct => ct.ProductId == tk.M_SanPham
-                                 && ct.DonHang.TrangThai == "Đã xác nhận")
-                    .SumAsync(ct => (float?)ct.Khoiluong) ?? 0;
-                if (truKho) { 
-                tk.KhoiLuong = tk.KhoiLuong - khoiLuongDonHang; // hoặc dùng cột riêng như KhoiLuongConLai
-                }else
-                    tk.KhoiLuong = tk.KhoiLuong + khoiLuongDonHang;
+                return "Đơn hàng không có chi tiết sản phẩm.";
             }
-            
-            await _context.SaveChangesAsync();
+
+            foreach (var item in chiTietItems)
+            {
+                // Giả định: 
+                // 1. `item.ProductId` là mã sản phẩm (lấy từ code cũ của bạn)
+                // 2. `item.Khoiluong` là khối lượng cần trừ (lấy từ code cũ của bạn)
+                // 3. Model LoTonKho dùng `KhoiLuongConLai` (decimal)
+                decimal soLuongCanThayDoi = (decimal)(item.Khoiluong);
+                string maSanPham = item.ProductId; // Giả định tên cột là ProductId
+
+                if (soLuongCanThayDoi <= 0) continue;
+
+                if (truKho) // === Logic TRỪ KHO (Xác nhận đơn) ===
+                {
+                    // Lấy các lô hàng theo FIFO (Cũ nhất trước)
+                    var availableLots = await _context.LoTonKhos
+                        .Where(l => l.M_SanPham == maSanPham &&
+                                    l.KhoiLuongConLai > 0)
+                        .OrderBy(l => l.NgayNhapKho) // FIFO
+                        .ToListAsync();
+
+                    // Kiểm tra tổng tồn kho
+                    decimal tongTonKho = availableLots.Sum(l => l.KhoiLuongConLai);
+                    if (tongTonKho < soLuongCanThayDoi)
+                    {
+                        var tenSP = await _context.SanPhams.Where(s => s.M_SanPham == maSanPham).Select(s => s.TenSanPham).FirstOrDefaultAsync();
+                        return $"Không đủ tồn kho cho '{tenSP ?? maSanPham}'. Tồn: {tongTonKho}, Cần: {soLuongCanThayDoi}";
+                    }
+
+                    // Lặp qua các lô để trừ kho
+                    foreach (var lot in availableLots)
+                    {
+                        decimal soLuongLayTuLoNay = Math.Min(soLuongCanThayDoi, lot.KhoiLuongConLai);
+
+                        lot.KhoiLuongConLai -= soLuongLayTuLoNay;
+                        soLuongCanThayDoi -= soLuongLayTuLoNay;
+
+                        _context.Update(lot); // Đánh dấu lô này cần cập nhật
+                        _logger.LogInformation("Trừ kho FIFO: Lấy {SoLuong} từ Lô {MaLo}. Lô còn lại: {KhoiLuongConLai}", soLuongLayTuLoNay, lot.MaLoTonKho, lot.KhoiLuongConLai);
+
+                        if (soLuongCanThayDoi <= 0) break; // Đã lấy đủ
+                    }
+                }
+                else // === Logic HOÀN KHO (Hủy đơn) ===
+                {
+                    // Hoàn kho: Tìm lô MỚI NHẤT của sản phẩm này và cộng trả lại
+                    var lotDeHoan = await _context.LoTonKhos
+                        .Where(l => l.M_SanPham == maSanPham)
+                        .OrderByDescending(l => l.NgayNhapKho) // Ưu tiên hoàn vào lô mới nhất
+                        .FirstOrDefaultAsync();
+
+                    if (lotDeHoan != null)
+                    {
+                        lotDeHoan.KhoiLuongConLai += soLuongCanThayDoi;
+                        _context.Update(lotDeHoan);
+                        _logger.LogInformation("Hoàn kho: Trả {SoLuong} vào Lô {MaLo}. Lô còn lại: {KhoiLuongConLai}", soLuongCanThayDoi, lotDeHoan.MaLoTonKho, lotDeHoan.KhoiLuongConLai);
+                    }
+                    else
+                    {
+                        // Nếu không còn lô nào, tạo một lô mới? (Logic nguy hiểm)
+                        // Tốt hơn là báo lỗi
+                        _logger.LogError("Không tìm thấy lô nào để hoàn kho cho SP {SanPhamId} khi hủy ĐH {DonHangId}", maSanPham, donHang.M_DonHang);
+                        // Không return lỗi, vẫn cho hủy đơn
+                    }
+                }
+            }
+
+            return null; // Thành công
         }
         private bool DonHangExists(string id)
         {

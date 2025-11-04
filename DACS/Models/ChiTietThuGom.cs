@@ -1,108 +1,84 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DACS.Models
 {
     public class ChiTietThuGom // Collection Detail
     {
         [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)] // <<< THÊM ATTRIBUTE NÀY
-        public String? M_ChiTiet { get;  set; }
-        [Required] // M_YeuCau is Required
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public String? M_ChiTiet { get; set; }
+
+        [Required]
         [StringLength(10)]
         public string M_YeuCau { get; set; } // PFK
-
         [ForeignKey("M_YeuCau")]
         public virtual YeuCauThuGom YeuCauThuGom { get; set; }
-        [Required]
-        [StringLength(10)]
-        public string M_DonViTinh { get; set; } // FK
+
+        // --- CÁC TRƯỜNG NÊN BỎ ĐI ---
+        // [StringLength(10)]
+        // public string M_KhachHang { get; set; } // <<< BỎ: Đã có trong YeuCauThuGom
+        // [ForeignKey("M_KhachHang")]
+        // public virtual KhachHang KhachHang { get; set; } // <<< BỎ
+        // ...
+        // public string MaTinh { get; set; } // <<< BỎ
+        // public string MaQuan { get; set; } // <<< BỎ
+        // public string MaXa { get; set; } // <<< BỎ
+        // public string? DiaChi_DuongApThon { get; set; } // <<< BỎ
+        // ... (Bỏ luôn các navigation property TinhThanhPho, QuanHuyen, XaPhuong)
+        // --- KẾT THÚC PHẦN BỎ ĐI ---
 
         [Required]
         [StringLength(10)]
-        // CẢNH BÁO: Có thể thừa? PK nên là (M_YeuCau, M_SanPham)?
-        public string M_KhachHang { get; set; } // PFK
+        public string M_SanPham { get; set; } // <<< Đưa lên trên cho rõ ràng
+        [ForeignKey("M_SanPham")]
+        public virtual SanPham SanPham { get; set; } = null!;
+
+        [Required]
+        [StringLength(10)]
+        public string M_LoaiSP { get; set; } // <<< Đưa lên trên cho rõ ràng
+        [ForeignKey("M_LoaiSP")]
+        public virtual LoaiSanPham LoaiSanPham { get; set; }
 
         [Required]
         public int SoLuong { get; set; } // Số lượng thu gom
 
-        [Display(Name = "Cồng Kềnh")]
-        public bool DacTinh_CongKenh { get; set; } = false; // Map từ charBulky
-
-        [Display(Name = "Ẩm/Ướt (Dễ hỏng)")]
-        public bool DacTinh_AmUot { get; set; } = false; // Map từ charWet
-
-        [Display(Name = "Khô (Dễ cháy)")]
-        public bool DacTinh_Kho { get; set; } = false; // Map từ charDry
-
-        [Display(Name = "Độ Ẩm Cao (>20%)")]
-        public bool DacTinh_DoAmCao { get; set; } = false; // Map từ charMoisture
-
-        [Display(Name = "Nhiều Tạp Chất")]
-        public bool DacTinh_TapChat { get; set; } = false; // Map từ charImpure
-
-        [Display(Name = "Đã Qua Xử Lý")]
-        public bool DacTinh_DaXuLy { get; set; } = false; // Map từ charProcessed
-
-        // --- THÊM: Danh sách hình ảnh ---
-        [Display(Name = "Hình Ảnh")]
-        public string? DanhSachHinhAnh { get; set; }
-
-
-
-        // --- Thêm Khóa Ngoại và Navigation Property đến SanPham ---
-        // (Cần thêm cột M_SanPham vào bảng ChiTietThuGom trong CSDL của bạn nếu chưa có)
-        // --- Hết phần thêm ---
-
+        [Required]
+        [StringLength(10)]
+        public string M_DonViTinh { get; set; } // FK
         [ForeignKey("M_DonViTinh")]
         public virtual DonViTinh DonViTinh { get; set; }
 
-        [ForeignKey("M_KhachHang")]
-        public virtual KhachHang KhachHang { get; set; }
+        public decimal? GiaTriMongMuon { get; set; }
+        public string? MoTa { get; set; }
 
-        // --- CÁC TRƯỜNG MÃ ĐỊA CHỈ LÀM KHÓA NGOẠI ---
-        // Kiểu dữ liệu (string/int) và độ dài phải khớp với Khóa chính của bảng ĐVHC
-        [Required(ErrorMessage = "Vui lòng chọn Tỉnh/Thành phố.")]
-        [StringLength(10)] // Hoặc int
-        [Display(Name = "Tỉnh/Thành phố")]
-        public string MaTinh { get; set; } // <<< Lưu Mã Tỉnh (FK)
+        // --- Đặc tính sản phẩm ---
+        [Display(Name = "Cồng Kềnh")]
+        public bool DacTinh_CongKenh { get; set; } = false;
+        [Display(Name = "Ẩm/Ướt (Dễ hỏng)")]
+        public bool DacTinh_DoAmCao { get; set; } = false;
+        [Display(Name = "Am Uot")]
+        public bool DacTinh_AmUot { get; set; } = false;
+        [Display(Name ="Kho")]
+        public bool DacTinh_Kho { get; set; } = false;
+        [Display(Name = "TapChat")]
+        public bool DacTinh_TapChat { get; set; } = false;
+        [Display(Name = "Đã Qua Xử Lý")]
+        public bool DacTinh_DaXuLy { get; set; } = false;
 
-        [Required(ErrorMessage = "Vui lòng chọn Quận/Huyện.")]
-        [StringLength(10)] // Hoặc int
-        [Display(Name = "Quận/Huyện")]
-        public string MaQuan { get; set; } // <<< Lưu Mã Quận (FK)
+        [Display(Name = "Hình Ảnh")]
+        public string? DanhSachHinhAnh { get; set; }
 
-        [Required(ErrorMessage = "Vui lòng chọn Xã/Phường.")]
-        [StringLength(10)] // Hoặc int
-        [Display(Name = "Xã/Phường")]
-        public string MaXa { get; set; } // <<< Lưu Mã Xã (FK)
-                                         // --- KẾT THÚC MÃ ĐỊA CHỈ ---
+        // --- Liên kết Lô Tồn Kho (RẤT QUAN TRỌNG) ---
+        [StringLength(20)]
+        [Display(Name = "Mã Lô Tồn Kho")]
+        public string? MaLoTonKho { get; set; } // Khóa ngoại đến LoTonKho
+        [ForeignKey("MaLoTonKho")]
+        public virtual LoTonKho? LoTonKho { get; set; }
 
-        // --- Trường địa chỉ chi tiết (Số nhà/Đường) ---
-        [StringLength(200)]
-        [Display(Name = "Số nhà, Đường/Ấp/Thôn")]
-        public string? DiaChi_DuongApThon { get; set; } // Lưu phần còn lại
-                                                        // -----------------------------------------
-
-        // --- Navigation Properties đến các bảng địa chỉ ---
-        [ForeignKey("MaTinh")]
-        public virtual TinhThanhPho? TinhThanhPho { get; set; }
-
-        [ForeignKey("MaQuan")]
-        public virtual QuanHuyen? QuanHuyen { get; set; }
-
-        [ForeignKey("MaXa")]
-        public virtual XaPhuong? XaPhuong { get; set; }
-        public string? MoTa { get;  set; }
-        public string M_SanPham { get; set; }
-        [ForeignKey("M_SanPham")] // Link to the FK property
-        public virtual SanPham SanPham { get; set; }
-        public string M_LoaiSP { get;  set; }
-        [ForeignKey("M_LoaiSP")] // Link to the FK property
-        public virtual LoaiSanPham LoaiSanPham { get; set; } // Add the navigation property
-        public decimal? GiaTriMongMuon { get;  set; }
-
-        // --- Kết thúc Navigation địa chỉ ---
+        [Required]
+        [StringLength(20)]
+        [Display(Name = "Trạng thái xử lý")]
+        public string TrangThaiXuLy { get; set; } = "MoiYeuCau";
     }
-
 }

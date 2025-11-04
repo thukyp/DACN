@@ -21,32 +21,41 @@ namespace DACS.Repository
             _logger = logger;
         }
 
-        public async Task<(IEnumerable<TonKho> Items, int TotalCount)> GetPagedTonKhoAsync(
-            string? searchTerm, string? maKhoFilter, int pageIndex, int pageSize, bool trackChanges = false)
+        public async Task<(IEnumerable<LoTonKho> Items, int TotalCount)> GetPagedTonKhoAsync(
+     string? searchTerm, string? maKhoFilter, int pageIndex, int pageSize, bool trackChanges = false)
         {
-            var query = _context.TonKhos.AsQueryable();
+            var query = _context.LoTonKhos.AsQueryable();
 
             if (!trackChanges)
             {
-                query = query.AsNoTracking(); // Không theo dõi thay đổi để tăng hiệu suất đọc
+                query = query.AsNoTracking();
             }
 
-            // Nối các bảng cần thiết để lấy tên
-            query = query.Include(tk => tk.KhoHang)
-                         .Include(tk => tk.LoaiSanPham)
-                         .Include(tk => tk.DonViTinh);
+            // <<< SỬA: Thay đổi cách Include
+            // Bạn cần Include SanPham, và SAU ĐÓ ThenInclude LoaiSanPham từ SanPham
+            query = query.Include(tk => tk.KhoHang)       // (Giả định bạn đã thêm 'KhoHang' vào model LoTonKho)
+                         .Include(tk => tk.DonViTinh)
+                         .Include(tk => tk.SanPham)       // <<< THÊM: Include SanPham
+                            .ThenInclude(sp => sp.LoaiSanPham); // <<< THÊM: Include LoaiSanPham TỪ SanPham
 
             // --- Áp dụng Bộ lọc ---
             if (!string.IsNullOrEmpty(searchTerm))
             {
                 string lowerSearchTerm = searchTerm.ToLower().Trim();
+
+                // <<< SỬA: Thay đổi cách lọc
+                // Phải lọc qua tk.SanPham.LoaiSanPham.TenLoai
                 query = query.Where(tk =>
-                    (tk.LoaiSanPham != null && tk.LoaiSanPham.TenLoai != null && tk.LoaiSanPham.TenLoai.ToLower().Contains(lowerSearchTerm)) ||
-                    (tk.LoaiSanPham != null && tk.M_LoaiSP != null && tk.M_LoaiSP.ToLower().Contains(lowerSearchTerm))  // Tìm theo mã SP
-                    
+                    // Tìm theo Mã Lô
+                    (tk.MaLoTonKho != null && tk.MaLoTonKho.ToLower().Contains(lowerSearchTerm)) ||
+                    // Tìm theo Tên Sản Phẩm
+                    (tk.SanPham != null && tk.SanPham.TenSanPham != null && tk.SanPham.TenSanPham.ToLower().Contains(lowerSearchTerm)) ||
+                    // Tìm theo Tên Loại Sản Phẩm
+                    (tk.SanPham != null && tk.SanPham.LoaiSanPham != null && tk.SanPham.LoaiSanPham.TenLoai != null && tk.SanPham.LoaiSanPham.TenLoai.ToLower().Contains(lowerSearchTerm))
                 );
             }
 
+            // (Phần lọc theo kho này có vẻ đúng, tôi giữ nguyên)
             if (!string.IsNullOrEmpty(maKhoFilter) && maKhoFilter.ToLower() != "all")
             {
                 query = query.Where(tk => tk.MaKho == maKhoFilter);
@@ -55,9 +64,11 @@ namespace DACS.Repository
             // --- Lấy Tổng số bản ghi (sau khi lọc) ---
             var totalItems = await query.CountAsync();
 
-            // --- Sắp xếp (Ví dụ: Theo Tên SP, rồi Tên Kho) ---
-            query = query.OrderBy(tk => tk.LoaiSanPham != null ? tk.LoaiSanPham.TenLoai : tk.M_LoaiSP)
-                         .ThenBy(tk => tk.KhoHang != null ? tk.KhoHang.TenKho : tk.MaKho);
+            // --- Sắp xếp (Ví dụ: Theo Tên Loại SP, rồi Tên SP) ---
+            // <<< SỬA: Thay đổi cách sắp xếp
+            query = query.OrderBy(tk => (tk.SanPham != null && tk.SanPham.LoaiSanPham != null) ? tk.SanPham.LoaiSanPham.TenLoai : null)
+                         .ThenBy(tk => (tk.SanPham != null) ? tk.SanPham.TenSanPham : tk.M_SanPham)
+                         .ThenBy(tk => tk.MaLoTonKho);
 
             // --- Phân trang ---
             var pagedData = await query
@@ -90,7 +101,7 @@ namespace DACS.Repository
         {
             // 1. Tìm đối tượng TonKho trong database dựa trên productId
             // Sử dụng FirstOrDefaultAsync để tránh lỗi nếu không tìm thấy
-            var tonKho = await _context.TonKhos
+            var tonKho = await _context.LoTonKhos
                                        .FirstOrDefaultAsync(tk => tk.M_SanPham == productId);
 
             // 2. Kiểm tra xem đối tượng có tồn tại không
@@ -102,7 +113,7 @@ namespace DACS.Repository
             }
 
             // 3. Cập nhật giá trị KhoiLuong mới
-            tonKho.KhoiLuong = newKhoiLuong;
+            tonKho.KhoiLuongConLai = (decimal)newKhoiLuong;
 
             // 4. Lưu các thay đổi vào database
             // SaveChangesAsync sẽ phát hiện rằng đối tượng 'tonKho' đã được modified
@@ -111,22 +122,11 @@ namespace DACS.Repository
         }
 
         // Phương thức mới: Lấy tồn kho theo ProductId (Nếu bạn chưa có)
-        public async Task<TonKho?> GetTonKhoByProductIdAsync(string productId)
+        public async Task<LoTonKho?> GetTonKhoByProductIdAsync(string productId)
         {
-            return await _context.TonKhos
+            return await _context.LoTonKhos
                                  .FirstOrDefaultAsync(tk => tk.M_SanPham == productId);
         }
-        // Implement các phương thức khác (GetByIdAsync, AddAsync, UpdateAsync, DeleteAsync) nếu cần
-        // ...
-
-        // Implement GetDinhMucToiThieuAsync nếu cần
-        // public async Task<long?> GetDinhMucToiThieuAsync(string maLoaiSP)
-        // {
-        //     // Logic để lấy định mức từ DB (ví dụ từ bảng LoaiSanPham hoặc bảng cấu hình riêng)
-        //     var loaiSp = await _context.LoaiSanPhams.FirstOrDefaultAsync(sp => sp.MaLoai == maLoaiSP);
-        //     // Giả sử LoaiSanPham có thuộc tính DinhMucTonKhoToiThieu
-        //     // return loaiSp?.DinhMucTonKhoToiThieu;
-        //     return null; // Trả về null nếu không tìm thấy hoặc chưa có định mức
-        // }
+      
     }
 }

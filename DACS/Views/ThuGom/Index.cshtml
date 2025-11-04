@@ -10,12 +10,9 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - YourAppName</title> @* Thay YourAppName *@
-    @* Các link CSS cần thiết (Bootstrap, site.css, fonts) *@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    <link rel='stylesheet' href='https://fonts.googleapis.com/css2?family=DM+Sans&amp;display=swap'> @* Font này có thể không cần nếu dùng Outfit *@
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"> @* Font Awesome *@
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap" rel="stylesheet"> @* Font Outfit *@
-    @* <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" /> *@ @* Bỏ comment nếu bạn có file site.css chung *@
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap" rel="stylesheet">
 
     <style>
         :root {
@@ -23,18 +20,17 @@
             --secondary: #8D6E63;
             --light-bg: #F9FBE7;
             --dark-text: #2E2E2E;
-            --card-border: #C8E6C9;
         }
-      h1{
+
+        h1 {
             color: var(--primary);
         }
+
         body {
             font-family: 'Outfit', sans-serif;
             background-color: var(--light-bg);
             color: var(--dark-text);
         }
-
-        
 
         .card-header {
             font-weight: 600;
@@ -62,7 +58,6 @@
         select:disabled {
             background-color: #e9ecef;
         }
-        /* Làm rõ dropdown bị disable */
     </style>
 </head>
 <body>
@@ -71,7 +66,7 @@
 
         <div asp-validation-summary="ModelOnly" class="alert alert-danger validation-summary-errors" role="alert"></div>
 
-        <form asp-action="ThuGom" asp-controller="Home" method="post" enctype="multipart/form-data" id="mainThuGomForm">
+        <form asp-action="Index" asp-controller="ThuGom" method="post" enctype="multipart/form-data" id="mainThuGomForm">
             @Html.AntiForgeryToken()
 
             <div class="row g-4">
@@ -82,6 +77,7 @@
                             <i class="fas fa-user me-2"></i> NGƯỜI CUNG CẤP
                         </div>
                         <div class="card-body">
+                            @* (Các trường: Tên, SĐT, Tỉnh, Huyện, Xã, Đường, Thời gian, Ghi chú... giữ nguyên) *@
                             <div class="mb-3">
                                 <label asp-for="SupplierName" class="form-label"></label> <span class="text-danger">*</span>
                                 <input asp-for="SupplierName" class="form-control" placeholder="Nhập tên người liên hệ">
@@ -97,7 +93,6 @@
                             <div class="row g-3 mb-3">
                                 <div class="col-md-6">
                                     <label asp-for="SupplierProvince" class="form-label"></label>
-                                    @* ĐÃ XÓA onchange khỏi đây *@
                                     <select asp-for="SupplierProvince" id="provinceSelectThuGom" class="form-select" asp-items="Model.ProvinceOptions">
                                         <option value="">-- Chọn Tỉnh/Thành phố --</option>
                                     </select>
@@ -105,7 +100,6 @@
                                 </div>
                                 <div class="col-md-6">
                                     <label asp-for="SupplierDistrict" class="form-label"></label>
-                                    @* ĐÃ XÓA onchange khỏi đây - Disabled ban đầu sẽ do JS xử lý *@
                                     <select asp-for="SupplierDistrict" id="districtSelectThuGom" class="form-select" asp-items="Model.DistrictOptions">
                                         <option value="">-- Chọn Quận/Huyện --</option>
                                     </select>
@@ -113,7 +107,6 @@
                                 </div>
                                 <div class="col-md-6">
                                     <label asp-for="SupplierWard" class="form-label"></label>
-                                    @* Disabled ban đầu sẽ do JS xử lý *@
                                     <select asp-for="SupplierWard" id="wardSelectThuGom" class="form-select" asp-items="Model.WardOptions">
                                         <option value="">-- Chọn Xã/Phường --</option>
                                     </select>
@@ -148,11 +141,19 @@
                         </div>
                         <div class="card-body">
                             <div class="mb-3">
-                                <label asp-for="ByproductType" class="form-label">Loại Sản Phẩm</label> <span class="text-danger">*</span>
-                                <select asp-for="ByproductType" class="form-select" asp-items="Model.LoaiSanPhamOptions">
+                                <label asp-for="M_LoaiSP" class="form-label"></label> <span class="text-danger">*</span>
+                                <select asp-for="M_LoaiSP" class="form-select" asp-items="Model.LoaiSanPhamOptions" id="loaiSanPhamSelect">
                                     <option selected disabled value="">Chọn loại sản phẩm...</option>
                                 </select>
-                                <span asp-validation-for="ByproductType" class="text-danger field-validation-error"></span>
+                                <span asp-validation-for="M_LoaiSP" class="text-danger field-validation-error"></span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="M_SanPham" class="form-label"></label> <span class="text-danger">*</span>
+                                <select asp-for="M_SanPham" class="form-select" asp-items="Model.SanPhamOptions" id="sanPhamSelect">
+                                    <option selected disabled value="">-- Vui lòng chọn Loại Sản Phẩm trước --</option>
+                                </select>
+                                <span asp-validation-for="M_SanPham" class="text-danger field-validation-error"></span>
                             </div>
                             <div class="mb-3">
                                 <label asp-for="ByproductDescription" class="form-label"></label>
@@ -204,13 +205,57 @@
                     </div>
                 </div>
 
-                @* ----- CỘT SUBMIT ----- *@
+                @* ----- CỘT SUBMIT VÀ CAM KẾT ----- *@
                 <div class="col-12">
                     <div class="card shadow-sm">
                         <div class="card-body text-center">
+
+                            <div class="mb-3 form-check" style="max-width: 600px; margin-left: auto; margin-right: auto; text-align: left;">
+                                <input asp-for="DaDongYCamKet" type="checkbox" class="form-check-input" />
+                                <label class="form-check-label fw-bold" for="DaDongYCamKet">
+                                    Tôi đã đọc và đồng ý với
+                                    <a href="#" data-bs-toggle="modal" data-bs-target="#camKetModal">
+                                        Điều Khoản Cam Kết Cung Cấp Phụ Phẩm.
+                                    </a>
+                                </label>
+                                <span asp-validation-for="DaDongYCamKet" class="text-danger field-validation-error d-block"></span>
+                            </div>
                             <div class="d-flex justify-content-center flex-wrap gap-3 mt-3">
                                 <button type="submit" class="btn btn-primary btn-lg"><i class="fas fa-paper-plane me-2"></i> Yêu cầu Thu gom</button>
                                 <button type="reset" class="btn btn-outline-danger"><i class="fas fa-redo me-2"></i> Làm mới Form</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                @* ----- MODAL CAM KẾT (Cửa sổ bật lên) ----- *@
+                <div class="modal fade" id="camKetModal" tabindex="-1" aria-labelledby="camKetModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="camKetModalLabel">BẢN CAM KẾT CUNG CẤP PHỤ PHẨM NÔNG NGHIỆP</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p>Bằng việc đồng ý, Bên Cung Cấp (Bên A) cam kết tuân thủ các điều khoản sau đây:</p>
+                                <h5 class="mt-4">Điều 1: Tính chính xác và trung thực của thông tin</h5>
+                                <p>Bên A cam kết mọi thông tin được kê khai trong "Yêu cầu Thu gom" là hoàn toàn trung thực, bao gồm: Loại Sản Phẩm, Sản Phẩm Cụ Thể, Số lượng/Khối lượng ước tính, và Hình ảnh cung cấp là hình ảnh thật của lô hàng.</p>
+                                <h5>Điều 2: Cam kết về đặc tính vật lý</h5>
+                                <p>Bên A cam kết phụ phẩm cung cấp đúng với các đặc tính vật lý đã mô tả (ví dụ: nếu chọn "Khô", phụ phẩm không được ướt, ẩm mốc).</p>
+                                <h5>Điều 3: Cam kết về độ tinh sạch và không pha trộn</h5>
+                                <p>Bên A cam kết phụ phẩm không bị cố ý trộn lẫn đất, đá, cát, rác thải, hoặc các vật lạ khác nhằm tăng khối lượng. Phụ phẩm không chứa các chất cấm hoặc hóa chất độc hại vượt ngưỡng cho phép.</p>
+                                <h5>Điều 4: Cam kết về thời gian và chất lượng tại điểm thu gom</h5>
+                                <p>Bên A cam kết phụ phẩm phải ở trạng thái chất lượng như đã mô tả (không bị thối rữa, nấm mốc phát sinh) tại đúng "Thời gian sẵn sàng lấy" đã hẹn.</p>
+                                <h5 class="text-danger">Điều 5: Điều khoản xử lý vi phạm và hoàn trả</h5>
+                                <p class="fw-bold">
+                                    Bên A hiểu rõ và đồng ý rằng: Bên Thu Gom (Bên B) có quyền <strong>từ chối thu gom</strong> ngay tại chỗ nếu phát hiện bất kỳ vi phạm nào.
+                                    Trường hợp vi phạm chỉ được phát hiện sau khi đã vận chuyển về kho, Bên B có quyền <strong>yêu cầu hoàn trả</strong> toàn bộ lô hàng. Bên A phải nhận lại lô hàng và chịu mọi chi phí vận chuyển phát sinh.
+                                </p>
+                                <hr />
+                                <p class="fw-bold">Tôi, đại diện cho Bên A, xác nhận đã đọc, hiểu rõ và đồng ý tuân thủ tất cả các điều khoản được nêu trong bản cam kết này.</p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đã hiểu</button>
                             </div>
                         </div>
                     </div>
@@ -220,118 +265,137 @@
     </div>
 
     @* --- SCRIPTS --- *@
-    @* Đặt jQuery trước validation và script tùy chỉnh *@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    @* 2. Bootstrap Bundle (thường chứa Popper) *@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
 
     @await Html.PartialAsync("_ValidationScriptsPartial") @* Script validation *@
 
-    @* Script AJAX cho dropdown địa chỉ *@
+    @* Script AJAX cho dropdown địa chỉ VÀ sản phẩm *@
     <script>
         $(document).ready(function () {
-            console.log("ThuGom AJAX script initializing...");
-
+            // === LOGIC ĐỊA CHỈ ===
             const provinceSelect = $('#provinceSelectThuGom');
             const districtSelect = $('#districtSelectThuGom');
             const wardSelect = $('#wardSelectThuGom');
 
-             // Kiểm tra sự tồn tại của các element
-            if(provinceSelect.length === 0) console.error("#provinceSelectThuGom not found!");
-            if(districtSelect.length === 0) console.error("#districtSelectThuGom not found!");
-            if(wardSelect.length === 0) console.error("#wardSelectThuGom not found!");
-
-            function resetDropdown(dropdown, defaultText) {
+            function resetDropdown(dropdown, defaultText, disabled) {
                 dropdown.empty().append($('<option>', {
                     value: '',
                     text: defaultText
-                })).prop('disabled', true);
+                })).prop('disabled', disabled);
                  dropdown.val('');
             }
-
             function enableDropdown(dropdown) {
                  dropdown.prop('disabled', false);
             }
 
-            // Khởi tạo trạng thái ban đầu
-            resetDropdown(districtSelect, '-- Chọn Quận/Huyện --');
-            resetDropdown(wardSelect, '-- Chọn Xã/Phường --');
+            // Khởi tạo (Nếu là postback lỗi, không reset)
+            if (districtSelect.find('option').length <= 1) {
+                 resetDropdown(districtSelect, '-- Chọn Quận/Huyện --', true);
+            }
+            if (wardSelect.find('option').length <= 1) {
+                resetDropdown(wardSelect, '-- Chọn Xã/Phường --', true);
+            }
 
             // Sự kiện change Tỉnh/TP
             provinceSelect.on('change', function () {
                 const selectedProvinceId = $(this).val();
-                console.log("Province changed:", selectedProvinceId);
-
-                resetDropdown(districtSelect, '-- Đang tải Quận/Huyện... --');
-                resetDropdown(wardSelect, '-- Chọn Xã/Phường --');
+                resetDropdown(districtSelect, '-- Đang tải Quận/Huyện... --', true);
+                resetDropdown(wardSelect, '-- Chọn Xã/Phường --', true);
 
                 if (selectedProvinceId) {
-                    const url = '@Url.Action("GetDistrictsForHome", "Home")' + '?provinceId=' + selectedProvinceId;
-                    console.log("Requesting Districts URL:", url);
-
+                    // ================= SỬA LỖI 3: Đổi Controller và Action cho AJAX =================
+                    const url = '@Url.Action("GetDistricts", "ThuGom")' + '?provinceId=' + selectedProvinceId;
                     $.getJSON(url)
                         .done(function (districts) {
-                             console.log("Districts received:", districts);
-                             if (districts && !districts.error && districts.length > 0) {
-                                 enableDropdown(districtSelect);
-                                 districtSelect.find('option:first').text('-- Chọn Quận/Huyện --');
+                             if (districts && districts.length > 0) {
+                                 resetDropdown(districtSelect, '-- Chọn Quận/Huyện --', false);
                                  $.each(districts, function (index, district) {
                                      districtSelect.append($('<option>', { value: district.id, text: district.name }));
                                  });
-                             } else if (districts.error) {
-                                console.error("Server error loading districts:", districts.error);
-                                 districtSelect.find('option:first').text(districts.error);
                              } else {
-                                 resetDropdown(districtSelect, '-- Không có Quận/Huyện --');
+                                  resetDropdown(districtSelect, '-- Không có Quận/Huyện --', true);
                              }
                         })
-                        .fail(function (jqXHR, textStatus, errorThrown) {
-                            console.error("AJAX Error loading districts:", textStatus, errorThrown, jqXHR.responseText);
-                            resetDropdown(districtSelect, 'Lỗi tải Quận/Huyện');
+                        .fail(function () {
+                            resetDropdown(districtSelect, 'Lỗi tải Quận/Huyện', true);
                         });
-                } else {
-                     resetDropdown(districtSelect, '-- Chọn Quận/Huyện --');
-                     resetDropdown(wardSelect, '-- Chọn Xã/Phường --');
                 }
             });
 
             // Sự kiện change Quận/Huyện
             districtSelect.on('change', function () {
                 const selectedDistrictId = $(this).val();
-                console.log("District changed:", selectedDistrictId);
-
-                resetDropdown(wardSelect, '-- Đang tải Xã/Phường... --');
+                resetDropdown(wardSelect, '-- Đang tải Xã/Phường... --', true);
 
                 if (selectedDistrictId) {
-                     const url = '@Url.Action("GetWardsForHome", "Home")' + '?districtId=' + selectedDistrictId;
-                     console.log("Requesting Wards URL:", url);
-
+                     // ================= SỬA LỖI 3: Đổi Controller và Action cho AJAX =================
+                     const url = '@Url.Action("GetWards", "ThuGom")' + '?districtId=' + selectedDistrictId;
                      $.getJSON(url)
                          .done(function (wards) {
-                             console.log("Wards received:", wards);
-                             if (wards && !wards.error && wards.length > 0) {
-                                 enableDropdown(wardSelect);
-                                 wardSelect.find('option:first').text('-- Chọn Xã/Phường --');
+                             if (wards && wards.length > 0) {
+                                 resetDropdown(wardSelect, '-- Chọn Xã/Phường --', false);
                                  $.each(wards, function (index, ward) {
                                      wardSelect.append($('<option>', { value: ward.id, text: ward.name }));
                                  });
-                             } else if (wards.error) {
-                                console.error("Server error loading wards:", wards.error);
-                                wardSelect.find('option:first').text(wards.error);
                              } else {
-                                resetDropdown(wardSelect, '-- Không có Xã/Phường --');
+                                 resetDropdown(wardSelect, '-- Không có Xã/Phường --', true);
                              }
                          })
-                         .fail(function (jqXHR, textStatus, errorThrown) {
-                             console.error("AJAX Error loading wards:", textStatus, errorThrown, jqXHR.responseText);
-                             resetDropdown(wardSelect, 'Lỗi tải Xã/Phường');
+                         .fail(function () {
+                             resetDropdown(wardSelect, 'Lỗi tải Xã/Phường', true);
                          });
-                } else {
-                     resetDropdown(wardSelect, '-- Chọn Xã/Phường --');
                 }
             });
 
-            console.log("ThuGom AJAX script initialization complete.");
+            // === LOGIC MỚI CHO SẢN PHẨM ===
+            const loaiSanPhamSelect = $('#loaiSanPhamSelect');
+            const sanPhamSelect = $('#sanPhamSelect');
+
+            // Hàm reset dropdown sản phẩm
+            function resetSanPhamDropdown(text, disabled) {
+                sanPhamSelect.empty().append($('<option>', {
+                    value: '',
+                    text: text
+                })).prop('disabled', disabled);
+                sanPhamSelect.val(''); // Đảm bảo giá trị rỗng
+            }
+
+            // Khởi tạo (Nếu là postback lỗi, không reset)
+            if (sanPhamSelect.find('option').length <= 1) {
+                 resetSanPhamDropdown('-- Vui lòng chọn Loại Sản Phẩm trước --', true);
+            }
+
+            // Sự kiện change Loại Sản Phẩm
+            loaiSanPhamSelect.on('change', function () {
+                const selectedLoaiSPId = $(this).val();
+
+                if (selectedLoaiSPId) {
+                    resetSanPhamDropdown('-- Đang tải Sản Phẩm... --', true);
+
+                    // Gọi hàm AJAX "GetSanPhamsByLoai" trong ThuGomController
+                    const url = '@Url.Action("GetSanPhamsByLoai", "ThuGom")' + '?maLoaiSP=' + selectedLoaiSPId;
+
+                    $.getJSON(url)
+                        .done(function (sanPhams) {
+                            if (sanPhams && sanPhams.length > 0) {
+                                resetSanPhamDropdown('-- Chọn sản phẩm --', false);
+                                $.each(sanPhams, function (index, sanPham) {
+                                    sanPhamSelect.append($('<option>', { value: sanPham.id, text: sanPham.name }));
+                                });
+                            } else {
+                                resetSanPhamDropdown('-- Không có sản phẩm cho loại này --', true);
+                            }
+                        })
+                        .fail(function () {
+                            resetSanPhamDropdown('Lỗi tải sản phẩm', true);
+                        });
+                } else {
+                    resetSanPhamDropdown('-- Vui lòng chọn Loại Sản Phẩm trước --', true);
+                }
+            });
+            // === KẾT THÚC LOGIC MỚI ===
+
         });
     </script>
 

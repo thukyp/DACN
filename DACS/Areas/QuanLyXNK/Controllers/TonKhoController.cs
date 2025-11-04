@@ -90,25 +90,27 @@ namespace DACS.Areas.QuanLyXNK.Controllers
         }
 
         // --- Hàm Helper để Map TonKho sang TonKhoListItemViewModel ---
-        private TonKhoListItemViewModel MapToListItemViewModel(TonKho tk, long? dinhMucToiThieu)
+        private TonKhoListItemViewModel MapToListItemViewModel(LoTonKho tk, long? dinhMucToiThieu)
         {
-            var khoiLuongDonHang = _context.ChiTietDatHangs
-    .Where(ct => ct.ProductId == tk.M_SanPham
-                 && ct.DonHang.TrangThai == "Đã xác nhận")
-    .Sum(ct => ct.Khoiluong);
+            var khoiLuongDonHang = (decimal)_context.ChiTietDatHangs
+                .Where(ct => ct.ProductId == tk.M_SanPham
+                             && ct.DonHang.TrangThai == "Đã xác nhận")
+                .Sum(ct => (float)ct.Khoiluong);
 
-            var khoiLuongConLai = tk.KhoiLuong - khoiLuongDonHang;
-            
+            var khoiLuongConLai = tk.KhoiLuongBanDau - khoiLuongDonHang;
 
             return new TonKhoListItemViewModel
             {
-                Id = tk.Id,
+                Id = int.TryParse(tk.MaLoTonKho, out var id) ? id : 0, // Fix: Convert string to int safely
                 TenKho = tk.KhoHang?.TenKho ?? tk.MaKho,
                 TenSanPham = tk.SanPham?.TenSanPham ?? tk.M_SanPham,
                 TenDonViTinh = tk.DonViTinh?.TenLoaiTinh ?? tk.M_DonViTinh,
-                KhoiLuong = khoiLuongConLai,
+                KhoiLuong = (float)khoiLuongConLai,
                 DinhMucToiThieu = dinhMucToiThieu,
-                TrangThai = CalculateStatus(tk.KhoiLuong, dinhMucToiThieu)
+                TrangThai = CalculateStatus((float)khoiLuongConLai, dinhMucToiThieu),
+                NgayNhapKho = tk.NgayNhapKho,
+                HanSuDung = tk.HanSuDung,
+                SoLo = tk.MaLoTonKho
             };
             
         }

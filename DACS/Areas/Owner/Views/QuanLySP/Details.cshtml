@@ -55,11 +55,10 @@
                 </dd>
 
                 <dt class="col-sm-4">
-                    @Html.DisplayNameFor(model => model.SoLuong)
+                    Tổng Tồn Kho
                 </dt>
                 <dd class="col-sm-8">
-                    @Html.DisplayFor(model => model.SoLuong)
-                    @(Model.DonViTinh?.TenLoaiTinh) @* Thêm đơn vị tính *@
+                    @Convert.ToDecimal(ViewData["TongTonKho"]).ToString("N0") @(Model.DonViTinh?.TenLoaiTinh)
                 </dd>
 
                 <dt class="col-sm-4">

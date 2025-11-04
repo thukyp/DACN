@@ -1,9 +1,8 @@
 ﻿@model IEnumerable<DACS.Models.SanPham>
-@using DACS.Models 
+@using DACS.Models
 
 @{
     ViewData["Title"] = "Quản Lý Sản Phẩm";
-    // Layout = "_AdminLayout"; // Đặt Layout nếu bạn có layout riêng
 }
 
 <!DOCTYPE html>
@@ -16,7 +15,15 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 
     <style>
-        /* CSS của bạn giữ nguyên ở đây */
+        /* (Giữ nguyên toàn bộ CSS của bạn) */
+        :root {
+            --primary: #4CAF50;
+            --secondary: #8D6E63;
+            --light-bg: #F9FBE7;
+            --dark-text: #2E2E2E;
+            --card-border: #C8E6C9;
+        }
+
         body, html {
             height: 100%;
         }
@@ -30,36 +37,6 @@
             flex-direction: row;
         }
 
-
-        .table td {
-            vertical-align: middle;
-            font-size: 0.9rem;
-        }
-
-        .table th {
-            font-weight: 600;
-            background-color: #e9ecef;
-            white-space: nowrap;
-            vertical-align: middle;
-        }
-
-        .actions a, .actions button {
-            margin-right: 5px;
-            font-size: 0.85rem;
-        }
-
-        .actions .btn-sm {
-            padding: 0.2rem 0.4rem;
-        }
-
-        .main-content-area {
-            padding: 25px;
-            background-color: #f8f9fa;
-            flex-grow: 1;
-            overflow-y: auto;
-            min-height: 100vh; /* Đảm bảo nội dung đủ cao */
-        }
-
         .sidebar {
             background-color: #212529;
             color: #fff;
@@ -71,10 +48,10 @@
             flex-direction: column;
         }
 
-            .sidebar h4 {
+            .sidebar h2 {
                 border-bottom: 1px solid #495057;
                 padding-bottom: 10px;
-                font-size: 1.25rem;
+                font-size: 1.98rem;
                 margin-bottom: 1rem;
                 font-weight: 600;
             }
@@ -117,6 +94,20 @@
                     color: #bd2130;
                 }
 
+        .main-content-area {
+            padding: 25px;
+            background-color: #f8f9fa;
+            flex-grow: 1;
+            overflow-y: auto;
+        }
+
+        .header {
+            font-size: 1.75rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            color: #343a40;
+        }
+
         .stat-card {
             background-color: #fff;
             border-radius: 0.375rem;
@@ -135,33 +126,72 @@
                 font-size: 0.9rem;
                 color: #6c757d;
             }
-        /* Thêm CSS nếu cần */
+
+        .filter-section {
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 0.375rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        }
+
+        .table th {
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        .table td {
+            font-size: 0.85rem;
+            vertical-align: middle;
+        }
+
+        .table .actions form, .table .actions a, .table .actions button {
+            margin-right: 3px;
+            display: inline-block;
+        }
+
+        .table .actions .btn-sm {
+            padding: 0.2rem 0.4rem;
+            font-size: 0.75rem;
+        }
+
+        .table .badge {
+            font-size: 0.75rem;
+            padding: 0.3em 0.5em;
+        }
+
+        .user-display span {
+            display: block;
+        }
+
+        .user-display small {
+            color: #6c757d;
+            font-size: 0.9em;
+        }
     </style>
 </head>
 <body>
+
     <div class="d-flex">
+        @* --- Sidebar --- *@
         <div class="sidebar">
-            <h2>Quản Lý SP</h2>
+            <h2>OWNER</h2>
             <ul class="nav flex-column">
-                <li class="nav-item">
-                    <a asp-area="QuanLySP" asp-controller="QuanLySP" asp-action="Index" class="nav-link active">
-                        <i class="fas fa-box-open me-2"></i> Quản lý Sản phẩm
-                    </a>
-                </li>
-
-
-			</ul>
+                @* (Giữ nguyên menu sidebar của bạn) *@
+                <li class="nav-item"><a asp-area="QuanLySP" asp-controller="QuanLySP" asp-action="Index" class="nav-link active"><i class="fas fa-box-open me-2"></i> Quản lý Sản phẩm</a></li>
+                @* (Các link khác...) *@
+            </ul>
             <div class="nav-item mt-auto ">
-            <button type="submit" class="list-group-item list-group-item-action text-danger border-0 bg-transparent p-0 w-100 text-start mt-1">
-				@* Adjusted button style to better match list items *@
-				<a href="/home/index" class="list-group-item list-group-item-action border-0 text-danger"><i class="fas fa-sign-out-alt fa-fw me-2"></i> Về trang chủ</a>
-			</button>
+                <button type="submit" class="text-danger border-0 bg-transparent p-0 w-100 text-start mt-1">
+                    <a href="/home/index" class="border-0 text-danger" style="text-decoration: none;"><i class="fas fa-sign-out-alt fa-fw me-2"></i> Về trang chủ</a>
+                </button>
             </div>
         </div>
 
         <div class="main-content-area">
             <div class="page-header">Quản Lý Sản Phẩm</div>
 
+            @* (Giữ nguyên code hiển thị TempData) *@
             @if (TempData["SuccessMessage"] != null)
             {
                 <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -177,51 +207,28 @@
                 </div>
             }
 
-            @* <div class="row" id="stat-cards"> *@
-            @*     <div class="col-md-4"> *@
-            @*         <div class="stat-card"> *@
-            @*             <div class="value" id="total-products">@(ViewBag.TotalProducts ?? Model.Count())</div> *@
-            @*             <div class="label">Tổng sản phẩm</div> *@
-            @*         </div> *@
-            @*     </div> *@
-            @*     <div class="col-md-4"> *@
-            @*         <div class="stat-card"> *@
-            @*             @(ViewBag.InStockProducts ?? Model.Count(p => p.SoLuong > 0)) *@
-            @*             <div class="label">Sản phẩm còn hàng</div> *@
-            @*         </div> *@
-            @*     </div> *@
-            @*     <div class="col-md-4"> *@
-            @*         <div class="stat-card"> *@
-            @*             @(ViewBag.InStockProducts ?? Model.Count(p => p.SoLuong > 0)) *@
-            @*             <div class="label">Sản phẩm hết hàng</div> *@
-            @*         </div> *@
-            @*     </div> *@
-            @* </div> *@
-
-
             <div class="row" id="stat-cards">
                 <div class="col-md-4">
                     <div class="stat-card">
-                        <div class="value" id="total-products">0</div>
+                        <div class="value" id="total-products">@ViewBag.TotalProducts</div>
                         <div class="label">Tổng sản phẩm</div>
                     </div>
                 </div>
                 <div class="col-md-4">
                     <div class="stat-card">
-                        <div class="value text-success" id="in-stock-products">0</div>
+                        <div class="value text-success" id="in-stock-products">@ViewBag.InStockProducts</div>
                         <div class="label">Sản phẩm còn hàng</div>
                     </div>
                 </div>
                 <div class="col-md-4">
                     <div class="stat-card">
-                        <div class="value text-danger" id="out-stock-products">0</div>
+                        <div class="value text-danger" id="out-stock-products">@ViewBag.OutStockProducts</div>
                         <div class="label">Sản phẩm hết hàng</div>
                     </div>
                 </div>
             </div>
-
-
             <div class="filter-card">
+                @* (Giữ nguyên code Filter. Lưu ý: filter JS của bạn cho "Loại SP" đang bị sai) *@
                 <div class="row g-3 align-items-center">
                     <div class="col-md-5">
                         <input type="text" id="search-input" class="form-control form-control-sm" placeholder="Tìm tên sản phẩm...">
@@ -233,32 +240,25 @@
                             <option value="high-to-low">Cao đến thấp</option>
                         </select>
                     </div>
-
-                    <div class="col-md-4 text-end">
-                        <div class="btn-group" role="group">
-                            <form asp-area="QuanLySP" asp-controller="QuanLySP" asp-action="ImportExcel"
-                                  method="post" enctype="multipart/form-data" class="d-inline-flex align-items-center">
-                                <input type="file" name="file" accept=".xlsx,.xls"
-                                       class="form-control form-control-sm d-none" id="fileInput" onchange="this.form.submit()" />
-                                <button type="button" class="btn btn-sm btn-primary"
-                                        onclick="document.getElementById('fileInput').click();">
-                                    <i class="fas fa-file-import me-1"></i> Nhập Excel
-                                </button>
-                            </form>
-
-                            <a asp-area="QuanLySP" asp-controller="QuanLySP" asp-action="ExportExcel"
-                               class="btn btn-sm btn-warning text-white">
-                                <i class="fas fa-file-export me-1"></i> Xuất Excel
-                            </a>
-
-                            <a asp-area="QuanLySP" asp-controller="QuanLySP" asp-action="Create"
-                               class="btn btn-sm btn-success">
-                                <i class="fas fa-plus me-1"></i> Thêm SP
-                            </a>
-                        </div>
+                    <div class="col-md-2">
+                        <select id="category-filter-select" class="form-select form-select-sm">
+                            <option value="" selected>Lọc theo loại SP</option>
+                            <optgroup label="Phụ phẩm từ cây lúa">
+                                <option value="LSP01_Rom">Rơm rạ</option>
+                                <option value="LSP01_Trau">Trấu</option>
+                                <option value="LSP01_Cam">Cám gạo</option>
+                            </optgroup>
+                            <optgroup label="Phụ phẩm từ ngô">
+                                <option value="LSP02_Than">Thân ngô</option>
+                                <option value="LSP02_La">Lá ngô</option>
+                            </optgroup>
+                        </select>
                     </div>
-
-
+                    <div class="col-md-2 text-end">
+                        <a asp-area="Owner" asp-controller="QuanLySP" asp-action="Create" class="btn btn-sm btn-success w-100">
+                            <i class="fas fa-plus me-1"></i> Thêm SP
+                        </a>
+                    </div>
                 </div>
             </div>
 
@@ -269,38 +269,42 @@
                             <tr>
                                 <th>@Html.DisplayNameFor(model => model.First().TenSanPham)</th>
                                 <th>@Html.DisplayNameFor(model => model.First().Gia)</th>
-                                <th>
+
+                                @* <th>
                                     @Html.DisplayNameFor(model => model.First().SoLuong)
                                     (@Html.DisplayNameFor(model => model.First().DonViTinh))
-                                </th>
+                                </th> *@
                                 <th>@Html.DisplayNameFor(model => model.First().LoaiSanPham)</th>
+                                <th>@Html.DisplayNameFor(model => model.First().TrangThai)</th> @* THÊM CỘT TRẠNG THÁI *@
                                 <th class="text-center">Thao tác</th>
                             </tr>
                         </thead>
                         <tbody id="product-table-body">
-                            @foreach (var item in Model) // Lặp qua danh sách sản phẩm từ Model
+                            @foreach (var item in Model)
                             {
                                 <tr data-category="@item.M_LoaiSP">
                                     <td>@Html.DisplayFor(modelItem => item.TenSanPham)</td>
                                     <td>@item.Gia.ToString("N0") đ</td>
-                                    <td>
+
+                                    @* <td>
                                         @item.SoLuong.ToString("N1") @(item.DonViTinh?.TenLoaiTinh)
-                                    </td>
+                                    </td> *@
                                     <td>@Html.DisplayFor(modelItem => item.LoaiSanPham.TenLoai)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.TrangThai)</td> @* THÊM DỮ LIỆU TRẠNG THÁI *@
                                     <td class="actions text-center">
-                                        <a asp-area="QuanLySP" asp-controller="QuanLySP" asp-action="Edit" asp-route-id="@item.M_SanPham" class="btn btn-sm btn-outline-primary" title="Chỉnh Sửa">
+                                        <a asp-area="Owner" asp-controller="QuanLySP" asp-action="Edit" asp-route-id="@item.M_SanPham" class="btn btn-sm btn-outline-primary" title="Chỉnh Sửa">
                                             <i class="fas fa-edit"></i>
                                         </a>
-                                        <a asp-area="QuanLySP" asp-controller="QuanLySP" asp-action="Details" asp-route-id="@item.M_SanPham" class="btn btn-sm btn-outline-info" title="Xem Chi Tiết">
+                                        <a asp-area="Owner" asp-controller="QuanLySP" asp-action="Details" asp-route-id="@item.M_SanPham" class="btn btn-sm btn-outline-info" title="Xem Chi Tiết">
                                             <i class="fas fa-info-circle"></i>
                                         </a>
-                                        <a asp-area="QuanLySP" asp-controller="QuanLySP" asp-action="Delete" asp-route-id="@item.M_SanPham" class="btn btn-sm btn-outline-danger" title="Xóa">
+                                        <a asp-area="Owner" asp-controller="QuanLySP" asp-action="Delete" asp-route-id="@item.M_SanPham" class="btn btn-sm btn-outline-danger" title="Xóa">
                                             <i class="fas fa-trash-alt"></i>
                                         </a>
                                     </td>
                                 </tr>
                             }
-                            @if (!Model.Any()) // Kiểm tra nếu không có sản phẩm nào
+                            @if (!Model.Any())
                             {
                                 <tr>
                                     <td colspan="5" class="text-center fst-italic text-muted py-3">Không có sản phẩm nào phù hợp.</td>
@@ -321,7 +325,6 @@
     <script src="~/js/search.js"></script>
     <script src="~/js/price.js"></script>
 
-    @* Script Lọc loại sản phẩm (cập nhật để dùng data-category) *@
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             const categoryFilter = document.getElementById("category-filter-select");
@@ -329,93 +332,37 @@
             const rows = Array.from(tableBody.querySelectorAll("tr"));
 
             function filterByCategory() {
-                const selectedValue = categoryFilter.value; // Lấy M_LoaiSP từ value
+                const selectedValue = categoryFilter.value;
 
                 rows.forEach(row => {
-                    // Lấy M_LoaiSP từ data-category của thẻ tr
                     const rowCategory = row.getAttribute('data-category');
-
-                    if (!selectedValue || // Nếu không chọn gì thì hiện tất cả
-                        (rowCategory && rowCategory === selectedValue)) { // Hoặc nếu category của dòng khớp với giá trị chọn
-                        row.style.display = ""; // Hiện dòng
+                    if (!selectedValue || (rowCategory && rowCategory.startsWith(selectedValue))) { // Dùng startsWith cho optgroup
+                        row.style.display = "";
                     } else {
-                        row.style.display = "none"; // Ẩn dòng
+                        row.style.display = "none";
                     }
                 });
-                 // Cập nhật lại thống kê sau khi lọc (nếu cần thiết)
-                 updateProductStatsBasedOnVisibleRows();
+
+                // <<< SỬA: HÀM NÀY KHÔNG CÒN Ý NGHĨA VÌ KHÔNG CÓ SỐ LƯỢNG >>>
+                // updateProductStatsBasedOnVisibleRows();
             }
 
             if (categoryFilter && tableBody) {
-                 categoryFilter.addEventListener("change", filterByCategory);
+                categoryFilter.addEventListener("change", filterByCategory);
             }
 
-             // --- Giữ lại hàm thống kê, nhưng cần đảm bảo đọc đúng cột Số lượng ---
-            function updateProductStatsBasedOnVisibleRows() {
-                 if (!tableBody) return; // Thoát nếu không tìm thấy tbody
+            // <<< SỬA: XÓA BỎ HÀM TÍNH TOÁN STATS BẰNG JS (VÌ DỮ LIỆU ĐÃ BỊ XÓA) >>>
+            // function updateProductStatsBasedOnVisibleRows() {
+                // ... (Toàn bộ code của hàm này nên được xóa)
+            // }
+            // updateProductStatsBasedOnVisibleRows();
 
-                 let total = 0;
-                 let inStock = 0;
-                 let outStock = 0;
+            // Gắn lại sự kiện cập nhật thống kê (đã bị xóa) cho các filter khác nếu cần
+            const searchInput = document.getElementById('search-input');
+            const priceFilter = document.getElementById('price-filter-select');
 
-                 // Lấy các dòng đang hiển thị
-                 const visibleRows = Array.from(tableBody.querySelectorAll('tr')).filter(row => row.style.display !== 'none');
-
-                 visibleRows.forEach(row => {
-                     // Kiểm tra xem có phải dòng thông báo "Không có sản phẩm" không
-                     if (row.cells.length < 4) return; // Bỏ qua nếu không đủ cột dữ liệu
-
-                     // Lấy text từ cột Số Lượng (cột thứ 3 - index 2)
-                     const khoiLuongCell = row.cells[2];
-                     if(khoiLuongCell){
-                         const khoiLuongText = khoiLuongCell.textContent.trim();
-                         // Tách số đầu tiên ra (có thể là số thập phân)
-                         const match = khoiLuongText.match(/^[+-]?([0-9]*[.,])?[0-9]+/);
-
-                         if (match) {
-                            // Thay dấu phẩy bằng dấu chấm để Parse hoạt động đúng
-                            const numberString = match[0].replace(',', '.');
-                            const khoiLuong = parseFloat(numberString);
-
-                            if (!isNaN(khoiLuong)) { // Kiểm tra nếu là số hợp lệ
-                                 total++; // Tăng tổng số SP hợp lệ hiển thị
-                                 if (khoiLuong > 0) {
-                                     inStock++;
-                                 } else {
-                                     outStock++;
-                                 }
-                            } else {
-                                // Có thể xử lý trường hợp không parse được số (vd: chỉ có chữ "kg")
-                                total++; // Vẫn đếm là 1 sản phẩm nhưng coi là hết hàng
-                                outStock++;
-                            }
-                         } else {
-                             // Trường hợp không có số trong cột (vd: trống hoặc chỉ có đơn vị)
-                            total++; // Vẫn đếm là 1 sản phẩm nhưng coi là hết hàng
-                            outStock++;
-                         }
-                     }
-                 });
-
-                 // Cập nhật số liệu vào Stat Cards
-                 const totalEl = document.getElementById('total-products');
-                 const inStockEl = document.getElementById('in-stock-products');
-                 const outStockEl = document.getElementById('out-stock-products');
-
-                 if(totalEl) totalEl.textContent = total;
-                 if(inStockEl) inStockEl.textContent = inStock;
-                 if(outStockEl) outStockEl.textContent = outStock;
-            }
-
-             // Gọi hàm thống kê ban đầu khi trang tải xong
-             updateProductStatsBasedOnVisibleRows();
-
-             // Gắn lại sự kiện cập nhật thống kê cho các filter khác nếu cần
-             const searchInput = document.getElementById('search-input');
-             const priceFilter = document.getElementById('price-filter-select');
-
-             if(searchInput) searchInput.addEventListener('input', updateProductStatsBasedOnVisibleRows);
-             if(priceFilter) priceFilter.addEventListener('change', updateProductStatsBasedOnVisibleRows);
+            // if(searchInput) searchInput.addEventListener('input', updateProductStatsBasedOnVisibleRows);
+            // if(priceFilter) priceFilter.addEventListener('change', updateProductStatsBasedOnVisibleRows);
         });
     </script>
     <script src="~/js/phantrangtruocsau.js"></script>

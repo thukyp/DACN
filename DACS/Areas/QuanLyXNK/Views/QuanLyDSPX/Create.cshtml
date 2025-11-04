@@ -148,9 +148,9 @@
 </style>
 
 <div class="d-flex main-container">
-    
+
     <hr />
-    
+
 
     <div class="sidebar">
         <h2>Quản Lý XNK</h2>
@@ -164,7 +164,7 @@
         </ul>
         <div class="nav-item mt-auto ">
             <button type="submit" class="text-danger border-0 bg-transparent p-0 w-100 text-start mt-1">
-                    @* Adjusted button style to better match list items *@
+                @* Adjusted button style to better match list items *@
                 <a href="/home/index" class="border-0 text-danger" style="text-decoration: none;"><i class="fas fa-sign-out-alt fa-fw me-2"></i> Về trang chủ</a>
             </button>
         </div>
@@ -173,78 +173,78 @@
     <div class="main-content-area">
         <div class="page-header">@ViewData["Title"]</div>
 
-    <form asp-action="Create" method="post">
-        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <form asp-action="Create" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-        <div class="row">
-            <div class="col-md-4 mb-3">
-                <label asp-for="MaKho" class="form-label"></label>
-                <select asp-for="MaKho" asp-items="Model.KhoHangOptions" class="form-select">
-                    <option value="">-- Chọn kho xuất --</option>
-                </select>
-                <span asp-validation-for="MaKho" class="text-danger"></span>
-            </div>
-            <div class="col-md-4 mb-3">
-                <label asp-for="NgayXuat" class="form-label"></label>
-                <input asp-for="NgayXuat" type="datetime-local" class="form-control" />
-                <span asp-validation-for="NgayXuat" class="text-danger"></span>
-            </div>
-            <div class="col-md-4 mb-3">
-                <label asp-for="LyDoXuat" class="form-label"></label>
-                <input asp-for="LyDoXuat" class="form-control" />
-                <span asp-validation-for="LyDoXuat" class="text-danger"></span>
-            </div>
-        </div>
-
-        <h4 class="mt-4">Chi Tiết Sản Phẩm Xuất</h4>
-        @if (ViewData.ModelState.ContainsKey("ChiTietItems"))
-        {
-            <div class="text-danger">@ViewData.ModelState["ChiTietItems"].Errors.First().ErrorMessage</div>
-        }
-
-        <div id="chiTietItemsContainer">
-            @for (int i = 0; i < Model.ChiTietItems.Count; i++)
-            {
-                <div class="row item-row align-items-end">
-                    <div class="col-md-4">
-                        <label asp-for="ChiTietItems[i].M_LoaiSP" class="form-label"></label>
-                        <select asp-for="ChiTietItems[i].M_LoaiSP" asp-items="Model.SanPhamOptions" class="form-select chi-tiet-san-pham">
-                            <option value="">-- Chọn sản phẩm --</option>
-                        </select>
-                        <span asp-validation-for="ChiTietItems[i].M_LoaiSP" class="text-danger"></span>
-                    </div>
-                    <div class="col-md-3">
-                        <label asp-for="ChiTietItems[i].M_DonViTinh" class="form-label"></label>
-                        <select asp-for="ChiTietItems[i].M_DonViTinh" asp-items="Model.DonViTinhOptions" class="form-select chi-tiet-donvitinh">
-                            <option value="">-- Chọn ĐVT --</option>
-                        </select>
-                        <span asp-validation-for="ChiTietItems[i].M_DonViTinh" class="text-danger"></span>
-                    </div>
-                    <div class="col-md-2">
-                        <label asp-for="ChiTietItems[i].SoLuong" class="form-label"></label>
-                        <input asp-for="ChiTietItems[i].SoLuong" type="number" class="form-control chi-tiet-soluong" min="1" />
-                        <span asp-validation-for="ChiTietItems[i].SoLuong" class="text-danger"></span>
-                    </div>
-                    @* Nút xóa dòng (cần JavaScript) - ví dụ *@
-                    @if (i > 0) @* Không cho xóa dòng đầu tiên nếu chỉ có 1 dòng *@
-                    {
-                        <div class="col-md-1">
-                            <button type="button" class="btn btn-sm btn-danger removeItemBtn">Xóa</button>
-                        </div>
-                    }
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label asp-for="MaKho" class="form-label"></label>
+                    <select asp-for="MaKho" asp-items="Model.KhoHangOptions" class="form-select">
+                        <option value="">-- Chọn kho xuất --</option>
+                    </select>
+                    <span asp-validation-for="MaKho" class="text-danger"></span>
                 </div>
+                <div class="col-md-4 mb-3">
+                    <label asp-for="NgayXuat" class="form-label"></label>
+                    <input asp-for="NgayXuat" type="datetime-local" class="form-control" />
+                    <span asp-validation-for="NgayXuat" class="text-danger"></span>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label asp-for="LyDoXuat" class="form-label"></label>
+                    <input asp-for="LyDoXuat" class="form-control" />
+                    <span asp-validation-for="LyDoXuat" class="text-danger"></span>
+                </div>
+            </div>
+
+            <h4 class="mt-4">Chi Tiết Sản Phẩm Xuất</h4>
+            @if (ViewData.ModelState.ContainsKey("ChiTietItems"))
+            {
+                <div class="text-danger">@ViewData.ModelState["ChiTietItems"].Errors.First().ErrorMessage</div>
             }
-        </div>
 
-        @* Nút thêm dòng mới (cần JavaScript) *@
-        <button type="button" id="addItemBtn" class="btn btn-sm btn-outline-success mt-2 mb-3">Thêm Sản Phẩm</button>
+            <div id="chiTietItemsContainer">
+                @for (int i = 0; i < Model.ChiTietItems.Count; i++)
+                {
+                    <div class="row item-row align-items-end">
+                        <div class="col-md-4">
+                            <label asp-for="ChiTietItems[i].M_LoaiSP" class="form-label"></label>
+                            <select asp-for="ChiTietItems[i].M_LoaiSP" asp-items="Model.SanPhamOptions" class="form-select chi-tiet-san-pham">
+                                <option value="">-- Chọn sản phẩm --</option>
+                            </select>
+                            <span asp-validation-for="ChiTietItems[i].M_LoaiSP" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-3">
+                            <label asp-for="ChiTietItems[i].M_DonViTinh" class="form-label"></label>
+                            <select asp-for="ChiTietItems[i].M_DonViTinh" asp-items="Model.DonViTinhOptions" class="form-select chi-tiet-donvitinh">
+                                <option value="">-- Chọn ĐVT --</option>
+                            </select>
+                            <span asp-validation-for="ChiTietItems[i].M_DonViTinh" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-2">
+                            <label asp-for="ChiTietItems[i].SoLuong" class="form-label"></label>
+                            <input asp-for="ChiTietItems[i].SoLuong" type="number" class="form-control chi-tiet-soluong" min="1" />
+                            <span asp-validation-for="ChiTietItems[i].SoLuong" class="text-danger"></span>
+                        </div>
+                        @* Nút xóa dòng (cần JavaScript) - ví dụ *@
+                        @if (i > 0) @* Không cho xóa dòng đầu tiên nếu chỉ có 1 dòng *@
+                        {
+                            <div class="col-md-1">
+                                <button type="button" class="btn btn-sm btn-danger removeItemBtn">Xóa</button>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
 
-        <div class="form-group mt-4">
-            <button type="submit" class="btn btn-primary">Tạo Phiếu Xuất</button>
-            <a asp-action="Index" asp-controller="TonKho" class="btn btn-secondary">Hủy</a>
-        </div>
-    </form>
-</div>
+            @* Nút thêm dòng mới (cần JavaScript) *@
+            <button type="button" id="addItemBtn" class="btn btn-sm btn-outline-success mt-2 mb-3">Thêm Sản Phẩm</button>
+
+            <div class="form-group mt-4">
+                <button type="submit" class="btn btn-primary">Tạo Phiếu Xuất</button>
+                <a asp-action="Index" asp-controller="TonKho" class="btn btn-secondary">Hủy</a>
+            </div>
+        </form>
+    </div>
 </div>
 @section Scripts {
     @{
@@ -268,7 +268,7 @@
                                     <option value="">-- Chọn sản phẩm --</option>
             @foreach (var option in Model.SanPhamOptions ?? Enumerable.Empty<SelectListItem>())
         {
-                                            <option value="@option.Value">@option.Text</option>
+                                                <option value="@option.Value">@option.Text</option>
         }
                                 </select>
                                 <span data-valmsg-for="ChiTietItems[${itemIndex}].M_LoaiSP" class="text-danger"></span>
@@ -279,7 +279,7 @@
                                     <option value="">-- Chọn ĐVT --</option>
         @foreach (var option in Model.DonViTinhOptions ?? Enumerable.Empty<SelectListItem>())
         {
-                                            <option value="@option.Value">@option.Text</option>
+                                                <option value="@option.Value">@option.Text</option>
         }
                                 </select>
                                 <span data-valmsg-for="ChiTietItems[${itemIndex}].M_DonViTinh" class="text-danger"></span>
