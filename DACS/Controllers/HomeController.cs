@@ -218,6 +218,71 @@ namespace DACS.Controllers
 
             return Ok(new { reply });
         }
+        [HttpPost]
+        public async Task<IActionResult> SaveMessage([FromBody] ChatMessage message)
+        {
+            if (message == null || string.IsNullOrEmpty(message.Message))
+                return BadRequest("Nội dung trống");
+
+            message.SentTime = DateTime.Now;
+
+            _context.ChatMessages.Add(message);
+            await _context.SaveChangesAsync();
+
+            return Ok();
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetChatHistory(string userId)
+        {
+            var messages = await _context.ChatMessages
+                .Where(x => x.SenderId == userId || x.ReceiverId == userId)
+                .OrderBy(x => x.SentTime)
+                .Select(x => new {
+                    x.SenderId,
+                    x.ReceiverId,
+                    x.Message,
+                    x.ImageUrl,
+                    SentTime = x.SentTime.ToString("yyyy-MM-ddTHH:mm:ss")
+                })
+                .ToListAsync();
+
+            var baseUrl = $"{Request.Scheme}://{Request.Host}";
+            var result = messages.Select(m => new {
+                m.SenderId,
+                m.ReceiverId,
+                m.Message,
+                ImageUrl = string.IsNullOrEmpty(m.ImageUrl) ? null : baseUrl + m.ImageUrl,
+                m.SentTime
+            });
+
+
+            return Json(result);
+        }
+
+
+
+        [HttpPost]
+        public async Task<IActionResult> UploadChatImage(IFormFile image)
+        {
+            if (image == null || image.Length == 0)
+                return BadRequest("Không có ảnh nào được gửi lên.");
+
+            // 🗂️ Lưu vào thư mục wwwroot/uploads/chat/
+            var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "chat");
+            if (!Directory.Exists(uploadsFolder))
+                Directory.CreateDirectory(uploadsFolder);
+
+            var fileName = Guid.NewGuid().ToString() + Path.GetExtension(image.FileName);
+            var filePath = Path.Combine(uploadsFolder, fileName);
+
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await image.CopyToAsync(stream);
+            }
+
+            var url = $"/uploads/chat/{fileName}";
+            return Json(new { url });
+        }
 
     }
 

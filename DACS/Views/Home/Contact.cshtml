@@ -28,11 +28,31 @@
             --dark-text: #2E2E2E;
             --card-border: #C8E6C9;
         }
+        /* === Overlay xem ảnh phóng to === */
+        #image-modal {
+            display: none; /* Ẩn mặc định */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.8);
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+            #image-modal img {
+                max-width: 90%;
+                max-height: 90%;
+                border-radius: 10px;
+                box-shadow: 0 0 15px rgba(255,255,255,0.4);
+                cursor: zoom-out;
+            }
 
         h1 {
             color: var(--primary);
             text-align: center;
-            
             margin-bottom: 30px;
         }
 
@@ -57,7 +77,7 @@
             padding: 40px 20px;
         }
 
-        
+
 
         .contact-wrapper {
             display: flex;
@@ -110,9 +130,9 @@
                 transition: 0.3s ease;
             }
 
-                .contact-form form button:hover {
-                    background: #219150;
-                }
+            .contact-form form button:hover {
+                background: #219150;
+            }
 
         .map {
             margin-top: 40px;
@@ -162,48 +182,48 @@
                 align-self: flex-start; /* Tin nhắn của admin */
             }
 
-        /* Ẩn/hiện các khu vực nhập liệu */
-        #chat-input-area {
-            display: none; /* Ban đầu ẩn đi */
-        }
     </style>
 </head>
 <body>
+    <div id="image-modal">
+        <img src="" alt="Phóng to ảnh">
+    </div>
 
     <!-- Banner -->
     <div class="container-contact">
         <h1>Liên hệ với chúng tôi</h1>
 
+
+
+        <div class="contact-form">
+            <h2>Live Chat</h2>
+
+            <div id="chat-messages-container">
+                <div class="chat-message admin">Xin chào! Bạn cần hỗ trợ gì ạ?</div>
+            </div>
+
+            <div id="chat-input-area">
+                <input type="file" id="chat-image" accept="image/*" style="margin-bottom: 5px;">
+                <textarea id="chat-input" placeholder="Nhập nội dung tin nhắn..." required></textarea>
+                <button type="button" id="chat-send-btn">Gửi</button>
+            </div>
+
+
+        </div>
+    </div>
+    <div class="container-contact">
         <div class="contact-wrapper">
-            <div class="contact-info">
+
+            <div class="contact-info col-lg-6">
                 <h2>Thông tin liên hệ</h2>
                 <p><strong>Địa chỉ:</strong> Chung cư tara</p>
                 <p><strong>Điện thoại:</strong> 0337178338</p>
                 <p><strong>Email:</strong> hoahaibakhongchin@gmail.com</p>
             </div>
-
-            <div class="contact-form">
-                <h2>Live Chat</h2>
-
-                <div id="chat-messages-container">
-                    <div class="chat-message admin">Xin chào! Bạn cần hỗ trợ gì ạ?</div>
-                </div>
-
-                <div id="chat-name-area">
-                    <input type="text" id="chat-user-name" placeholder="Họ và tên" required>
-                    <button type"button" id="chat-start-btn">Bắt đầu chat</button>
-                </div>
-
-                <div id="chat-input-area">
-                    <textarea id="chat-input" placeholder="Nội dung tin nhắn..." required></textarea>
-                    <button type="button" id="chat-send-btn">Gửi</button>
-                </div>
+            <div class="map col-lg-6">
+                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3920.0228620243133!2d106.65046155452728!3d10.732719992999037!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31752e421ba32545%3A0x8482217e407b119e!2zUE1KMytXRkgsIFBoxrDhu51uZyA2LCBRdeG6rW4gOCwgSOG7kyBDaMOtIE1pbmgsIFZp4buHdCBOYW0!5e0!3m2!1svi!2s!4v1744707048987!5m2!1svi!2s" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
             </div>
         </div>
-
-        <div class="map">
-            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3920.0228620243133!2d106.65046155452728!3d10.732719992999037!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31752e421ba32545%3A0x8482217e407b119e!2zUE1KMytXRkgsIFBoxrDhu51uZyA2LCBRdeG6rW4gOCwgSOG7kyBDaMOtIE1pbmgsIFZp4buHdCBOYW0!5e0!3m2!1svi!2s!4v1744707048987!5m2!1svi!2s" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-            </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
@@ -215,77 +235,195 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-
-            // Lấy các phần tử HTML
             const messagesContainer = document.getElementById("chat-messages-container");
             const messageInput = document.getElementById("chat-input");
             const sendButton = document.getElementById("chat-send-btn");
-            const nameArea = document.getElementById("chat-name-area");
-            const inputArea = document.getElementById("chat-input-area");
-            const nameInput = document.getElementById("chat-user-name");
-            const startButton = document.getElementById("chat-start-btn");
-
-            let userName = "";
-
-            // 1. Tạo kết nối tới Hub
+            const imageInput = document.getElementById("chat-image");
+            const userName = "@(User.Identity?.Name ?? "Khách")".trim();
+            const userRole = "@(User.IsInRole("Admin") ? "admin" : "user")";
+            // ✅ Kết nối SignalR
             const connection = new signalR.HubConnectionBuilder()
-                .withUrl("/chatHub") // Phải trùng với tên Hub bạn đăng ký ở Program.cs
+                .withUrl("/Hubs/ChatHub")
                 .build();
 
-            // 2. Bắt đầu chat (sau khi nhập tên)
-            startButton.addEventListener("click", () => {
-                userName = nameInput.value.trim();
-                if (userName) {
-                    nameArea.style.display = "none";    // Ẩn khung nhập tên
-                    inputArea.style.display = "block";  // Hiện khung nhập tin nhắn
-                    messageInput.focus();
-                }
-            });
+            connection.start()
+                .then(() => console.log("✅ Kết nối SignalR thành công"))
+                .catch(err => console.error(err.toString()));
 
-            // 3. Hàm GỬI tin nhắn (gọi hàm "SendMessageToAdmin" trên Hub)
-            function sendMessage() {
-                const message = messageInput.value.trim();
-                if (message && userName) {
-                    // Gửi tin nhắn LÊN server (Hub)
-                    connection.invoke("SendMessageToAdmin", userName, message).catch(err => console.error(err.toString()));
+            // 🟩 TẢI LỊCH SỬ CHAT
+            async function loadMessages() {
+                try {
+                    const res = await fetch(`/Home/GetChatHistory?userId=${encodeURIComponent(userName)}`);
+                    if (!res.ok) throw new Error("Không tải được lịch sử chat");
+                    const data = await res.json();
 
-                    // Hiển thị tin nhắn của chính mình (user)
-                    addMessageToBox(message, "user");
-
-                    messageInput.value = "";
-                    messageInput.focus();
+                    messagesContainer.innerHTML = ""; // Xóa cũ
+                    data.forEach(msg => {
+                        const type = msg.senderId === userName ? "user" : "admin";
+                        addMessageToBox(msg.message, type, msg.sentTime, msg.imageUrl);
+                    });
+                } catch (err) {
+                    console.error("❌ Lỗi loadMessages:", err);
                 }
             }
 
-            // Gửi khi nhấn nút
+            // Gọi lần đầu khi load trang
+            loadMessages();
+
+            // 🕒 TỰ ĐỘNG KIỂM TRA CÓ TIN NHẮN MỚI KHÔNG
+            let lastMessageCount = 0;
+            setInterval(async () => {
+                try {
+                    const res = await fetch(`/Home/GetChatHistory?userId=${encodeURIComponent(userName)}`);
+                    const data = await res.json();
+
+                    if (data.length !== lastMessageCount) {
+                        lastMessageCount = data.length;
+                        messagesContainer.innerHTML = "";
+                        data.forEach(msg => {
+                            const type = msg.senderId === userName ? "user" : "admin";
+                            addMessageToBox(msg.message, type, msg.sentTime, msg.imageUrl);
+                        });
+                    }
+                } catch (e) {
+                    console.warn("Không thể auto reload:", e);
+                }
+            }, 2000); // 👉 2 giây cập nhật 1 lần
+
+            // ===============================
+            // 🟩 GỬI TIN NHẮN (CÓ HÌNH)
+            // ===============================
+            async function sendMessage() {
+                const message = messageInput.value.trim();
+                const file = imageInput.files[0];
+                let imageUrl = null;
+                 if(userRole !== "user") return;
+                // 🟨 Nếu có chọn ảnh thì upload ảnh trước
+                if (file) {
+                    const formData = new FormData();
+                    formData.append("image", file);
+
+                    const res = await fetch("/Home/UploadChatImage", {
+                        method: "POST",
+                        body: formData
+                    });
+
+                    if (res.ok) {
+                        const data = await res.json();
+                        imageUrl = data.url;
+                    } else {
+                        alert("❌ Không tải được hình ảnh!");
+                        return;
+                    }
+                }
+
+                if (!message && !imageUrl) return; // Không gửi trống
+
+                // 🟩 Gửi qua SignalR (realtime)
+                connection.invoke("SendMessageToAdmin", userName, message, imageUrl)
+                    .catch(err => console.error(err.toString()));
+
+                // 🟩 Gọi API lưu tin nhắn
+                fetch("/Home/SaveMessage", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        senderId: userName,
+                        receiverId: "Admin",
+                        content: message,
+                        imageUrl: imageUrl,
+
+                    })
+                });
+
+                // 🟩 Hiển thị ngay ở giao diện người dùng
+                addMessageToBox(message, "user", null, imageUrl);
+                messageInput.value = "";
+                imageInput.value = "";
+            }
+
+            // ===========================
+            // 🟨 GỬI KHI NHẤN NÚT HOẶC ENTER
+            // ===========================
             sendButton.addEventListener("click", sendMessage);
-            // Gửi khi nhấn Enter (trong textarea thì dùng Ctrl+Enter hoặc tùy chỉnh)
             messageInput.addEventListener("keypress", function (e) {
-                if (e.key === "Enter" && !e.shiftKey) { // Gửi khi nhấn Enter (không phải Shift+Enter)
-                    e.preventDefault(); // Ngăn xuống dòng
+                if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
                     sendMessage();
                 }
             });
 
-            // 4. Hàm NHẬN tin nhắn (lắng nghe sự kiện "ReceiveAdminReply" từ Hub)
-            connection.on("ReceiveAdminReply", (message) => {
-                // Hiển thị tin nhắn của admin
-                addMessageToBox(message, "admin");
-            });
-
-            // Hàm tiện ích để thêm tin nhắn vào khung chat
-            function addMessageToBox(message, type) {
+            // ===========================
+            // 🟩 HIỂN THỊ TIN NHẮN TRONG KHUNG
+            // ===========================
+            function addMessageToBox(message, type, sentTime = null, imageUrl = null) {
                 const msgDiv = document.createElement("div");
-                msgDiv.className = `chat-message ${type}`; // "user" hoặc "admin"
-                msgDiv.textContent = message;
+                msgDiv.className = `chat-message ${type}`;
+
+                // 🟨 Nếu có ảnh thì hiển thị ảnh
+                if (imageUrl) {
+                    const img = document.createElement("img");
+                    img.src = imageUrl;
+                    img.style.maxWidth = "200px";
+                    img.style.borderRadius = "10px";
+                    img.style.display = "block";
+                    img.style.marginBottom = "5px";
+                    msgDiv.appendChild(img);
+                }
+
+                if (message) {
+                    const textDiv = document.createElement("div");
+                    textDiv.textContent = message;
+                    msgDiv.appendChild(textDiv);
+                }
+
+                // 🕒 Thời gian
+                const timeDiv = document.createElement("div");
+                let timeText = "";
+
+                if (sentTime) {
+                    const date = new Date(sentTime);
+                    timeText = date.toLocaleString("vi-VN", {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric'
+                    });
+                } else {
+                    const now = new Date();
+                    timeText = now.toLocaleTimeString("vi-VN", { hour: '2-digit', minute: '2-digit' });
+                }
+
+                timeDiv.textContent = timeText;
+                timeDiv.style.fontSize = "12px";
+                timeDiv.style.color = "gray";
+                timeDiv.style.marginTop = "2px";
+                msgDiv.appendChild(timeDiv);
+
                 messagesContainer.appendChild(msgDiv);
-                // Cuộn xuống tin nhắn mới nhất
                 messagesContainer.scrollTop = messagesContainer.scrollHeight;
             }
 
-            // 5. Bắt đầu kết nối
-            connection.start().catch(err => console.error(err.toString()));
+            // === Xử lý phóng to ảnh khi nhấn vào ===
+            const imageModal = document.getElementById("image-modal");
+            const modalImg = imageModal.querySelector("img");
+
+            document.addEventListener("click", function (e) {
+                if (e.target.tagName === "IMG" && e.target.closest(".chat-message")) {
+                    modalImg.src = e.target.src;
+                    imageModal.style.display = "flex";
+                }
+            });
+
+            imageModal.addEventListener("click", function () {
+                imageModal.style.display = "none";
+            });
         });
+
+
     </script>
+
+
 </body>
 </html>

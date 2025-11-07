@@ -1,33 +1,130 @@
-﻿// File: /Hubs/ChatHub.cs
-using Microsoft.AspNetCore.SignalR;
+﻿using Microsoft.AspNetCore.SignalR;
 using System.Threading.Tasks;
+using DACS.Models;
+using System.Collections.Concurrent;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 public class ChatHub : Hub
 {
-    // HÀM 1: Khách hàng (User) gọi hàm này để gửi tin cho Admin
-    public async Task SendMessageToAdmin(string user, string message)
-    {
-        // Lấy ID kết nối của người gửi
-        var connectionId = Context.ConnectionId;
+    private readonly ApplicationDbContext _context;
+    private static ConcurrentDictionary<string, string> OnlineUsers = new();
 
-        // Gửi tin nhắn này TỚI NHÓM "Admins"
-        // Admin sẽ lắng nghe sự kiện tên là "ReceiveUserMessage"
-        await Clients.Group("Admins").SendAsync("ReceiveUserMessage", connectionId, user, message);
+    public ChatHub(ApplicationDbContext context)
+    {
+        _context = context;
     }
 
-    // HÀM 2: Admin (QuanLyND) gọi hàm này để trả lời 1 khách hàng cụ thể
-    public async Task SendReplyToUser(string connectionId, string message)
+    public override async Task OnConnectedAsync()
     {
-        // Gửi tin nhắn trả lời TỚI một ConnectionId cụ thể (người khách đó)
-        // Khách hàng sẽ lắng nghe sự kiện "ReceiveAdminReply"
-        await Clients.Client(connectionId).SendAsync("ReceiveAdminReply", message);
+        string userId = Context.User?.Identity?.Name ?? Context.ConnectionId;
+
+        // Lưu connection
+        OnlineUsers[userId] = Context.ConnectionId;
+
+        // Nếu là admin
+        if (Context.User?.IsInRole("Admin") == true)
+        {
+            await Groups.AddToGroupAsync(Context.ConnectionId, "Admins");
+        }
+
+        await base.OnConnectedAsync();
     }
 
-    // HÀM 3: Admin (QuanLyND) gọi hàm này khi họ vừa kết nối
-    public async Task JoinAdminGroup()
+    public override async Task OnDisconnectedAsync(Exception? exception)
     {
-        // Thêm admin này vào một nhóm riêng để họ nhận được tất cả tin nhắn
-        // từ tất cả khách hàng
-        await Groups.AddToGroupAsync(Context.ConnectionId, "Admins");
+        var kv = OnlineUsers.FirstOrDefault(x => x.Value == Context.ConnectionId);
+        if (!string.IsNullOrEmpty(kv.Key))
+        {
+            OnlineUsers.TryRemove(kv.Key, out _);
+        }
+
+        await base.OnDisconnectedAsync(exception);
+    }
+
+    [Authorize(Roles = "KhachHang")]
+    public async Task SendMessageToAdmin(string senderName, string message = "", string? imageUrl = null)
+    {
+        string senderId = Context.User?.Identity?.Name ?? Context.ConnectionId;
+
+        if (string.IsNullOrWhiteSpace(message) && string.IsNullOrWhiteSpace(imageUrl))
+            return;
+
+        var chat = new ChatMessage
+        {
+            SenderId = senderId,
+            ReceiverId = "Admin",
+            SenderName = senderName,
+            Message = string.IsNullOrWhiteSpace(message) ? null : message,
+            ImageUrl = string.IsNullOrWhiteSpace(imageUrl) ? null : imageUrl,
+            IsFromAdmin = false,
+            SentTime = DateTime.Now,
+
+        };
+
+        _context.ChatMessages.Add(chat);
+        await _context.SaveChangesAsync();
+
+        // Gửi realtime tới tất cả admin đang online
+        await Clients.Group("Admins").SendAsync("ReceiveUserMessage", new
+        {
+            senderId,
+            senderName,
+            message = chat.Message,
+            imageUrl = chat.ImageUrl,
+            sentTime = chat.SentTime.ToString("HH:mm")
+        });
+
+        // Gửi lại cho chính user để hiển thị ngay (tránh delay)
+        await Clients.Caller.SendAsync("ReceiveUserMessage", new
+        {
+            senderId,
+            senderName,
+            message = chat.Message,
+            imageUrl = chat.ImageUrl,
+            sentTime = chat.SentTime.ToString("HH:mm")
+        });
+    }
+
+    // ✅ ADMIN gửi tin nhắn (hoặc ảnh) cho KHÁCH
+    public async Task SendReplyToUser(string receiverId, string message = "", string? imageUrl = null)
+    {
+        if (string.IsNullOrWhiteSpace(message) && string.IsNullOrWhiteSpace(imageUrl))
+            return;
+
+        var chat = new ChatMessage
+        {
+            SenderId = "Admin",
+            ReceiverId = receiverId,
+            SenderName = "Admin",
+            Message = string.IsNullOrWhiteSpace(message) ? null : message,
+            ImageUrl = string.IsNullOrWhiteSpace(imageUrl) ? null : imageUrl,
+            IsFromAdmin = true,
+            M_KhachHang = receiverId,
+            SentTime = DateTime.Now
+        };
+
+        _context.ChatMessages.Add(chat);
+        await _context.SaveChangesAsync();
+
+        // Gửi cho khách nếu đang online
+        if (OnlineUsers.TryGetValue(receiverId, out var connId))
+        {
+            await Clients.Client(connId).SendAsync("ReceiveAdminReply", new
+            {
+                message = chat.Message,
+                imageUrl = chat.ImageUrl,
+                sentTime = chat.SentTime.ToString("HH:mm")
+            });
+        }
+
+        // Gửi lại cho admin để hiển thị ngay
+        await Clients.Caller.SendAsync("AdminSentMessage", new
+        {
+            receiverId,
+            message = chat.Message,
+            imageUrl = chat.ImageUrl,
+            sentTime = chat.SentTime.ToString("HH:mm")
+        });
     }
 }

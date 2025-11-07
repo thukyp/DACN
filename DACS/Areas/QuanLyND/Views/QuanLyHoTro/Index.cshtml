@@ -13,6 +13,38 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 
     <style>
+        #messages {
+            flex-grow: 1;
+            padding: 15px;
+            overflow-y: auto;
+            background-color: #f8f9fa;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .message {
+            display: inline-block;
+            padding: 10px 14px;
+            margin: 6px 0;
+            border-radius: 15px;
+            max-width: 75%;
+            word-wrap: break-word;
+            line-height: 1.4;
+        }
+
+            .message.user {
+                align-self: flex-start;
+                background-color: #e9ecef; /* màu xám nhẹ cho KH */
+                color: #212529;
+                border: 1px solid #dee2e6;
+            }
+
+            .message.admin {
+                align-self: flex-end;
+                background-color: #0d6efd; /* xanh dương cho Admin */
+                color: white;
+            }
+
         .container {
             display: grid;
             max-width: 100%;
@@ -224,6 +256,79 @@
             height: 40px;
             margin-left: 10px;
         }
+
+        .image-bubble {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end; /* Mặc định là admin */
+            background: transparent !important;
+            padding: 6px;
+            border-radius: 12px;
+        }
+
+        .message.user .image-bubble {
+            align-items: flex-start; /* Nếu là khách */
+        }
+
+        .chat-image {
+            max-width: 220px;
+            max-height: 220px;
+            border-radius: 10px;
+            object-fit: cover;
+            margin-bottom: 5px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+            .chat-image:hover {
+                transform: scale(1.03);
+                box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            }
+
+        .image-bubble .time {
+            font-size: 0.75rem;
+            color: #6c757d;
+            align-self: flex-end;
+        }
+
+        .image-modal {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            padding-top: 60px;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.8);
+        }
+
+            .image-modal img {
+                margin: auto;
+                display: block;
+                max-width: 90%;
+                max-height: 85%;
+                border-radius: 10px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            }
+
+            .image-modal .close-modal {
+                position: absolute;
+                top: 20px;
+                right: 35px;
+                color: #fff;
+                font-size: 40px;
+                font-weight: bold;
+                cursor: pointer;
+                transition: 0.2s;
+            }
+
+                .image-modal .close-modal:hover {
+                    color: #ccc;
+                }
+
+
     </style>
 </head>
 <body>
@@ -240,6 +345,11 @@
                     <a href="/home/index" class="border-0 text-danger" style="text-decoration: none;"><i class="fas fa-sign-out-alt fa-fw me-2"></i> Về trang chủ</a>
                 </button>
             </div>
+        </div>
+        <!-- Modal hiển thị ảnh phóng to -->
+        <div id="imageModal" class="image-modal" style="display: none;">
+            <span class="close-modal">&times;</span>
+            <img class="modal-content" id="modalImage">
         </div>
 
         <div class="main-content flex-grow-1">
@@ -259,6 +369,10 @@
                     <div id="messages">
                     </div>
                     <div id="reply-area">
+                        <input type="file" id="image-input" accept="image/*" style="display:none;">
+                        <button id="image-btn" class="btn btn-outline-secondary me-2">
+                            <i class="fas fa-image"></i>
+                        </button>
                         <input type="text" id="reply-input" class="form-control" placeholder="Nhập tin nhắn..." disabled>
                         <button id="reply-send-btn" class="btn btn-primary" disabled><i class="fas fa-paper-plane"></i></button>
                     </div>
@@ -272,145 +386,276 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
+                const connection = new signalR.HubConnectionBuilder()
+                    .withUrl("/Hubs/ChatHub")
+                    .withAutomaticReconnect()
+                    .build();
 
-            // Lấy các phần tử
-            const userList = document.getElementById("user-list");
-            const chatHeader = document.getElementById("chat-window-header");
-            const messages = document.getElementById("messages");
-            const replyInput = document.getElementById("reply-input");
-            const sendButton = document.getElementById("reply-send-btn");
+                let currentUser = null;
+                let userList = [];
 
-            let activeConnectionId = null; // ID của user đang được admin chọn
-            let chatData = {}; // Lưu trữ lịch sử chat: { connectionId: [ {user, message}, ... ] }
+                connection.start().then(() => {
+                    console.log("✅ Connected to ChatHub");
+                    loadUserList();
+                }).catch(err => console.error(err));
 
-            // 1. Tạo kết nối tới Hub
-            const connection = new signalR.HubConnectionBuilder()
-                .withUrl("/chatHub") // Phải trùng với tên Hub bạn đăng ký
-                .build();
-
-            // 2. Lắng nghe tin nhắn TỪ USER (sự kiện "ReceiveUserMessage")
-            connection.on("ReceiveUserMessage", (connectionId, user, message) => {
-
-                // A. Lưu tin nhắn vào kho
-                if (!chatData[connectionId]) {
-                    chatData[connectionId] = []; // Tạo mảng tin nhắn mới
-                }
-                chatData[connectionId].push({ sender: 'user', name: user, text: message });
-
-                // B. Cập nhật danh sách User
-                let userLi = document.getElementById(`user-${connectionId}`);
-                if (!userLi) {
-                    // Nếu user này chưa có, tạo mới
-                    userLi = document.createElement("li");
-                    userLi.id = `user-${connectionId}`;
-                    userLi.dataset.connectionId = connectionId; // Lưu ID
-                    userLi.dataset.userName = user;
-
-                    userLi.innerHTML = `
-                        <div class="user-name">${user}</div>
-                        <div class="last-message">${message}</div>
-                        <span class="unread-badge">!</span>
-                    `;
-
-                    // Thêm sự kiện click để chọn chat
-                    userLi.addEventListener("click", () => selectUserChat(connectionId));
-                    userList.prepend(userLi); // Thêm user mới lên đầu
-                } else {
-                    // Nếu user đã có, cập nhật tin nhắn cuối
-                    userLi.querySelector(".last-message").textContent = message;
+                // 🧩 Tải danh sách khách hàng đã chat
+                async function loadUserList() {
+                    try {
+                        const res = await fetch('/QuanLyND/QuanLyHoTro/clients');
+                        if (!res.ok) throw new Error("Không tải được danh sách khách");
+                        userList = await res.json();
+                    } catch {
+                        userList = [
+                            { id: "user1", name: "Khách A" },
+                            { id: "user2", name: "Khách B" }
+                        ];
+                    }
+                    renderUserList();
                 }
 
-                // C. Xử lý thông báo
-                if (connectionId !== activeConnectionId) {
-                    // Nếu user gửi tin không phải user đang chat, bật thông báo
-                    userLi.classList.add("has-unread");
-                } else {
-                    // Nếu là user đang chat, hiển thị tin nhắn ngay
-                    addMessageToBox('user', user, message);
-                }
-            });
-
-            // 3. Hàm chọn User để chat
-            function selectUserChat(connectionId) {
-                activeConnectionId = connectionId; // Đặt user này là active
-
-                // Bỏ active của user cũ
-                const oldActive = userList.querySelector("li.active");
-                if (oldActive) {
-                    oldActive.classList.remove("active");
-                }
-
-                // Active user mới
-                const userLi = document.getElementById(`user-${connectionId}`);
-                userLi.classList.add("active");
-                userLi.classList.remove("has-unread"); // Tắt thông báo
-
-                // Cập nhật header
-                const userName = userLi.dataset.userName;
-                chatHeader.textContent = `Đang chat với: ${userName}`;
-
-                // Kích hoạt ô nhập
-                replyInput.disabled = false;
-                sendButton.disabled = false;
-
-                // Tải lịch sử chat
-                messages.innerHTML = ""; // Xóa chat cũ
-                if (chatData[connectionId]) {
-                    chatData[connectionId].forEach(msg => {
-                        addMessageToBox(msg.sender, msg.name, msg.text);
+                // 🧩 Hiển thị danh sách khách hàng
+                function renderUserList() {
+                    const ul = document.getElementById('user-list');
+                    ul.innerHTML = '';
+                    userList.forEach(u => {
+                        const li = document.createElement('li');
+                        li.textContent = u.name;
+                        li.onclick = () => selectUser(u);
+                        ul.appendChild(li);
                     });
                 }
-            }
 
-            // 4. Hàm GỬI tin nhắn trả lời (gọi hàm "SendReplyToUser" trên Hub)
-            function sendReply() {
-                const message = replyInput.value.trim();
-                if (!message || !activeConnectionId) return;
+                // 🧩 Chọn 1 khách để chat
+                function selectUser(u) {
+                    currentUser = u;
+                    document.querySelectorAll('#user-list li').forEach(li => li.classList.remove('active'));
+                    const selected = [...document.querySelectorAll('#user-list li')]
+                        .find(li => li.textContent === u.name);
+                    if (selected) selected.classList.add('active');
 
-                // Gửi tin nhắn trả lời LÊN server
-                connection.invoke("SendReplyToUser", activeConnectionId, message)
-                    .catch(err => console.error(err.toString()));
+                    document.getElementById('chat-window-header').textContent = "Đang chat với " + u.name;
+                    document.getElementById('reply-input').disabled = false;
+                    document.getElementById('reply-send-btn').disabled = false;
 
-                // A. Lưu tin nhắn của admin
-                chatData[activeConnectionId].push({ sender: 'admin', name: 'Admin', text: message });
-
-                // B. Hiển thị tin nhắn của admin
-                addMessageToBox('admin', 'Admin', message);
-
-                replyInput.value = "";
-                replyInput.focus();
-            }
-
-            sendButton.addEventListener("click", sendReply);
-            replyInput.addEventListener("keypress", (e) => e.key === "Enter" && sendReply());
-
-            // 5. Hàm thêm tin nhắn vào UI
-            function addMessageToBox(senderType, name, text) {
-                const msgDiv = document.createElement("div");
-                msgDiv.className = `chat-message ${senderType}`; // "user" hoặc "admin"
-
-                // Thêm tên cho tin nhắn của User
-                if(senderType === 'user') {
-                     msgDiv.innerHTML = `<strong class="d-block" style="font-size: 0.9em;">${name}</strong>${text}`;
-                } else {
-                     msgDiv.textContent = text;
+                    loadMessages(u.id);
                 }
 
-                messages.appendChild(msgDiv);
-                messages.scrollTop = messages.scrollHeight; // Cuộn xuống
-            }
+                // 🧩 Chuẩn hóa thời gian theo giờ Việt Nam
+                       function formatVietnamTime(sentTime = null) {
+                    if (!sentTime) return "";
 
-            // 6. Bắt đầu kết nối và GIA NHẬP NHÓM ADMIN
-            connection.start()
-                .then(() => {
-                    console.log("Admin connected.");
-                    // SAU KHI KẾT NỐI, BÁO CHO SERVER TÔI LÀ ADMIN
-                    connection.invoke("JoinAdminGroup")
-                              .catch(err => console.error(err.toString()));
-                })
-                .catch(err => console.error(err.toString()));
+                    const date = new Date(sentTime);
+                    if (isNaN(date)) return "";
+
+                    // ✅ Format theo giờ và ngày Việt Nam
+                    const timeString = date.toLocaleTimeString("vi-VN", {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                    });
+
+                    const dateString = date.toLocaleDateString("vi-VN", {
+                        day: "2-digit",
+                        month: "2-digit",
+                        year: "numeric",
+                    });
+
+                    // ✅ Luôn hiển thị cả ngày và giờ
+                    return `${timeString} • ${dateString}`;
+                }
+
+                // 🧩 Tải lịch sử tin nhắn từ SQL
+                async function loadMessages(userId) {
+                    const messagesBox = document.getElementById("messages");
+                    messagesBox.innerHTML = "<p class='text-muted'>Đang tải...</p>";
+
+                    try {
+                        const res = await fetch(`/QuanLyND/QuanLyHoTro/history/${userId}`);
+                        if (!res.ok) throw new Error("Không tải được tin nhắn");
+                        const data = await res.json();
+
+                        messagesBox.innerHTML = "";
+
+                        if (data.length === 0) {
+                            messagesBox.innerHTML = "<p class='text-muted'>Chưa có tin nhắn nào.</p>";
+                            return;
+                        }
+
+                        data.forEach(m => {
+                            const role = m.isFromAdmin ? "admin" : "user";
+                                    if (m.imageUrl) {
+                        addImageMessage(role, m.imageUrl, m.sentTime);
+                    }
+
+                    if (m.message && m.message.trim() !== "") {
+                        addMessage(role, m.message, m.sentTime);
+                    }
+                        });
+
+                    } catch (err) {
+                        console.error(err);
+                        messagesBox.innerHTML = "<p class='text-danger'>Lỗi khi tải tin nhắn.</p>";
+                    }
+                }
+
+                const adminName = "@(User.Identity?.Name ?? "Admin")".trim();
+
+                // 🧩 Khi admin gửi tin
+                         function sendMessage() {
+                        const messageInput = document.getElementById("reply-input");
+                        const message = messageInput.value.trim();
+                        if (!message || !currentUser) return;
+
+                        // Gửi realtime
+                        connection.invoke("SendReplyToUser", currentUser.name, message)
+                            .catch(err => console.error(err.toString()));
+
+                        // Lưu vào DB
+                        fetch("/QuanLyND/QuanLyHoTro/SaveMessage", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                senderId: adminName,
+                                receiverId: currentUser.id,
+                                senderName: adminName,
+                                message: message,
+                                imageUrl: null, // ❌ Không gửi image khi chỉ là tin nhắn văn bản
+                                isFromAdmin: true
+                            })
+                        })
+                        .then(res => {
+                            if (!res.ok) console.error("❌ Không lưu được tin nhắn");
+                            else console.log("💾 Tin nhắn đã lưu vào DB");
+                        })
+                        .catch(err => console.error("Lỗi khi lưu tin nhắn:", err));
+
+                        // Hiển thị ngay trên giao diện
+                        addMessage("admin", message, new Date().toISOString());
+                        messageInput.value = "";
+                    }
+
+                // 🧩 Hiển thị tin nhắn (giống user)
+                function addMessage(senderRole, message, sentTime = null) {
+                    const messagesDiv = document.getElementById("messages");
+                    const msgDiv = document.createElement("div");
+                    msgDiv.classList.add("message", senderRole);
+
+                    msgDiv.innerHTML = `
+                        <div class="bubble">
+                            <p>${message}</p>
+                            <span class="time">${formatVietnamTime(sentTime)}</span>
+                        </div>
+                    `;
+
+                    messagesDiv.appendChild(msgDiv);
+                    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+                }
+
+                const sendButton = document.getElementById("reply-send-btn");
+                const messageInput = document.getElementById("reply-input");
+
+                sendButton.addEventListener("click", sendMessage);
+                messageInput.addEventListener("keypress", function (e) {
+                    if (e.key === "Enter" && !e.shiftKey) {
+                        e.preventDefault();
+                        sendMessage();
+                    }
+                });
+                        // 🧩 Khi click nút ảnh -> mở hộp chọn ảnh
+                document.getElementById("image-btn").addEventListener("click", () => {
+                    document.getElementById("image-input").click();
+                });
+
+                // 🧩 Khi chọn ảnh
+                document.getElementById("image-input").addEventListener("change", async function () {
+                    const file = this.files[0];
+                    if (!file || !currentUser) return;
+
+                    // Hiển thị ảnh trước khi upload
+                    const previewUrl = URL.createObjectURL(file);
+                    addImageMessage("admin", previewUrl, new Date().toISOString(), true);
+
+                    const formData = new FormData();
+                    formData.append("file", file);
+                    formData.append("senderId", adminName);
+                    formData.append("receiverId", currentUser.id);
+                    formData.append("senderName", adminName);
+                    formData.append("isFromAdmin", true);
+
+                    try {
+                                                        const res = await fetch("/QuanLyND/QuanLyHoTro/upload", {
+                            method: "POST",
+                            body: formData
+                        });
+
+                        if (!res.ok) throw new Error("Không upload được ảnh");
+                        const result = await res.json();
+
+                        // Gửi realtime cho user
+                        connection.invoke("SendImageToUser", currentUser.name, result.imageUrl)
+                            .catch(err => console.error(err.toString()));
+
+                        console.log("📸 Ảnh đã gửi thành công:", result.imageUrl);
+                    } catch (err) {
+                        console.error("Lỗi khi upload ảnh:", err);
+                    }
+
+                    // Reset input
+                    this.value = "";
+                });
+
+                // 🧩 Hàm hiển thị ảnh trong khung chat
+                       function addImageMessage(senderRole, imageUrl, sentTime = null, isPreview = false) {
+                    const messagesDiv = document.getElementById("messages");
+                    const msgDiv = document.createElement("div");
+                    msgDiv.classList.add("message", senderRole);
+
+                    msgDiv.innerHTML = `
+                                <div class="image-bubble">
+                            <img src="${imageUrl}" class="chat-image" alt="Ảnh gửi" />
+                            <div class="time text-muted">${formatVietnamTime(sentTime)}</div>
+                        </div>
+                    `;
+
+                    messagesDiv.appendChild(msgDiv);
+                    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+                }
+
+                // Khi click vào ảnh => mở modal
+        document.addEventListener("click", function (e) {
+            if (e.target.classList.contains("chat-image")) {
+                const modal = document.getElementById("imageModal");
+                const modalImg = document.getElementById("modalImage");
+                modal.style.display = "block";
+                modalImg.src = e.target.src;
+            }
         });
+
+        // Khi nhấn nút đóng hoặc click ra ngoài => đóng modal
+        document.querySelector(".close-modal").onclick = function () {
+            document.getElementById("imageModal").style.display = "none";
+        };
+
+        document.getElementById("imageModal").onclick = function (e) {
+            if (e.target.id === "imageModal") {
+                document.getElementById("imageModal").style.display = "none";
+            }
+        };
+                let lastMessageCount = 0;
+
+                async function smartReload(userId) {
+                    const res = await fetch(`/QuanLyND/QuanLyHoTro/history/${userId}`);
+                    const data = await res.json();
+                    if (data.length !== lastMessageCount) {
+                        lastMessageCount = data.length;
+                        loadMessages(userId); // Chỉ reload khi có tin nhắn mới
+                    }
+                }
+
+                setInterval(() => {
+                    if (currentUser) smartReload(currentUser.id);
+                        }, 1000);
+
     </script>
 </body>
 </html>
