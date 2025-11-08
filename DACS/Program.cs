@@ -42,7 +42,7 @@ builder.Services.ConfigureApplicationCookie(options => {
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
-
+builder.Services.AddSingleton<BlockchainService>();
 builder.Services.AddScoped<INguoiMuaRepository, NguoiMuaRepository>();
 builder.Services.AddScoped<IThuGomRepository, ThuGomRepository>();
 builder.Services.AddScoped<ISanPhamRepository, EFSanPhamRepository>();
@@ -104,6 +104,25 @@ pattern: "{area:exists}/{controller=QuanLySP}/{action=Index}/{id?}");
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 });
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        var blockchainService = services.GetRequiredService<BlockchainService>();
 
+        // Log để biết nó đang chạy
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogWarning("Đang kích hoạt TestBlockchainAsync() khi khởi động...");
+
+        // Gọi hàm (không cần await để không block khởi động)
+        _ = blockchainService.TestBlockchainAsync();
+    }
+    catch (Exception ex)
+    {
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "Không thể chạy BlockchainService test khi khởi động.");
+    }
+}
 
 app.Run();

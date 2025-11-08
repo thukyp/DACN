@@ -10,6 +10,8 @@ using System.Linq; // For LINQ methods like .Any()
 using System.Threading.Tasks; // For Task
 using System.Collections.Generic;
 using DACS.Models.ViewModels; // For List
+using DACS.Services;
+using Microsoft.Extensions.Logging;
 
 namespace DACS.Areas.QuanLyDH.Controllers
 {
@@ -19,6 +21,8 @@ namespace DACS.Areas.QuanLyDH.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly ILogger<QuanLyDHController> _logger;
+        private readonly BlockchainService _blockchainService;
+
         // --- ĐỊNH NGHĨA CÁC CHUỖI TRẠNG THÁI ĐƠN HÀNG TRONG DATABASE ---
         private const string StatusPendingDbValue = "Chờ xác nhận"; // Hoặc "Chưa xử lý" nếu bạn dùng nó làm giá trị DB ban đầu
         private const string StatusConfirmedDbValue = "Đã xác nhận";
@@ -28,10 +32,13 @@ namespace DACS.Areas.QuanLyDH.Controllers
         private const string StatusCancelledDbValue = "Đã hủy";
         // --- KẾT THÚC ĐỊNH NGHĨA ---
 
-        public QuanLyDHController(ApplicationDbContext context, ILogger<QuanLyDHController> logger)
+        public QuanLyDHController(ApplicationDbContext context,
+                                        ILogger<QuanLyDHController> logger,
+                                        BlockchainService blockchainService)
         {
             _context = context;
             _logger = logger;
+            _blockchainService = blockchainService;
         }
 
         // GET: QuanLyDH/QuanLyDH (Index)
@@ -878,7 +885,23 @@ namespace DACS.Areas.QuanLyDH.Controllers
 
                         _context.Update(lot); // Đánh dấu lô này cần cập nhật
                         _logger.LogInformation("Trừ kho FIFO: Lấy {SoLuong} từ Lô {MaLo}. Lô còn lại: {KhoiLuongConLai}", soLuongLayTuLoNay, lot.MaLoTonKho, lot.KhoiLuongConLai);
-
+                        // <<< ================= BẮT ĐẦU GỌI BLOCKCHAIN ================= >>>
+                        try
+                        {
+                            string txHash = await _blockchainService.GhiNhatKyAsync(
+                                lot.MaLoTonKho,        // Mã Lô (ví dụ: "L001")
+                                "XUẤT KHO",            // Trạng thái
+                                donHang.M_DonHang,     // Địa điểm (Mã Đơn Hàng)
+                                $"Trừ {soLuongLayTuLoNay.ToString("N2")}kg cho ĐH" // Ghi chú (Metadata)
+                            );
+                            _logger.LogInformation("ĐÃ GHI BLOCKCHAIN (Xuất Kho) cho Lô {MaLo}, TxHash: {TxHash}", lot.MaLoTonKho, txHash);
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.LogError(ex, "LỖI GHI BLOCKCHAIN (Xuất Kho) cho Lô {MaLo}. Giao dịch CSDL sẽ tiếp tục.", lot.MaLoTonKho);
+                            // Không rollback, chấp nhận CSDL thành công
+                        }
+                        // <<< ================= KẾT THÚC GỌI BLOCKCHAIN ================= >>>
                         if (soLuongCanThayDoi <= 0) break; // Đã lấy đủ
                     }
                 }

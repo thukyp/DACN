@@ -1,0 +1,47 @@
+﻿@model DACS.Models.ViewModels.NhatKyViewModel
+@{
+    ViewData["Title"] = "Nhật Ký Truy Xuất Lô: " + Model.LotInfo.MaLoTonKho;
+}
+
+<div class="container">
+    <h1>Nhật Ký Truy Xuất Nguồn Gốc</h1>
+    <h2>Lô Hàng: @Model.LotInfo.MaLoTonKho</h2>
+
+    <hr />
+
+    <h3>Thông Tin Lô Hàng</h3>
+    <div class="row">
+        <div class="col-md-6">
+            <p><strong>Sản phẩm:</strong> @Model.LotInfo.SanPham.TenSanPham</p> <p><strong>Mã Sản Phẩm:</strong> @Model.LotInfo.M_SanPham</p>
+            <p><strong>Mã Kho:</strong> @Model.LotInfo.MaKho</p>
+            <p><strong>Số lượng ban đầu:</strong> @Model.LotInfo.KhoiLuongBanDau @Model.LotInfo.DonViTinh</p>
+        </div>
+    </div>
+
+    <hr />
+
+    <h3>Nhật Ký Lịch Sử</h3>
+
+    @if (Model.History.Count == 0)
+    {
+        <div class="alert alert-warning">Chưa có nhật ký nào trên Blockchain cho lô này.</div>
+    }
+    else
+    {
+        foreach (var item in Model.History)
+        {
+            <div class="card mb-3">
+                <div class="card-header bg-dark text-white d-flex justify-content-between">
+                    <strong>@item.Status.ToUpper()</strong>
+                    <span>@item.Timestamp</span>
+                </div>
+                <div class="card-body">
+                    <p><strong>Địa điểm:</strong> @item.Location</p>
+                    <p><strong>Chi tiết:</strong> @item.Metadata</p>
+                </div>
+            </div>
+        }
+    }
+
+    <a asp-action="Index" asp-controller="Home" class="btn btn-secondary">Quay lại</a>
+</div>

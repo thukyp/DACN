@@ -1,64 +1,35 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using DACS.Models.Blockchain;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Nethereum.Contracts;
-using Nethereum.Hex.HexTypes;
 using Nethereum.Web3;
 using Nethereum.Web3.Accounts;
 using System;
-using System.Globalization;
-using System.Numerics; // Cần cho BigInteger
-using System.Security.Cryptography;
-using System.Text;
+using System.Collections.Generic;
+using System.Numerics;
 using System.Threading.Tasks;
+using Nethereum.ABI.FunctionEncoding.Attributes; // <<< THÊM USING NÀY
+using Nethereum.Hex.HexTypes; // <<< THÊM USING NÀY
 
 namespace DACS.Services
 {
     public class BlockchainService
     {
         private readonly Web3 _web3;
-        private readonly string _contractAddress = "0xE8c0abB166387D7505B490528e33d4d0A08d013e"; // <-- DÁN VÀO ĐÂY
+        private readonly Contract _contract;
+        private readonly Nethereum.Web3.Accounts.Account _account;
+        private readonly string _contractAddress;
+        private readonly ILogger<BlockchainService> _logger;
+
+        // (ABI của bạn giữ nguyên)
         private readonly string _abi = @"[
-	{
-		""inputs"": [
-			{
-				""internalType"": ""string"",
-				""name"": ""_sqlRecordId"",
-				""type"": ""string""
-			},
-			{
-				""internalType"": ""string"",
-				""name"": ""_recordType"",
-				""type"": ""string""
-			},
-			{
-				""internalType"": ""string"",
-				""name"": ""_dataHash"",
-				""type"": ""string""
-			}
-		],
-		""name"": ""createTraceRecord"",
-		""outputs"": [],
-		""stateMutability"": ""nonpayable"",
-		""type"": ""function""
-	},
 	{
 		""anonymous"": false,
 		""inputs"": [
 			{
 				""indexed"": true,
 				""internalType"": ""string"",
-				""name"": ""sqlRecordId"",
-				""type"": ""string""
-			},
-			{
-				""indexed"": false,
-				""internalType"": ""string"",
-				""name"": ""recordType"",
-				""type"": ""string""
-			},
-			{
-				""indexed"": false,
-				""internalType"": ""string"",
-				""name"": ""dataHash"",
+				""name"": ""lotId"",
 				""type"": ""string""
 			},
 			{
@@ -66,40 +37,85 @@ namespace DACS.Services
 				""internalType"": ""uint256"",
 				""name"": ""timestamp"",
 				""type"": ""uint256""
+			},
+			{
+				""indexed"": false,
+				""internalType"": ""string"",
+				""name"": ""status"",
+				""type"": ""string""
+			},
+			{
+				""indexed"": false,
+				""internalType"": ""string"",
+				""name"": ""location"",
+				""type"": ""string""
 			}
 		],
-		""name"": ""RecordCreated"",
+		""name"": ""HistoryAdded"",
 		""type"": ""event""
 	},
 	{
 		""inputs"": [
 			{
 				""internalType"": ""string"",
-				""name"": ""_sqlRecordId"",
+				""name"": ""lotId"",
 				""type"": ""string""
 			},
 			{
 				""internalType"": ""string"",
-				""name"": ""_recordType"",
+				""name"": ""status"",
+				""type"": ""string""
+			},
+			{
+				""internalType"": ""string"",
+				""name"": ""location"",
+				""type"": ""string""
+			},
+			{
+				""internalType"": ""string"",
+				""name"": ""metadata"",
 				""type"": ""string""
 			}
 		],
-		""name"": ""getTraceRecord"",
-		""outputs"": [
+		""name"": ""addHistory"",
+		""outputs"": [],
+		""stateMutability"": ""nonpayable"",
+		""type"": ""function""
+	},
+	{
+		""inputs"": [
 			{
 				""internalType"": ""string"",
-				""name"": """",
-				""type"": ""string""
-			},
-			{
-				""internalType"": ""string"",
-				""name"": """",
+				""name"": ""lotId"",
 				""type"": ""string""
 			},
 			{
 				""internalType"": ""uint256"",
+				""name"": ""index"",
+				""type"": ""uint256""
+			}
+		],
+		""name"": ""getHistoryByIndex"",
+		""outputs"": [
+			{
+				""internalType"": ""uint256"",
 				""name"": """",
 				""type"": ""uint256""
+			},
+			{
+				""internalType"": ""string"",
+				""name"": """",
+				""type"": ""string""
+			},
+			{
+				""internalType"": ""string"",
+				""name"": """",
+				""type"": ""string""
+			},
+			{
+				""internalType"": ""string"",
+				""name"": """",
+				""type"": ""string""
 			}
 		],
 		""stateMutability"": ""view"",
@@ -109,161 +125,180 @@ namespace DACS.Services
 		""inputs"": [
 			{
 				""internalType"": ""string"",
-				""name"": """",
+				""name"": ""lotId"",
 				""type"": ""string""
 			}
 		],
-		""name"": ""traceRecords"",
+		""name"": ""getHistoryCount"",
 		""outputs"": [
 			{
-				""internalType"": ""string"",
-				""name"": ""sqlRecordId"",
-				""type"": ""string""
-			},
-			{
-				""internalType"": ""string"",
-				""name"": ""recordType"",
-				""type"": ""string""
-			},
-			{
-				""internalType"": ""string"",
-				""name"": ""dataHash"",
-				""type"": ""string""
-			},
-			{
 				""internalType"": ""uint256"",
-				""name"": ""timestamp"",
+				""name"": """",
 				""type"": ""uint256""
 			}
 		],
 		""stateMutability"": ""view"",
 		""type"": ""function""
 	}
-]"; // <-- DÁN VÀO ĐÂY
-        private readonly string _privateKey = "0x798001e4defbfd8cf67098fb48c93cab42789e7b802e84782d54669260254bf3"; // <-- DÁN VÀO ĐÂY
-        private readonly string _ganacheUrl = "http://127.0.0.1:7545";
-        private readonly ILogger<BlockchainService> _logger;
+]";
 
-        public BlockchainService(ILogger<BlockchainService> logger)
+        public BlockchainService(IConfiguration configuration, ILogger<BlockchainService> logger)
         {
             _logger = logger;
-            try
-            {
-                var account = new Account(_privateKey);
-                _web3 = new Web3(account, _ganacheUrl);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Không thể khởi tạo Web3. Key hoặc URL sai?");
-                _web3 = null;
-            }
+            var privateKey = configuration["Blockchain:PrivateKey"];
+            var rpcUrl = configuration["Blockchain:RpcUrl"];
+            _contractAddress = configuration["Blockchain:ContractAddress"];
+
+            _account = new Nethereum.Web3.Accounts.Account(privateKey);
+            _web3 = new Web3(_account, rpcUrl);
+            _contract = _web3.Eth.GetContract(_abi, _contractAddress);
+
+            // <<< ================= THÊM 3 DÒNG NÀY ================= >>>
+            _logger.LogWarning("--- CẤU HÌNH BLOCKCHAIN SERVICE ĐANG CHẠY ---");
+            _logger.LogWarning("RPC URL (Ganache): {RpcUrl}", rpcUrl);
+            _logger.LogWarning("TÀI KHOẢN (Người gửi): {AccountAddress}", _account.Address);
+            _logger.LogWarning("HỢP ĐỒNG (Người nhận): {ContractAddress}", _contractAddress);
+            // <<< ================= KẾT THÚC THÊM ================= >>>
         }
 
-        public async Task<string> WriteTraceRecord(string sqlRecordId, string recordType, string dataHash)
+        public async Task<string> GhiNhatKyAsync(string lotId, string status, string location, string metadata)
         {
-            if (_web3 == null) { /* ... (xử lý lỗi) ... */ return null; }
-            Contract contract;
-            Function createRecordFunction;
             try
             {
-                contract = _web3.Eth.GetContract(_abi, _contractAddress);
-                createRecordFunction = contract.GetFunction("createTraceRecord");
-            }
-            catch (Exception ex) { /* ... (xử lý lỗi) ... */ return null; }
+                var addFunction = _contract.GetFunction("addHistory");
 
-            try
-            {
-                _logger.LogInformation("Đang ghi... ID: {SqlRecordId}, Type: {RecordType}", sqlRecordId, recordType);
-                var transactionReceipt = await createRecordFunction.SendTransactionAndWaitForReceiptAsync(
-                    from: _web3.TransactionManager.Account.Address,
-                    gas: new HexBigInteger(3000000),
-                    value: new HexBigInteger(0),
-                    functionInput: new object[] { sqlRecordId, recordType, dataHash }
-                );
-                _logger.LogInformation("Ghi thành công. TxHash: {TransactionHash}", transactionReceipt.TransactionHash);
-                return transactionReceipt.TransactionHash;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Lỗi khi ghi blockchain cho ID {SqlRecordId}", sqlRecordId);
-                return null;
-            }
-        }
+                // 🧮 Ước lượng gas
+                var gas = await addFunction.EstimateGasAsync(_account.Address, null, null, lotId, status, location, metadata);
+                // ⚙️ Cộng thêm 15% gas buffer cho an toàn
+                gas = new HexBigInteger(gas.Value + (gas.Value / 6));
 
-        public string CreateSha256Hash(string input)
-        {
-            using (SHA256 sha256 = SHA256.Create())
-            {
-                byte[] bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(input));
-                StringBuilder builder = new StringBuilder();
-                for (int i = 0; i < bytes.Length; i++)
+                // 🚀 Gửi giao dịch
+                var txHash = await addFunction.SendTransactionAsync(_account.Address, gas, null, lotId, status, location, metadata);
+                _logger.LogInformation($"✅ Giao dịch đã gửi (Sent). TxHash = {txHash}");
+
+                // 🕓 CHỜ XÁC NHẬN
+                var receipt = await _web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(txHash);
+                int retry = 0;
+                while (receipt == null && retry < 10)
                 {
-                    builder.Append(bytes[i].ToString("x2"));
+                    await Task.Delay(2000);
+                    receipt = await _web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(txHash);
+                    retry++;
                 }
-                return builder.ToString();
+
+                // <<< ================= THÊM KIỂM TRA STATUS ================= >>>
+                if (receipt == null)
+                {
+                    _logger.LogError("❌ GIAO DỊCH THẤT BẠI: Không nhận được Receipt (Timeout). TxHash: {TxHash}", txHash);
+                    throw new Exception($"Transaction receipt timeout for {txHash}.");
+                }
+                else if (receipt.Status.Value == 0) // <<< KIỂM TRA REVERT
+                {
+                    _logger.LogError("❌ GIAO DỊCH THẤT BẠI (Reverted). Block: {BlockNumber}. TxHash: {TxHash}", receipt.BlockNumber.Value, txHash);
+                    throw new Exception($"Transaction Reverted: {txHash}. Lỗi Gas Limit hoặc Logic Hợp đồng.");
+                }
+                else
+                {
+                    // (receipt.Status.Value == 1) -> THÀNH CÔNG
+                    _logger.LogInformation($"📬 Giao dịch đã xác nhận THÀNH CÔNG trong block {receipt.BlockNumber.Value}");
+                }
+                // <<< ================= KẾT THÚC SỬA ================= >>>
+
+                return txHash;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Lỗi khi ghi Blockchain.");
+                throw;
             }
         }
 
-        public async Task<List<HistoryStepDTO>> GetLotHistoryAsync(string sqlRecordId)
+        // <<< ================= SỬA LẠI HÀM NÀY ================= >>>
+        public async Task<List<TraceEventDTO>> GetHistoryAsync(string maLo)
         {
-            var historySteps = new List<HistoryStepDTO>();
-            if (_web3 == null) return historySteps;
-
-            var eventTypesToQuery = new[]
-            {
-                "ThuGom_Scheduled", "ThuGom_Started", "ThuGom_Completed", "ThuGom_Failed"
-            };
-
-            Contract contract;
-            Function getRecordFunction;
+            var result = new List<TraceEventDTO>();
             try
             {
-                contract = _web3.Eth.GetContract(_abi, _contractAddress);
-                getRecordFunction = contract.GetFunction("getTraceRecord");
-            }
-            catch (Exception ex) { /* ... (xử lý lỗi) ... */ return historySteps; }
+                var getCountFunction = _contract.GetFunction("getHistoryCount");
+                var count = await getCountFunction.CallAsync<BigInteger>(maLo);
+                _logger.LogInformation("📦 Lô {MaLo} có {Count} bản ghi.", maLo, count);
 
-            _logger.LogInformation("Bắt đầu truy vết lịch sử cho ID: {SqlRecordId}", sqlRecordId);
+                var getByIndexFunction = _contract.GetFunction("getHistoryByIndex");
 
-            foreach (var eventType in eventTypesToQuery)
-            {
-                var step = new HistoryStepDTO { /* ... */ };
-                try
+                for (int i = 0; i < (int)count; i++)
                 {
-                    var result = await getRecordFunction.CallAsync<Tuple<string, string, BigInteger>>(
-                        sqlRecordId, eventType
-                    );
+                    // 1. Gọi hàm và hứng bằng DTO chuyên dụng cho Output
+                    var eventRaw = await getByIndexFunction.CallDeserializingToObjectAsync<GetHistoryByIndexOutputDTO>(maLo, i);
 
-                    if (result != null && result.Item3 > 0)
+                    // 2. Chuyển đổi thủ công sang DTO chính của bạn
+                    if (eventRaw != null)
                     {
-                        step.IsFound = true;
-                        step.DataHash = result.Item2;
-                        step.Timestamp = ConvertUnixTimestamp(result.Item3);
-                        step.EventType = eventType;
-                        historySteps.Add(step);
-                        _logger.LogInformation("... Tìm thấy sự kiện: {EventType}", eventType);
+                        result.Add(new TraceEventDTO
+                        {
+                            Timestamp = eventRaw.Timestamp,
+                            Status = eventRaw.Status,
+                            Location = eventRaw.Location,
+                            Metadata = eventRaw.Metadata
+                        });
                     }
                 }
-                catch (Exception) { /* Lỗi "Record not found" là bình thường */ }
             }
-            return historySteps.OrderBy(s => s.Timestamp).ToList();
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Lỗi khi đọc Blockchain.");
+            }
+            return result;
         }
+        // <<< ================= KẾT THÚC SỬA ================= >>>
 
-        private DateTime ConvertUnixTimestamp(BigInteger unixTimestamp)
+
+        // (Hàm TestBlockchainAsync giữ nguyên)
+        public async Task TestBlockchainAsync()
         {
-            if (!double.TryParse(unixTimestamp.ToString(), out double timestampDouble)) return DateTime.MinValue;
-            DateTimeOffset dateTimeOffset = DateTimeOffset.FromUnixTimeSeconds((long)timestampDouble);
-            return dateTimeOffset.LocalDateTime;
+            try
+            {
+                _logger.LogInformation("===== BẮT ĐẦU KIỂM TRA GHI & ĐỌC BLOCKCHAIN =====");
+                string lotId = "TEST_AUTO_" + DateTime.Now.ToString("yyyyMMddHHmmss");
+
+                await GhiNhatKyAsync(lotId, "TEST_GHI", "KHO_A", "Metadata thử nghiệm");
+
+                var events = await GetHistoryAsync(lotId);
+                if (events.Count > 0)
+                {
+                    _logger.LogInformation("✅ Đọc lại thành công, tổng {Count} bản ghi.", events.Count);
+                    foreach (var e in events)
+                        _logger.LogInformation($"🕓 {e.Timestamp} | {e.Status} @ {e.Location} | {e.Metadata}");
+                }
+                else
+                {
+                    _logger.LogWarning("⚠️ Không tìm thấy bản ghi nào trong blockchain cho {LotId}", lotId);
+                }
+
+                _logger.LogInformation("===== KIỂM TRA HOÀN TẤT =====");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Lỗi trong quá trình test tự động Blockchain.");
+            }
         }
-
     }
 
-    public class HistoryStepDTO
+    // <<< ================= THÊM CLASS NÀY VÀO ================= >>>
+    // Class này chỉ dùng để "hứng" 4 giá trị trả về không tên của hàm getHistoryByIndex
+    [FunctionOutput]
+    public class GetHistoryByIndexOutputDTO : IFunctionOutputDTO
     {
-        public string EventType { get; set; }
-        public string DataHash { get; set; }
-        public DateTime Timestamp { get; set; }
-        public bool IsFound { get; set; }
-        public string SqlRecordId { get; set; }
+        [Parameter("uint256", "", 1)]
+        public BigInteger Timestamp { get; set; }
+
+        [Parameter("string", "", 2)]
+        public string Status { get; set; }
+
+        [Parameter("string", "", 3)]
+        public string Location { get; set; }
+
+        [Parameter("string", "", 4)]
+        public string Metadata { get; set; }
     }
+    // <<< ================= KẾT THÚC THÊM ================= >>>
 }

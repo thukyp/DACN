@@ -1,10 +1,12 @@
-﻿using DACS.Models.ViewModels;
-using DACS.Models;
+﻿using DACS.Models;
+using DACS.Models.ViewModels;
+using DACS.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Authorization;
+using DACS.Services;
 
 namespace DACS.Areas.QuanLyXNK.Controllers
 {
@@ -16,14 +18,17 @@ namespace DACS.Areas.QuanLyXNK.Controllers
         private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ILogger<QuanLyXNKController> _logger;
+        private readonly BlockchainService _blockchainService;
 
         public QuanLyXNKController(ApplicationDbContext context,
                                      UserManager<ApplicationUser> userManager,
-                                     ILogger<QuanLyXNKController> logger)
+                                     ILogger<QuanLyXNKController> logger, BlockchainService blockchainService
+                                     )
         {
             _context = context;
             _userManager = userManager;
             _logger = logger;
+            _blockchainService = blockchainService;
         }
 
         public async Task<IActionResult> Index(string? searchTerm, DateTime? dateFilter, string? statusFilter, string? collectorFilter, int page = 1)
@@ -545,7 +550,26 @@ namespace DACS.Areas.QuanLyXNK.Controllers
                         };
                         _context.Add(newLoTonKho);
                         _logger.LogInformation("Chuẩn bị TẠO MỚI LoTonKho: MaLo={MaLo}, Kho={MaKho}, SP={MaSP}, KL={KhoiLuong}", newMaLo, targetMaKho, maSanPham, khoiLuongCollected);
+                        // <<< ================= BẮT ĐẦU GỌI BLOCKCHAIN ================= >>>
+                        try
+                        {
+                            string txHash = await _blockchainService.GhiNhatKyAsync(
+                                newMaLo,              // Mã Lô (ví dụ: "L001")
+                                "NHẬP KHO",           // Trạng thái
+                                targetMaKho,          // Địa điểm (Mã Kho)
+                                $"Từ Yêu cầu: {yeuCau}" // Ghi chú (Metadata)
+                            );
+                            _logger.LogInformation("ĐÃ GHI BLOCKCHAIN (Nhập Kho) cho Lô {MaLo}, TxHash: {TxHash}", newMaLo, txHash);
 
+                            // (Bạn có thể thêm 1 cột [BlockchainHashNhap] vào LoTonKho để lưu txHash này nếu muốn)
+                            // newLoTonKho.BlockchainHashNhap = txHash; 
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.LogError(ex, "LỖI GHI BLOCKCHAIN (Nhập Kho) cho Lô {MaLo}. Giao dịch CSDL sẽ tiếp tục.", newMaLo);
+                            // Không Rollback transaction, chấp nhận việc ghi CSDL thành công nhưng Blockchain thất bại
+                        }
+                        // <<< ================= KẾT THÚC GỌI BLOCKCHAIN ================= >>>
                         // <<< THÊM: Liên kết ChiTietThuGom với Lô vừa tạo
                         ct.MaLoTonKho = newMaLo;
                         ct.TrangThaiXuLy = "Đã nhập kho";

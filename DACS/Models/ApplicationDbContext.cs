@@ -1,8 +1,6 @@
 ﻿using DACS.Extention;
 using DACS.Models;
-
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-
 using Microsoft.EntityFrameworkCore;
 
 
@@ -76,7 +74,6 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<ChatHistory> ChatHistory { get; set; }
     public DbSet<SanPhamYeuThich> SanPhamYeuThichs { get; set; }
     public DbSet<ChatMessage> ChatMessages { get; set; }
-
     protected override void OnModelCreating(ModelBuilder builder)
 
     {
