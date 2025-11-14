@@ -11,6 +11,7 @@ using System.Collections.Generic; // Thêm using
 using System.Linq; // Thêm using
 using System.Threading.Tasks;
 using YourNameSpace.Extensions; // Thêm using
+using DACS.Services;
 
 namespace DACS.Controllers
 {
@@ -21,13 +22,22 @@ namespace DACS.Controllers
         private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ILogger<ShoppingCartController> _logger;
+        private readonly IEmailService _emailService;
+        private readonly ISmsService _smsService;
 
-        public ShoppingCartController(ApplicationDbContext context, UserManager<ApplicationUser> userManager, ISanPhamRepository productRepository, ILogger<ShoppingCartController> logger)
+        public ShoppingCartController(ApplicationDbContext context, 
+            UserManager<ApplicationUser> userManager, 
+            ISanPhamRepository productRepository, 
+            ILogger<ShoppingCartController> logger,
+            IEmailService emailService,
+            ISmsService smsService)
         {
             _productRepository = productRepository;
             _context = context;
             _userManager = userManager;
             _logger = logger;
+            _emailService = emailService;
+            _smsService = smsService;
         }
 
         public IActionResult Checkout()
@@ -142,6 +152,46 @@ namespace DACS.Controllers
                 // (Lưu ý: Logic trừ kho FIFO nên được gọi ở đây, nhưng bạn đang gọi nó ở Controller khác)
 
                 await transaction.CommitAsync(); // Hoàn thành
+                // <<< ============ GỬI EMAIL SAU KHI MUA HÀNG THÀNH CÔNG ============ >>>
+                try
+                {
+                    var subject = $"Xác nhận đơn hàng #{order.M_DonHang}";
+                    var body = $@"
+                        <h1>Cảm ơn bạn đã mua hàng!</h1>
+                        <p>Chào {user.FullName ?? user.UserName},</p>
+                        <p>Đơn hàng <strong>#{order.M_DonHang}</strong> của bạn đã được tiếp nhận và đang chờ xử lý.</p>
+                        <p><strong>Tổng giá trị đơn hàng:</strong> {order.TotalPrice:N0} VNĐ</p>
+                        <p><strong>Địa chỉ giao hàng:</strong> {order.ShippingAddress},{order.SoDienThoaidathang}</p>
+                        <p>Chúng tôi sẽ liên hệ với bạn sớm nhất.</p>
+                        <p>Trân trọng,</p>
+                        <p>Đội ngũ [Tên Cửa Hàng]</p>";
+
+                    await _emailService.SendEmailAsync(user.Email, subject, body);
+                }
+                catch (Exception emailEx)
+                {
+                    // Ghi log lỗi gửi mail nhưng không làm ảnh hưởng đến kết quả trả về cho khách
+                    _logger.LogError(emailEx, "Lỗi khi gửi email xác nhận đơn hàng {DonHangId}", order.M_DonHang);
+                }
+                // <<< ================== KẾT THÚC GỬI EMAIL ================== >>>
+
+                // <<< ============ GỬI SMS SAU KHI MUA HÀNG ============ >>>
+                try
+                {
+                    // Dùng SĐT từ Đơn Hàng (order) thay vì từ Tài Khoản (user)
+                    if (!string.IsNullOrEmpty(order.SoDienThoaidathang))
+                    {
+                        var smsMessage = $"Cam on ban da mua hang. Don hang #{order.M_DonHang} da duoc tiep nhan.";
+
+                        // Dùng order.PhoneNumber
+                        await _smsService.SendSmsAsync(order.SoDienThoaidathang, smsMessage);
+                    }
+                }
+                catch (Exception smsEx)
+                {
+                    _logger.LogError(smsEx, "Lỗi khi gửi SMS cho đơn hàng {DonHangId}", order.M_DonHang);
+                }
+                // <<< ================== KẾT THÚC GỬI SMS ================== >>>
             }
             catch (Exception ex)
             {

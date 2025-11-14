@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
+using DACS.Services;
 
 namespace DACS.Controllers
 {
@@ -17,19 +18,22 @@ namespace DACS.Controllers
         private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IConfiguration _configuration;
+        private readonly IEmailService _emailService;
 
         public ThuGomController(
             IConfiguration configuration,
             ILogger<ThuGomController> logger,
             ApplicationDbContext dbContext,
             IWebHostEnvironment webHostEnvironment,
-            UserManager<ApplicationUser> userManager)
+            UserManager<ApplicationUser> userManager,
+            IEmailService emailService)
         {
             _configuration = configuration;
             _logger = logger;
             _context = dbContext;
             _webHostEnvironment = webHostEnvironment;
             _userManager = userManager;
+            _emailService = emailService;
         }
 
         [HttpPost]
@@ -158,6 +162,32 @@ namespace DACS.Controllers
                 _context.YeuCauThuGoms.Add(yeuCau);
                 await _context.SaveChangesAsync();
                 await transaction.CommitAsync();
+
+                // <<< ============ GỬI EMAIL SAU KHI ĐẶT THU GOM THÀNH CÔNG ============ >>>
+                try
+                {
+                    var loaiSP = await _context.LoaiSanPhams.FindAsync(model.M_LoaiSP);
+                    var subject = $"Xác nhận yêu cầu thu gom #{yeuCau.M_YeuCau}";
+                    var body = $@"
+                        <h1>Cảm ơn bạn đã gửi yêu cầu thu gom!</h1>
+                        <p>Chào {khachHang.Ten_KhachHang},</p>
+                        <p>Yêu cầu thu gom <strong>#{yeuCau.M_YeuCau}</strong> của bạn đã được tiếp nhận.</p>
+                        <p><strong>Loại sản phẩm:</strong> {loaiSP?.TenLoai ?? model.M_LoaiSP}</p>
+                        <p><strong>Thời gian sẵn sàng:</strong> {model.PickupReadyTime.Value.ToString("g")}</p>
+                        <p><strong>Địa chỉ thu gom:</strong> {model.SupplierStreet}, {model.SupplierWard}, {model.SupplierDistrict}, {model.SupplierPhone}</p>
+                        <p>Chúng tôi sẽ liên hệ với bạn sớm nhất để sắp xếp.</p>
+                        <p>Trân trọng,</p>
+                        <p>Đội ngũ [Tên Cửa Hàng]</p>";
+                        
+                    // Dùng user.Email để gửi
+                    await _emailService.SendEmailAsync(khachHang.Email_KhachHang, subject, body); 
+                }
+                catch (Exception emailEx)
+                {
+                    // Ghi log lỗi gửi mail nhưng không làm ảnh hưởng đến kết quả
+                    _logger.LogError(emailEx, "Lỗi khi gửi email xác nhận thu gom {YeuCauId}", yeuCau?.M_YeuCau);
+                }
+                // <<< ================== KẾT THÚC GỬI EMAIL ================== >>>
 
                 _logger.LogInformation($"Đã tạo yêu cầu thu gom {yeuCau.M_YeuCau} bởi khách hàng {khachHang.M_KhachHang}");
                 TempData["SuccessMessage"] = $"Yêu cầu thu gom ({yeuCau.M_YeuCau}) của bạn đã được gửi thành công!";

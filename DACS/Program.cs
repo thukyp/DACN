@@ -1,15 +1,16 @@
-﻿using System.Net;
-using System.Net.Sockets;
-using System.Text;
-using DACS.Controllers;
+﻿using DACS.Controllers;
 using DACS.Models;
 using DACS.Repositories;
 using DACS.Repository;
 using DACS.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Nethereum.Contracts.Standards.ENS;
+using System.Net;
+using System.Net.Sockets;
+using System.Text;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
-    
+
 var builder = WebApplication.CreateBuilder(args);
 
 
@@ -48,6 +49,11 @@ builder.Services.AddScoped<IThuGomRepository, ThuGomRepository>();
 builder.Services.AddScoped<ISanPhamRepository, EFSanPhamRepository>();
 builder.Services.AddScoped<ITonKhoRepository, TonKhoRepository>();
 builder.Services.AddScoped<IPhieuXuatRepository, PhieuXuatRepository>();
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
+builder.Services.AddTransient<IEmailService, EmailService>();
+builder.Services.Configure<ESmsSettings>(builder.Configuration.GetSection("ESmsSettings"));
+builder.Services.AddTransient<ISmsService, ESmsService>();
+builder.Services.AddHttpClient();
 //builder.WebHost.UseUrls("http://0.0.0.0:5001");//chạy ebsite
 
 
