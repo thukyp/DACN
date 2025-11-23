@@ -66,7 +66,7 @@ if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
 }
-app.MapHub<ChatHub>("/chatHub");
+app.MapHub<ChatHub>("Hubs/ChatHub");
 app.UseSession();
 app.UseStaticFiles();
 app.UseRouting();

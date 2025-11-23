@@ -183,14 +183,7 @@ namespace DACS.Areas.QuanLyDH.Controllers
                         if (donHang.TrangThai == StatusPendingDbValue || donHang.TrangThai == "Chưa xử lý")
                         {
                             // <<< LOGIC MỚI: Trừ kho FIFO
-                            inventoryError = await ApplyInventoryChangesForOrderAsync(donHang, truKho: true);
-                            if (inventoryError != null)
-                            {
-                                // Nếu có lỗi (hết hàng), rollback và báo lỗi
-                                await transaction.RollbackAsync();
-                                TempData["ErrorMessage"] = $"Không thể xác nhận ĐH {donHang.M_DonHang}: {inventoryError}";
-                                return RedirectToAction(nameof(Details), new { id = id });
-                            }
+                            
 
                             actualNewStatusInDb = StatusConfirmedDbValue;
                             successMessagePart = "xác nhận và đã trừ tồn kho.";
@@ -219,6 +212,14 @@ namespace DACS.Areas.QuanLyDH.Controllers
                     case "complete":
                         if (donHang.TrangThai == StatusShippingDbValue)
                         {
+                            inventoryError = await ApplyInventoryChangesForOrderAsync(donHang, truKho: true);
+                            if (inventoryError != null)
+                            {
+                                // Nếu có lỗi (hết hàng), rollback và báo lỗi
+                                await transaction.RollbackAsync();
+                                TempData["ErrorMessage"] = $"Không thể xác nhận ĐH {donHang.M_DonHang}: {inventoryError}";
+                                return RedirectToAction(nameof(Details), new { id = id });
+                            }
                             actualNewStatusInDb = StatusCompletedDbValue;
                             successMessagePart = "hoàn thành.";
                             canUpdate = true;
@@ -888,11 +889,12 @@ namespace DACS.Areas.QuanLyDH.Controllers
                         // <<< ================= BẮT ĐẦU GỌI BLOCKCHAIN ================= >>>
                         try
                         {
+                            string metadata = $"Đơn hàng {donHang.M_DonHang} - {donHang.TrangThai} - {donHang.PhuongThucThanhToan}　- {donHang.TotalPrice}";
                             string txHash = await _blockchainService.GhiNhatKyAsync(
-                                lot.MaLoTonKho,        // Mã Lô (ví dụ: "L001")
-                                "XUẤT KHO",            // Trạng thái
-                                donHang.M_DonHang,     // Địa điểm (Mã Đơn Hàng)
-                                $"Trừ {soLuongLayTuLoNay.ToString("N2")}kg cho ĐH" // Ghi chú (Metadata)
+                                donHang.M_DonHang,        // Mã Lô (ví dụ: "L001")
+                                donHang.TrangThai,            // Trạng thái
+                                donHang.ShippingAddress,     // Địa điểm (Mã Đơn Hàng)
+                                metadata // Ghi chú (Metadata)
                             );
                             _logger.LogInformation("ĐÃ GHI BLOCKCHAIN (Xuất Kho) cho Lô {MaLo}, TxHash: {TxHash}", lot.MaLoTonKho, txHash);
                         }

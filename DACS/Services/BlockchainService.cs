@@ -281,6 +281,7 @@ namespace DACS.Services
                 _logger.LogError(ex, "Lỗi trong quá trình test tự động Blockchain.");
             }
         }
+
     }
 
     // <<< ================= THÊM CLASS NÀY VÀO ================= >>>

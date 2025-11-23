@@ -1,11 +1,9 @@
 using System.ComponentModel;
 using System.Configuration;
 using System.Diagnostics;
-
 using System.Security.Claims;
 using DACS.Areas.KhachHang.Controllers;
 using DACS.Models;
-
 using DACS.Models.ViewModels;
 using DACS.Services;
 using FuzzySharp;

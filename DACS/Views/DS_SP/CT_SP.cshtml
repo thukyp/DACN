@@ -12,6 +12,9 @@
     var reviewMessage = TempData["ReviewMessage"] as string;
     var currentUserMKhachHang = ViewData["CurrentUser_M_KhachHang"] as string;
 }
+<form id="antiForgeryForm" style="display:none;">
+    @Html.AntiForgeryToken()
+</form>
 
 <div class="container mt-5 mb-5">
     @if (!string.IsNullOrEmpty(reviewMessage))
@@ -184,5 +187,71 @@
 </div>
 
 @section Scripts {
-    @* (Giữ nguyên toàn bộ JavaScript của bạn) *@
+    <script>
+        $(document).ready(function () {
+
+            // 🩷 Xử lý bấm nút Yêu thích
+            $('#btnWishlist').click(function () {
+                var btn = $(this);
+                var icon = $('#wishlistIcon');
+                var productId = btn.data('id');
+
+                // 1. Lấy token bảo mật từ form ẩn
+                var token = $('#antiForgeryForm input[name="__RequestVerificationToken"]').val();
+
+                if (!token) {
+                    console.error("Không tìm thấy AntiForgeryToken!");
+                    alert("Lỗi: Không thể xác thực. Vui lòng tải lại trang.");
+                    return;
+                }
+
+                // Vô hiệu hóa nút
+                btn.prop('disabled', true);
+
+                // 2. Gửi AJAX
+                $.ajax({
+                    url: '/DS_SP/ToggleWishlist',
+                    type: 'POST',
+                    // Gửi dữ liệu đúng chuẩn AntiForgery
+                    data: {
+                        m_SanPham: productId,
+                        __RequestVerificationToken: token
+                    },
+                    success: function (res) {
+                        if (res.success) {
+                            // 3. Cập nhật giao diện nút Tim
+                            if (res.isFavorite) {
+                                icon.removeClass('fa-regular').addClass('fa-solid fa-heart text-danger');
+                            } else {
+                                icon.removeClass('fa-solid fa-heart text-danger').addClass('fa-regular');
+                            }
+
+                            // 4. (Tùy chọn) Cập nhật số lượng trên mini-wishlist (header)
+                            if (typeof loadWishlistMini === 'function') {
+                                loadWishlistMini();
+                            }
+
+                        } else {
+                            // Xử lý lỗi từ server (VD: chưa đăng nhập)
+                            alert(res.message);
+                            if (res.message.includes("đăng nhập")) {
+                                window.location.href = "/Identity/Account/Login";
+                            }
+                        }
+                    },
+                    error: function () {
+                        alert("Lỗi kết nối. Vui lòng thử lại sau.");
+                    },
+                    complete: function () {
+                        // Kích hoạt lại nút sau khi hoàn tất
+                        btn.prop('disabled', false);
+                    }
+                });
+            });
+
+            // (Giữ lại script xử lý sao đánh giá của bạn nếu có)
+            // ...
+
+        });
+    </script>
 }
