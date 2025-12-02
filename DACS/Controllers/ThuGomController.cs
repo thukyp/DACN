@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using DACS.Services;
+using DACS.Models.AI;
+using Newtonsoft.Json;
 
 namespace DACS.Controllers
 {
@@ -408,5 +410,92 @@ namespace DACS.Controllers
                 return Json(new List<object>());
             }
         }
+
+        public double DistanceKm(double lat1, double lng1, double lat2, double lng2)
+        {
+            var R = 6371; // Bán kính trái đất km
+            var dLat = ToRad(lat2 - lat1);
+            var dLng = ToRad(lng2 - lng1);
+            var a = Math.Sin(dLat / 2) * Math.Sin(dLat / 2) +
+                    Math.Cos(ToRad(lat1)) * Math.Cos(ToRad(lat2)) *
+                    Math.Sin(dLng / 2) * Math.Sin(dLng / 2);
+            var c = 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
+            return R * c;
+        }
+
+        public double ToRad(double deg) => deg * Math.PI / 180;
+
+        [HttpPost("du-doan-gia")]
+        public async Task<IActionResult> PredictPrice([FromBody] PriceRequest req)
+        {
+            if (req == null) return BadRequest("Dữ liệu không hợp lệ");
+
+            // 1. Tạo địa chỉ đầy đủ
+            string fullAddress = $"{req.Street}, {req.Ward}, {req.District}, {req.Province}, Việt Nam";
+
+            // 2. Lấy tọa độ bằng geocoding backend
+            var (lat, lng) = await GetCoordinatesAsync(fullAddress);
+            if (lat == 0 || lng == 0)
+                return BadRequest("Không tìm thấy tọa độ từ địa chỉ.");
+
+            // 3. Lấy kho phù hợp loại phụ phẩm
+            var khoList = _context.KhoHangs
+                .Where(x => x.TenLoaiKho == req.TenLoaiKho)
+                .ToList();
+
+            if (!khoList.Any())
+                return BadRequest("Không tìm thấy kho phù hợp loại phụ phẩm.");
+
+            // 4. Tìm kho gần nhất
+            KhoHang nearest = null;
+            double nearestKm = double.MaxValue;
+            foreach (var k in khoList)
+            {
+                double km = DistanceKm(lat, lng, k.Lat, k.Lng);
+                if (km < nearestKm)
+                {
+                    nearestKm = km;
+                    nearest = k;
+                }
+            }
+
+            // 5. Tính phí vận chuyển + phụ phí
+            double shippingFee = nearestKm * 5000;
+            double extra = 0;
+            if (req.IsWet) extra += 3000;
+            if (req.IsBulky) extra += 4000;
+
+            double total = req.BaseValue + shippingFee + extra;
+
+            return Ok(new
+            {
+                ViTriNongDan = new { lat, lng },
+                KhoGanNhat = nearest.TenKho,
+                KhoLat = nearest.Lat,
+                KhoLng = nearest.Lng,
+                DistanceKm = Math.Round(nearestKm, 2),
+                ShippingFee = Math.Round(shippingFee),
+                ExtraFee = extra,
+                TotalPrice = Math.Round(total)
+            });
+        }
+
+        // Hàm lấy tọa độ
+        public async Task<(double lat, double lng)> GetCoordinatesAsync(string address)
+        {
+            using var client = new HttpClient();
+            var url = $"https://nominatim.openstreetmap.org/search?format=json&q={Uri.EscapeDataString(address)}";
+
+            client.DefaultRequestHeaders.Add("User-Agent", "YourAppName/1.0 (your@email.com)"); 
+
+            var response = await client.GetStringAsync(url);
+            dynamic data = JsonConvert.DeserializeObject(response);
+
+            if (data.Count == 0) return (0, 0);
+
+            return (double.Parse((string)data[0].lat), double.Parse((string)data[0].lon));
+        }
+
+
     }
 }

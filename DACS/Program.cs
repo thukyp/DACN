@@ -43,6 +43,7 @@ builder.Services.ConfigureApplicationCookie(options => {
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
+//builder.Services.AddScoped<IGeoService, GeoService>();
 builder.Services.AddSingleton<BlockchainService>();
 builder.Services.AddScoped<INguoiMuaRepository, NguoiMuaRepository>();
 builder.Services.AddScoped<IThuGomRepository, ThuGomRepository>();
@@ -66,7 +67,7 @@ if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
 }
-app.MapHub<ChatHub>("/chatHub");
+app.MapHub<ChatHub>("Hubs/ChatHub");
 app.UseSession();
 app.UseStaticFiles();
 app.UseRouting();

@@ -13,51 +13,10 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap" rel="stylesheet">
-
+    <link rel="stylesheet" type="text/css" href="~/css/AIGoiY.css">
     <style>
-        :root {
-            --primary: #4CAF50;
-            --secondary: #8D6E63;
-            --light-bg: #F9FBE7;
-            --dark-text: #2E2E2E;
-        }
 
-        h1 {
-            color: var(--primary);
-        }
-
-        body {
-            font-family: 'Outfit', sans-serif;
-            background-color: var(--light-bg);
-            color: var(--dark-text);
-        }
-
-        .card-header {
-            font-weight: 600;
-        }
-
-        .form-label {
-            font-weight: 500;
-        }
-
-        .field-validation-error {
-            color: #dc3545;
-            font-size: 0.875em;
-        }
-
-        .input-validation-error {
-            border-color: #dc3545;
-        }
-
-        .validation-summary-errors ul {
-            padding-left: 20px;
-            margin-bottom: 0;
-            color: #dc3545;
-        }
-
-        select:disabled {
-            background-color: #e9ecef;
-        }
+       
     </style>
 </head>
 <body>
@@ -163,7 +122,7 @@
                             <div class="row g-3 mb-3">
                                 <div class="col-sm-6">
                                     <label asp-for="ByproductQuantity" class="form-label"></label> <span class="text-danger">*</span>
-                                    <input asp-for="ByproductQuantity" type="number" step="any" class="form-control" placeholder="Nhập số lượng" min="0.01">
+                                    <input asp-for="ByproductQuantity" type="number" id="KhoiLuong" step="any" class="form-control" placeholder="Nhập khối lượng" min="0.01">
                                     <span asp-validation-for="ByproductQuantity" class="text-danger field-validation-error"></span>
                                 </div>
                                 <div class="col-sm-6">
@@ -263,12 +222,96 @@
             </div>
         </form>
     </div>
+    <!-- AI Assistant Bubble -->
+    <div id="ai-assistant">
+        <div class="ai-circle" id="aiCircle"></div>
+        <div class="ai-message" id="aiMessage">Nhập đủ thông tin để tôi giúp bạn!</div>
+    </div>
+    @* <input type="hidden" id="Lat" asp-for="Latitude"> *@
+    @* <input type="hidden" id="Lng" asp-for="Longitude"> *@
 
     @* --- SCRIPTS --- *@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=API_KEY&libraries=places"></script>
 
     @await Html.PartialAsync("_ValidationScriptsPartial") @* Script validation *@
+    @* AI gọi ý *@
+    <script>
+        const aiCircle = document.getElementById("aiCircle");
+        const aiMessage = document.getElementById("aiMessage");
+
+        async function calculatePrice() {
+            const req = {
+                province: document.getElementById("provinceSelectThuGom").value,
+                district: document.getElementById("districtSelectThuGom").value,
+                ward: document.getElementById("wardSelectThuGom").value,
+                street: document.getElementById("SupplierStreet").value,
+                baseValue: parseFloat(document.getElementById("ByproductValue").value || 0),
+                isWet: document.getElementById("CharWet").checked,
+                isBulky: document.getElementById("CharBulky").checked
+            };
+
+            try {
+                const res = await fetch("du-doan-gia", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(req)
+                });
+
+                if (!res.ok) throw new Error("Lỗi server");
+
+                const data = await res.json();
+
+                // Cập nhật UI, AI có thể gợi ý sau khi có giá
+                aiMessage.innerText =
+                    `Kho gần nhất: ${data.khoGanNhat}\nKhoảng cách: ${data.distanceKm} km\nGiá dự đoán: ${data.totalPrice.toLocaleString()} VNĐ`;
+
+                return data; // trả dữ liệu cho AI
+            } catch (err) {
+                console.error(err);
+                aiMessage.innerText = "Lỗi khi tính giá";
+            }
+        }
+
+        function checkConditions() {
+            const loai = document.getElementById("loaiSanPhamSelect")?.value;
+            const khoiLuong = document.getElementById("KhoiLuong")?.value;
+            const province = document.getElementById("provinceSelectThuGom")?.value;
+            const district = document.getElementById("districtSelectThuGom")?.value;
+            const ward = document.getElementById("wardSelectThuGom")?.value;
+            const street = document.getElementById("SupplierStreet")?.value;
+
+            const isValid = loai && khoiLuong && province && district && ward && street;
+
+            if (!isValid) {
+                aiCircle.classList.remove("ai-glow");
+                aiMessage.innerText = "Nhập đủ thông tin địa chỉ và phụ phẩm để tôi dự đoán giá!";
+                return false;
+            }
+
+            aiCircle.classList.add("ai-glow");
+            aiMessage.innerText = "Đã đủ thông tin, đang tính km và dự đoán giá...";
+
+            // Gọi tính giá tự động
+            calculatePrice();
+
+            return true;
+        }
+
+        // Gọi checkConditions khi thay đổi input/select
+        document.querySelectorAll("input, select").forEach(el => {
+            el.addEventListener("change", checkConditions);
+        });
+
+        // Click AI Bubble vẫn có thể gọi lại calculatePrice để refresh
+        aiCircle.addEventListener("click", () => {
+            if (checkConditions()) {
+                calculatePrice();
+            }
+        });
+    </script>
+
 
     @* Script AJAX cho dropdown địa chỉ VÀ sản phẩm *@
     <script>
@@ -398,6 +441,6 @@
 
         });
     </script>
-
+   
 </body>
 </html>
