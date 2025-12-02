@@ -182,7 +182,7 @@ namespace DACS.Areas.QuanLyDH.Controllers
                     case "confirm":
                         if (donHang.TrangThai == StatusPendingDbValue || donHang.TrangThai == "Chưa xử lý")
                         {
-                            // --- SỬA: TRỪ KHO NGAY KHI XÁC NHẬN ---
+                            // --- SỬA: CHUYỂN TRỪ KHO LÊN ĐÂY ---
                             inventoryError = await ApplyInventoryChangesForOrderAsync(donHang, truKho: true);
                             if (inventoryError != null)
                             {
@@ -190,10 +190,10 @@ namespace DACS.Areas.QuanLyDH.Controllers
                                 TempData["ErrorMessage"] = $"Lỗi tồn kho: {inventoryError}";
                                 return RedirectToAction(nameof(Details), new { id = id });
                             }
-                            // ---------------------------------------
+                            // ------------------------------------
 
                             actualNewStatusInDb = StatusConfirmedDbValue;
-                            successMessagePart = "xác nhận và đã giữ hàng.";
+                            successMessagePart = "xác nhận và đã trừ tồn kho.";
                             canUpdate = true;
                         }
                         break;
@@ -217,13 +217,12 @@ namespace DACS.Areas.QuanLyDH.Controllers
                         break;
 
                     case "complete":
-                        // Cho phép hoàn thành từ các bước đang chạy
+                        // SỬA: Cho phép hoàn thành từ các trạng thái đang chạy
                         if (donHang.TrangThai == StatusShippingDbValue ||
                             donHang.TrangThai == StatusProcessingDbValue ||
                             donHang.TrangThai == StatusConfirmedDbValue)
                         {
-                            // SỬA: BỎ TRỪ KHO Ở ĐÂY (VÌ ĐÃ TRỪ LÚC CONFIRM RỒI)
-                            // inventoryError = await ApplyInventoryChangesForOrderAsync(donHang, truKho: true); <-- XÓA DÒNG NÀY
+                            // QUAN TRỌNG: KHÔNG GỌI TRỪ KHO Ở ĐÂY NỮA (VÌ ĐÃ TRỪ Ở CONFIRM RỒI)
 
                             actualNewStatusInDb = StatusCompletedDbValue;
                             successMessagePart = "hoàn thành.";
