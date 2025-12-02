@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Authorization; // Cần thêm using này cho List
 using DACS.Models.ViewModels;
 using Microsoft.EntityFrameworkCore;
 public class HistoryViewModel
-    {
+{
     public string LotId { get; set; }
     public string Status { get; set; }
     public string Location { get; set; }
@@ -50,7 +50,7 @@ namespace DACS.Areas.QuanLyDH.Controllers
         public IActionResult PublicTrace()
         {
             // Có thể dùng để hiển thị form tra cứu ban đầu
-            return View(); 
+            return View();
         }
         [HttpGet("api/blockchain/tx-data-sql")]
         public async Task<IActionResult> GetTxDataFromSql([FromQuery] string txHash)
