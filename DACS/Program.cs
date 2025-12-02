@@ -1,25 +1,33 @@
-﻿using DACS.Controllers;
+using DACS.Controllers;
 using DACS.Models;
 using DACS.Repositories;
 using DACS.Repository;
 using DACS.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Nethereum.Contracts.Standards.ENS;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 var builder = WebApplication.CreateBuilder(args);
 
-
-builder.Services.AddScoped<HomeController>();//kết nối chat
-builder.Services.AddSingleton<SocketServer>();//kết nối chat
+// ===========================
+// ĐĂNG KÝ SERVICE
+// ===========================
+builder.Services.AddScoped<HomeController>(); // Chat
+builder.Services.AddSingleton<SocketServer>();
 builder.Services.AddControllersWithViews();
 builder.Services.AddSignalR();
+
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// ===== FIX LỖI: Chỉ để lại 1 Identity duy nhất =====
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+    .AddDefaultTokenProviders()
+    .AddDefaultUI()
+    .AddEntityFrameworkStores<ApplicationDbContext>();
+
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
 {
@@ -27,23 +35,30 @@ builder.Services.AddSession(options =>
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
 });
-builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
-.AddDefaultTokenProviders()
-.AddDefaultUI()
-.AddEntityFrameworkStores<ApplicationDbContext>();
-builder.Services.AddControllersWithViews();
-builder.Services.ConfigureApplicationCookie(options => {
-    options.LoginPath = $"/Identity/Account/Login";
-    options.LogoutPath = $"/Identity/Account/Logout";
-    options.LogoutPath = $"/Identity/Account/AccessDenied";
+
+// Cookie config
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = "/Identity/Account/Login";
+    options.LogoutPath = "/Identity/Account/Logout";
+    options.AccessDeniedPath = "/Identity/Account/AccessDenied";
 });
 
-// Add services to the container.
+// Google Login
+builder.Services.AddAuthentication()
+    .AddGoogle(options =>
+    {
+        IConfigurationSection googleAuthNSection =
+            builder.Configuration.GetSection("Authentication:Google");
 
+        options.ClientId = googleAuthNSection["ClientId"];
+        options.ClientSecret = googleAuthNSection["ClientSecret"];
+        options.SaveTokens = true;
+    });
 
-builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
-//builder.Services.AddScoped<IGeoService, GeoService>();
+
+// Business services
 builder.Services.AddSingleton<BlockchainService>();
 builder.Services.AddScoped<INguoiMuaRepository, NguoiMuaRepository>();
 builder.Services.AddScoped<IThuGomRepository, ThuGomRepository>();
@@ -55,75 +70,63 @@ builder.Services.AddTransient<IEmailService, EmailService>();
 builder.Services.Configure<ESmsSettings>(builder.Configuration.GetSection("ESmsSettings"));
 builder.Services.AddTransient<ISmsService, ESmsService>();
 builder.Services.AddHttpClient();
-//builder.WebHost.UseUrls("http://0.0.0.0:5001");//chạy ebsite
 
 
-
+// ===========================
+// BUILD APP
+// ===========================
 var app = builder.Build();
+
+// Chạy server socket (chat)
 var socketServer = app.Services.GetRequiredService<SocketServer>();
-_ = Task.Run(() => socketServer.StartAsync()); //kết nối chat
-// Configure the HTTP request pipeline.
+_ = Task.Run(() => socketServer.StartAsync());
+
+
+// ===========================
+// PIPELINE
+// ===========================
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
 }
+
 app.MapHub<ChatHub>("Hubs/ChatHub");
+
 app.UseSession();
 app.UseStaticFiles();
 app.UseRouting();
-app.UseAuthentication(); ;
+app.UseAuthentication();
 app.UseAuthorization();
+
 app.MapRazorPages();
 
-app.UseEndpoints(endpoints =>
-{
-
-    endpoints.MapControllerRoute(
-        name: "areas",
-        pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
-
-    endpoints.MapControllerRoute(
-        name: "Owner",
-        pattern: "{area:exists}/{controller=Owner}/{action=Index}/{id?}");
-
-    endpoints.MapControllerRoute(
-        name: "KhachHang",
-        pattern: "{area:exists}/{controller=KhachHang}/{action=Index}/{id?}");
-
-    endpoints.MapControllerRoute(
-        name: "QuanLyDH",
-        pattern: "{area:exists}/{controller=QuanLyDH}/{action=Index}/{id?}");
-
-    endpoints.MapControllerRoute(
-        name: "QuanLyND",
-        pattern: "{area:exists}/{controller=QuanLyND}/{action=Index}/{id?}");
-
-    endpoints.MapControllerRoute(
-    name: "QuanLyXNK",
-    pattern: "{area:exists}/{controller=QuanLyXNK}/{action=Index}/{id?}");
-
-
-    endpoints.MapControllerRoute(
-name: "QuanLySP",
-pattern: "{area:exists}/{controller=QuanLySP}/{action=Index}/{id?}");
-
-    endpoints.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+// ===========================
+// ROUTES
+// ===========================
+app.UseEndpoints(endpoints => 
+{ endpoints.MapControllerRoute( name: "areas", pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}"); 
+    endpoints.MapControllerRoute( name: "Owner", pattern: "{area:exists}/{controller=Owner}/{action=Index}/{id?}"); 
+    endpoints.MapControllerRoute( name: "KhachHang", pattern: "{area:exists}/{controller=KhachHang}/{action=Index}/{id?}");
+    endpoints.MapControllerRoute( name: "QuanLyDH", pattern: "{area:exists}/{controller=QuanLyDH}/{action=Index}/{id?}"); 
+    endpoints.MapControllerRoute( name: "QuanLyND", pattern: "{area:exists}/{controller=QuanLyND}/{action=Index}/{id?}"); 
+    endpoints.MapControllerRoute( name: "QuanLyXNK", pattern: "{area:exists}/{controller=QuanLyXNK}/{action=Index}/{id?}"); 
+    endpoints.MapControllerRoute( name: "QuanLySP", pattern: "{area:exists}/{controller=QuanLySP}/{action=Index}/{id?}"); 
+    endpoints.MapControllerRoute( name: "default", pattern: "{controller=Home}/{action=Index}/{id?}"); 
 });
+
+// ===========================
+// KHỞI ĐỘNG BLOCKCHAIN TEST
+// ===========================
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
     try
     {
         var blockchainService = services.GetRequiredService<BlockchainService>();
-
-        // Log để biết nó đang chạy
         var logger = services.GetRequiredService<ILogger<Program>>();
         logger.LogWarning("Đang kích hoạt TestBlockchainAsync() khi khởi động...");
 
-        // Gọi hàm (không cần await để không block khởi động)
-        _ = blockchainService.TestBlockchainAsync();
+        _ = blockchainService.TestBlockchainAsync(); // chạy nền không block app
     }
     catch (Exception ex)
     {
