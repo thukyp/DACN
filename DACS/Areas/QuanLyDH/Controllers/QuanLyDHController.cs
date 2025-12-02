@@ -182,11 +182,18 @@ namespace DACS.Areas.QuanLyDH.Controllers
                     case "confirm":
                         if (donHang.TrangThai == StatusPendingDbValue || donHang.TrangThai == "Chưa xử lý")
                         {
-                            // <<< LOGIC MỚI: Trừ kho FIFO
-                            
+                            // --- SỬA: TRỪ KHO NGAY KHI XÁC NHẬN ---
+                            inventoryError = await ApplyInventoryChangesForOrderAsync(donHang, truKho: true);
+                            if (inventoryError != null)
+                            {
+                                await transaction.RollbackAsync();
+                                TempData["ErrorMessage"] = $"Lỗi tồn kho: {inventoryError}";
+                                return RedirectToAction(nameof(Details), new { id = id });
+                            }
+                            // ---------------------------------------
 
                             actualNewStatusInDb = StatusConfirmedDbValue;
-                            successMessagePart = "xác nhận và đã trừ tồn kho.";
+                            successMessagePart = "xác nhận và đã giữ hàng.";
                             canUpdate = true;
                         }
                         break;
@@ -210,16 +217,14 @@ namespace DACS.Areas.QuanLyDH.Controllers
                         break;
 
                     case "complete":
-                        if (donHang.TrangThai == StatusShippingDbValue)
+                        // Cho phép hoàn thành từ các bước đang chạy
+                        if (donHang.TrangThai == StatusShippingDbValue ||
+                            donHang.TrangThai == StatusProcessingDbValue ||
+                            donHang.TrangThai == StatusConfirmedDbValue)
                         {
-                            inventoryError = await ApplyInventoryChangesForOrderAsync(donHang, truKho: true);
-                            if (inventoryError != null)
-                            {
-                                // Nếu có lỗi (hết hàng), rollback và báo lỗi
-                                await transaction.RollbackAsync();
-                                TempData["ErrorMessage"] = $"Không thể xác nhận ĐH {donHang.M_DonHang}: {inventoryError}";
-                                return RedirectToAction(nameof(Details), new { id = id });
-                            }
+                            // SỬA: BỎ TRỪ KHO Ở ĐÂY (VÌ ĐÃ TRỪ LÚC CONFIRM RỒI)
+                            // inventoryError = await ApplyInventoryChangesForOrderAsync(donHang, truKho: true); <-- XÓA DÒNG NÀY
+
                             actualNewStatusInDb = StatusCompletedDbValue;
                             successMessagePart = "hoàn thành.";
                             canUpdate = true;
@@ -227,23 +232,22 @@ namespace DACS.Areas.QuanLyDH.Controllers
                         break;
 
                     case "cancel":
+                        // Logic hủy giữ nguyên, nó sẽ hoàn kho đúng vì ta đã trừ kho ở bước confirm.
                         if (donHang.TrangThai == StatusPendingDbValue || donHang.TrangThai == "Chưa xử lý")
                         {
-                            // Đơn hàng chưa xác nhận -> chưa trừ kho -> chỉ cần hủy
                             actualNewStatusInDb = StatusCancelledDbValue;
                             successMessagePart = "hủy (chưa trừ kho).";
                             canUpdate = true;
                         }
-                        else if (donHang.TrangThai == StatusConfirmedDbValue || donHang.TrangThai == StatusProcessingDbValue)
+                        else if (donHang.TrangThai == StatusConfirmedDbValue ||
+                                 donHang.TrangThai == StatusProcessingDbValue ||
+                                 donHang.TrangThai == StatusShippingDbValue) // Thêm Shipping vào để cho phép hủy khi đang giao
                         {
-                            // Đơn hàng đã xác nhận/xử lý -> đã trừ kho -> phải hoàn kho
-                            // <<< LOGIC MỚI: Hoàn kho (giả định)
-                            inventoryError = await ApplyInventoryChangesForOrderAsync(donHang, truKho: false);
+                            inventoryError = await ApplyInventoryChangesForOrderAsync(donHang, truKho: false); // Hoàn kho
                             if (inventoryError != null)
                             {
-                                // Vẫn cho hủy nhưng báo lỗi hoàn kho
-                                _logger.LogError("Lỗi khi hoàn kho cho ĐH {DonHangId}: {Error}", donHang.M_DonHang, inventoryError);
-                                successMessagePart = $"hủy. (CẢNH BÁO: Lỗi tự động hoàn kho: {inventoryError})";
+                                _logger.LogError("Lỗi hoàn kho: {Error}", inventoryError);
+                                successMessagePart = $"hủy. (Lỗi hoàn kho: {inventoryError})";
                             }
                             else
                             {

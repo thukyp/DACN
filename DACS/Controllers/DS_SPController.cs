@@ -253,52 +253,72 @@ namespace DACS.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> SubmitReview(ChiTietDanhGia reviewInput)
         {
+            // 1. Kiểm tra đăng nhập
             if (!User.Identity.IsAuthenticated)
             {
                 TempData["ReviewMessage"] = "Lỗi: Bạn cần đăng nhập để gửi đánh giá.";
                 return RedirectToAction("CT_SP", new { id = reviewInput.M_SanPham });
             }
 
-            if (!int.TryParse(reviewInput.MucDoHaiLong, out int rating) || rating < 1 || rating > 5)
+            // 2. Lấy thông tin User hiện tại và tìm M_KhachHang tương ứng
+            var userId = _userManager.GetUserId(User);
+            var khachHang = await _context.KhachHangs.FirstOrDefaultAsync(k => k.UserId == userId);
+
+            if (khachHang == null)
             {
-                ModelState.AddModelError("MucDoHaiLong", "Mức độ hài lòng không hợp lệ.");
-            }
-
-            if (ModelState.IsValid)
-            {
-                var productExists = await _context.SanPhams.AnyAsync(p => p.M_SanPham == reviewInput.M_SanPham);
-                if (!productExists)
-                {
-                    TempData["ReviewMessage"] = "Lỗi: Sản phẩm không tồn tại.";
-                    return RedirectToAction("Index", "Home");
-                }
-
-                var customerExists = await _context.KhachHangs.AnyAsync(k => k.M_KhachHang == reviewInput.M_KhachHang);
-                if (!customerExists)
-                {
-                    TempData["ReviewMessage"] = "Lỗi: Khách hàng không tồn tại.";
-                    return RedirectToAction("CT_SP", new { id = reviewInput.M_SanPham });
-                }
-
-                bool alreadyReviewed = await _context.ChiTietDanhGias
-                    .AnyAsync(dg => dg.M_SanPham == reviewInput.M_SanPham &&
-                                    dg.M_KhachHang == reviewInput.M_KhachHang);
-
-                if (alreadyReviewed)
-                {
-                    TempData["ReviewMessage"] = "Thông báo: Bạn đã đánh giá sản phẩm này rồi.";
-                    return RedirectToAction("CT_SP", new { id = reviewInput.M_SanPham });
-                }
-
-                reviewInput.NgayDanhGia = DateTime.UtcNow;
-                _context.ChiTietDanhGias.Add(reviewInput);
-                await _context.SaveChangesAsync();
-
-                TempData["ReviewMessage"] = "Cảm ơn bạn đã gửi đánh giá!";
+                TempData["ReviewMessage"] = "Lỗi: Tài khoản của bạn chưa có thông tin Khách Hàng.";
                 return RedirectToAction("CT_SP", new { id = reviewInput.M_SanPham });
             }
 
-            TempData["ReviewMessage"] = "Đánh giá không hợp lệ. Vui lòng kiểm tra lại thông tin.";
+            // Gán M_KhachHang vào model
+            reviewInput.M_KhachHang = khachHang.M_KhachHang;
+
+            // 3. Xử lý Mức độ hài lòng (Chuyển đổi string sang int nếu cần thiết, hoặc validation)
+            // Lưu ý: Nếu bạn sửa Model ở Bước 2 thành int thì bỏ đoạn TryParse này.
+            if (!int.TryParse(reviewInput.MucDoHaiLong, out int rating) || rating < 1 || rating > 5)
+            {
+                TempData["ReviewMessage"] = "Lỗi: Mức độ hài lòng không hợp lệ (1-5 sao).";
+                return RedirectToAction("CT_SP", new { id = reviewInput.M_SanPham });
+            }
+
+            // 4. Kiểm tra sản phẩm có tồn tại không
+            var productExists = await _context.SanPhams.AnyAsync(p => p.M_SanPham == reviewInput.M_SanPham);
+            if (!productExists)
+            {
+                TempData["ReviewMessage"] = "Lỗi: Sản phẩm không tồn tại.";
+                return RedirectToAction("Index", "Home");
+            }
+
+            // 5. Kiểm tra xem đã đánh giá chưa (Dựa trên Composite Key)
+            bool alreadyReviewed = await _context.ChiTietDanhGias
+                .AnyAsync(dg => dg.M_SanPham == reviewInput.M_SanPham &&
+                                dg.M_KhachHang == reviewInput.M_KhachHang);
+
+            if (alreadyReviewed)
+            {
+                TempData["ReviewMessage"] = "Thông báo: Bạn đã đánh giá sản phẩm này rồi.";
+                return RedirectToAction("CT_SP", new { id = reviewInput.M_SanPham });
+            }
+
+            // 6. Lưu vào DB
+            // Loại bỏ Validation cho Navigation Properties để tránh lỗi ModelState
+            ModelState.Remove("KhachHang");
+            ModelState.Remove("SanPham");
+            ModelState.Remove("M_KhachHang"); // Vì ta gán code-behind, không phải từ form
+
+            try
+            {
+                reviewInput.NgayDanhGia = DateTime.UtcNow;
+                _context.ChiTietDanhGias.Add(reviewInput);
+                await _context.SaveChangesAsync();
+                TempData["ReviewMessage"] = "Cảm ơn bạn đã gửi đánh giá!";
+            }
+            catch (Exception ex)
+            {
+                // Log lỗi nếu cần
+                TempData["ReviewMessage"] = "Lỗi hệ thống: Không thể lưu đánh giá.";
+            }
+
             return RedirectToAction("CT_SP", new { id = reviewInput.M_SanPham });
         }
     }
