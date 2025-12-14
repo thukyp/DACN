@@ -13,34 +13,21 @@
     <div class="row">
         @* Cột Menu bên trái *@
         <div class="col-lg-3 mb-4 mb-lg-0">
-            <div class="account-menu list-group shadow-sm">
-
-                @* 1. Tổng quan *@
-                <a asp-area="KhachHang" asp-controller="KhachHang" asp-action="Index"
-                   class="list-group-item list-group-item-action @(ViewContext.RouteData.Values["Action"]?.ToString() == "Index" ? "active" : "")">
+            @* Added bottom margin for mobile *@
+            <div class="account-menu list-group">
+                <a asp-area="KhachHang" asp-controller="KhachHang" asp-action="Index" class="list-group-item list-group-item-action active">
                     <i class="fas fa-tachometer-alt fa-fw me-2"></i> Tổng quan
                 </a>
-
-                @* 2. Hồ sơ cá nhân *@
-                <a asp-area="KhachHang" asp-controller="KhachHang" asp-action="HoSoCaNhan"
-                   class="list-group-item list-group-item-action @(ViewContext.RouteData.Values["Action"]?.ToString() == "HoSoCaNhan" ? "active" : "")">
+                <a asp-area="KhachHang" asp-controller="KhachHang" asp-action="HoSoCaNhan" class="list-group-item list-group-item-action">
                     <i class="fas fa-user-circle fa-fw me-2"></i> Hồ sơ cá nhân
                 </a>
-
-                @* 3. Lịch sử Đơn hàng *@
-                <a asp-area="KhachHang" asp-controller="KhachHang" asp-action="LichSuDonHang"
-                   class="list-group-item list-group-item-action @(ViewContext.RouteData.Values["Action"]?.ToString() == "LichSuDonHang" ? "active" : "")">
+                <a asp-area="KhachHang" asp-controller="KhachHang" asp-action="LichSuDonHang" class="list-group-item list-group-item-action">
                     <i class="fas fa-receipt fa-fw me-2"></i> Lịch sử Đơn hàng
                 </a>
-
-                @* 4. Lịch sử Thu gom *@
-                <a asp-area="KhachHang" asp-controller="KhachHang" asp-action="LichSuYeuCauThuGom"
-                   class="list-group-item list-group-item-action @(ViewContext.RouteData.Values["Action"]?.ToString() == "LichSuYeuCauThuGom" ? "active" : "")">
+                <a asp-area="KhachHang" asp-controller="KhachHang" asp-action="LichSuYeuCauThuGom" class="list-group-item list-group-item-action">
+                    @* Added link to Collection History here for consistency *@
                     <i class="fas fa-recycle fa-fw me-2"></i> Lịch sử Thu gom
                 </a>
-
-                @* --- PHẦN ĐÁNH GIÁ (MỚI) --- *@
-
                 @* 5. Chờ đánh giá (Đã sửa lại class cho đẹp) *@
                 <a asp-area="KhachHang" asp-controller="KhachHang" asp-action="SanPhamChoDanhGia"
                    class="list-group-item list-group-item-action @(ViewContext.RouteData.Values["Action"]?.ToString() == "SanPhamChoDanhGia" ? "active" : "")">
@@ -52,21 +39,16 @@
                    class="list-group-item list-group-item-action @(ViewContext.RouteData.Values["Action"]?.ToString() == "LichSuDanhGia" ? "active" : "")">
                     <i class="fas fa-history fa-fw me-2 text-success"></i> Lịch sử đánh giá
                 </a>
-
-                @* --------------------------- *@
-
-                @* 7. Đổi mật khẩu *@
-                <a asp-area="Identity" asp-page="/Account/Manage/ChangePassword"
-                   class="list-group-item list-group-item-action">
+                <a asp-area="Identity" asp-page="/Account/Manage/ChangePassword" class="list-group-item list-group-item-action">
                     <i class="fas fa-lock fa-fw me-2"></i> Đổi mật khẩu
                 </a>
-
-                @* 8. Đăng xuất / Về trang chủ *@
-                <div class="list-group-item p-0">
-                    <a href="/home/index" class="btn btn-light w-100 text-start text-danger border-0 rounded-0 py-3 px-3">
-                        <i class="fas fa-sign-out-alt fa-fw me-2"></i> Về trang chủ
-                    </a>
-                </div>
+                @* <a asp-area="KhachHang" asp-controller="Address" asp-action="Index" class="list-group-item list-group-item-action">
+                    <i class="fas fa-map-marker-alt fa-fw me-2"></i> Sổ địa chỉ
+                   </a> *@
+                <button type="submit" class="list-group-item list-group-item-action text-danger border-0 bg-transparent p-0 w-100 text-start">
+                    @* Adjusted button style to better match list items *@
+                    <a href="/home/index" class="list-group-item list-group-item-action border-0 text-danger"><i class="fas fa-sign-out-alt fa-fw me-2"></i> Về trang chủ</a>
+                </button>
             </div>
         </div>
 

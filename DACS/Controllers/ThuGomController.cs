@@ -10,6 +10,7 @@ using System.Security.Claims;
 using DACS.Services;
 using DACS.Models.AI;
 using Newtonsoft.Json;
+using DACS.Areas.QuanLyXNK.Controllers;
 
 namespace DACS.Controllers
 {
@@ -410,10 +411,78 @@ namespace DACS.Controllers
                 return Json(new List<object>());
             }
         }
-
-        public double DistanceKm(double lat1, double lng1, double lat2, double lng2)
+        // AI tính giá
+        [HttpPost("du-doan-gia")]
+        public async Task<IActionResult> PredictPrice([FromBody] PriceRequest req)
         {
-            var R = 6371; // Bán kính trái đất km
+            
+            var sanPham = _context.SanPhams.FirstOrDefault(p => p.M_SanPham == req.NhomSanPham);
+
+            if (sanPham == null)
+                return BadRequest("Không tìm thấy sản phẩm trong hệ thống.");
+
+            double heSoMuaVu = CheckSeasonalFactor(sanPham);
+
+            string fullAddress = $" {req.Ward}, {req.District}, {req.Province}, Việt Nam";
+            var (userLat, userLng) = await GetCoordinatesAsync(fullAddress);
+
+            if (userLat == 0 && userLng == 0)
+                return BadRequest("Không tìm thấy địa chỉ.");
+
+            var khoList = _context.KhoHangs.ToList();
+            KhoHang khoGanNhat = null;
+            double minDistance = double.MaxValue;
+
+            foreach (var k in khoList)
+            {
+                double d = DistanceKm(userLat, userLng, k.Lat, k.Lng);
+                if (d < minDistance)
+                {
+                    minDistance = d;
+                    khoGanNhat = k;
+                }
+            }
+            double roadDistanceKm = minDistance * 1.3; 
+            double shippingFee = CalculateShipping(roadDistanceKm, req.KhoiLuong);
+            
+            double doAmChuan = 15.0; 
+            double chenhLechDoAm = req.DoAmThucTe - doAmChuan;
+            double heSoDoAm = 1.0;
+
+            if (chenhLechDoAm > 0) 
+                heSoDoAm = 1.0 - (chenhLechDoAm * 0.012); 
+            else 
+                heSoDoAm = 1.0 + (Math.Abs(chenhLechDoAm) * 0.005);
+
+            if (heSoDoAm < 0.6) heSoDoAm = 0.6;
+            double HE_SO_BIEN_LOI_NHUAN = 0.8;
+          
+            double giaCoSoThuMua = (double)sanPham.Gia * HE_SO_BIEN_LOI_NHUAN;
+            double donGiaUocTinh = giaCoSoThuMua * heSoMuaVu * heSoDoAm;
+
+            double tongGiaTriHang = donGiaUocTinh * req.KhoiLuong;
+
+            double giaCuoiCung = Math.Max(0, tongGiaTriHang - shippingFee);
+
+            return Ok(new
+            {
+                TenSanPham = sanPham.TenSanPham ?? "Tên lỗi",
+                KhoGanNhat = khoGanNhat?.TenKho ?? "Chưa tìm thấy kho",
+                QuangDuong = Math.Round(roadDistanceKm, 1),
+
+                GiaGocTaiKho = (double)sanPham.Gia,
+                HeSoMuaVu = heSoMuaVu,
+                HeSoDoAm = Math.Round(heSoDoAm, 2), 
+
+                PhiVanChuyen = Math.Round(shippingFee), 
+
+                TotalPrice = Math.Round(giaCuoiCung / 1000) * 1000
+            });
+        }
+        //tính km khoảng cách
+        private double DistanceKm(double lat1, double lng1, double lat2, double lng2)
+        {
+            var R = 6371;
             var dLat = ToRad(lat2 - lat1);
             var dLng = ToRad(lng2 - lng1);
             var a = Math.Sin(dLat / 2) * Math.Sin(dLat / 2) +
@@ -422,80 +491,75 @@ namespace DACS.Controllers
             var c = 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
             return R * c;
         }
-
-        public double ToRad(double deg) => deg * Math.PI / 180;
-
-        [HttpPost("du-doan-gia")]
-        public async Task<IActionResult> PredictPrice([FromBody] PriceRequest req)
+        private double ToRad(double deg) => deg * Math.PI / 180;
+        //lấy địa chỉ lat log
+        private async Task<(double lat, double lng)> GetCoordinatesAsync(string address)
         {
-            if (req == null) return BadRequest("Dữ liệu không hợp lệ");
-
-            // 1. Tạo địa chỉ đầy đủ
-            string fullAddress = $"{req.Street}, {req.Ward}, {req.District}, {req.Province}, Việt Nam";
-
-            // 2. Lấy tọa độ bằng geocoding backend
-            var (lat, lng) = await GetCoordinatesAsync(fullAddress);
-            if (lat == 0 || lng == 0)
-                return BadRequest("Không tìm thấy tọa độ từ địa chỉ.");
-
-            // 3. Lấy kho phù hợp loại phụ phẩm
-            var khoList = _context.KhoHangs
-                .Where(x => x.TenLoaiKho == req.TenLoaiKho)
-                .ToList();
-
-            if (!khoList.Any())
-                return BadRequest("Không tìm thấy kho phù hợp loại phụ phẩm.");
-
-            // 4. Tìm kho gần nhất
-            KhoHang nearest = null;
-            double nearestKm = double.MaxValue;
-            foreach (var k in khoList)
+            try
             {
-                double km = DistanceKm(lat, lng, k.Lat, k.Lng);
-                if (km < nearestKm)
-                {
-                    nearestKm = km;
-                    nearest = k;
-                }
+                using var client = new HttpClient();
+                client.DefaultRequestHeaders.Add("User-Agent", "DACS_NongNghiep/1.0 (contact@email.com)");
+                client.Timeout = TimeSpan.FromSeconds(10);
+                
+
+                var url = $"https://nominatim.openstreetmap.org/search?format=json&limit=1&q={Uri.EscapeDataString(address)}";
+                var response = await client.GetStringAsync(url);
+                dynamic data = JsonConvert.DeserializeObject(response);
+
+                if (data.Count == 0) return (0, 0);
+                return ((double)data[0].lat, (double)data[0].lon);
+            }
+            catch
+            {
+                return (0, 0); 
+            }
+        }
+        //check season
+        private double CheckSeasonalFactor(SanPham sp)
+        {
+            int currentMonth = DateTime.Now.Month;
+            bool isInSeason = false;
+            if (sp.ThangBatDauVu <= sp.ThangKetThucVu)
+            {
+                if (currentMonth >= sp.ThangBatDauVu && currentMonth <= sp.ThangKetThucVu)
+                    isInSeason = true;
+            }
+            else
+            {
+                if (currentMonth >= sp.ThangBatDauVu || currentMonth <= sp.ThangKetThucVu)
+                    isInSeason = true;
             }
 
-            // 5. Tính phí vận chuyển + phụ phí
-            double shippingFee = nearestKm * 5000;
-            double extra = 0;
-            if (req.IsWet) extra += 3000;
-            if (req.IsBulky) extra += 4000;
-
-            double total = req.BaseValue + shippingFee + extra;
-
-            return Ok(new
-            {
-                ViTriNongDan = new { lat, lng },
-                KhoGanNhat = nearest.TenKho,
-                KhoLat = nearest.Lat,
-                KhoLng = nearest.Lng,
-                DistanceKm = Math.Round(nearestKm, 2),
-                ShippingFee = Math.Round(shippingFee),
-                ExtraFee = extra,
-                TotalPrice = Math.Round(total)
-            });
+            return isInSeason ? sp.HeSoGiaTrongMua : sp.HeSoGiaTraiMua;
         }
-
-        // Hàm lấy tọa độ
-        public async Task<(double lat, double lng)> GetCoordinatesAsync(string address)
+        //tính ship theo khối lượng
+        private double CalculateShipping(double km, double khoiLuongKg)
         {
-            using var client = new HttpClient();
-            var url = $"https://nominatim.openstreetmap.org/search?format=json&q={Uri.EscapeDataString(address)}";
+            double basePrice = 0; 
+            double pricePerKm = 0; 
 
-            client.DefaultRequestHeaders.Add("User-Agent", "YourAppName/1.0 (your@email.com)"); 
+            if (khoiLuongKg < 50)
+            {
+                basePrice = 15000; 
+                pricePerKm = 3000; 
+            }
+           
+            else if (khoiLuongKg < 500)
+            {
+                basePrice = 40000; 
+                pricePerKm = 7000; 
+            }
+            
+            else
+            {
+                basePrice = 150000; 
+                pricePerKm = 12000; 
+            }
 
-            var response = await client.GetStringAsync(url);
-            dynamic data = JsonConvert.DeserializeObject(response);
+            if (km <= 2) return basePrice;
 
-            if (data.Count == 0) return (0, 0);
-
-            return (double.Parse((string)data[0].lat), double.Parse((string)data[0].lon));
+            return basePrice + ((km - 2) * pricePerKm);
         }
-
-
+       
     }
 }

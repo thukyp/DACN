@@ -1,247 +1,212 @@
-﻿@model IEnumerable<DACS.Models.SanPham>
-
-@{
-    ViewData["Title"] = "Trang chủ";
-    Layout = "~/Views/Shared/_Layout.cshtml";
-}
-
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
-<link rel="stylesheet" type="text/css" href="~/css/trangchu.css">
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans&amp;display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css">
-
-<style>
-    :root {
-        --primary: #4CAF50;
-        --secondary: #8D6E63;
-        --light-bg: #F9FBE7;
-        --dark-text: #2E2E2E;
-        --card-border: #C8E6C9;
-    }
-
-    .grid-item img {
-        width: 100%;
-        height: 200px;
-        object-fit: cover;
-        border-radius: 8px;
-    }
-    /* Thêm CSS cho nút Xem chi tiết nếu chưa có trong trangchu.css */
-    .button {
-        display: inline-block;
-        background-color: var(--primary);
-        color: white;
-        padding: 8px 16px;
-        text-decoration: none;
-        border-radius: 4px;
-        margin-top: 10px;
-    }
-
-        .button:hover {
-            background-color: #45a049;
-            color: white;
+﻿<!doctype html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="~/css/trangchu.css">
+    <link rel='stylesheet' href='https://fonts.googleapis.com/css2?family=DM+Sans&amp;display=swap'>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+     <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css">
+    <title>
+        Hahana
+    </title>
+    <style>
+        :root {
+            --primary: #4CAF50;
+            --secondary: #8D6E63;
+            --light-bg: #F9FBE7;
+            --dark-text: #2E2E2E;
+            --card-border: #C8E6C9;
         }
 
-    .benefit-box {
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
 
-        .benefit-box:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--light-bg);
+            color: var(--dark-text);
         }
-        /* Đảm bảo text không bị vỡ */
-        .benefit-box ul li span {
-            line-height: 1.5;
-            font-size: 1.05rem;
-        }
-</style>
+    </style>
+</head>
+<body>
 
-<section>
-    <div id="demo" class="carousel slide" data-bs-ride="carousel" data-bs-interval="3000">
-        <div class="carousel-indicators">
-            <button type="button" data-bs-target="#demo" data-bs-slide-to="0" class="active"></button>
-            <button type="button" data-bs-target="#demo" data-bs-slide-to="1"></button>
-            <button type="button" data-bs-target="#demo" data-bs-slide-to="2"></button>
-        </div>
-        <div class="carousel-inner">
-            <div class="carousel-item active">
-                <div class="carousel-img">
-                    <img src="~/images/Banner/ba_mia_khoi.png" alt="Banner 1" class="d-block w-100">
-                </div>
-            </div>
-            <div class="carousel-item">
-                <div class="carousel-img">
-                    <img src="~/images/Banner/Banner_2.png" alt="Banner 2" class="d-block w-100">
-                </div>
-            </div>
-            <div class="carousel-item">
-                <div class="carousel-img">
-                    <img src="~/images/Banner/NongNghiep.png" alt="Banner 3" class="d-block w-100">
-                </div>
-            </div>
-        </div>
-        <button class="carousel-control-prev" type="button" data-bs-target="#demo" data-bs-slide="prev">
-            <span class="carousel-control-prev-icon"></span>
-        </button>
-        <button class="carousel-control-next" type="button" data-bs-target="#demo" data-bs-slide="next">
-            <span class="carousel-control-next-icon"></span>
-        </button>
-    </div>
-</section>
+    <section>
+        <div id="demo" class="carousel slide" data-bs-ride="carousel" data-bs-interval="3000">
 
-<div class="header-grid mt-5" style="text-align: center; font-size: 24px; font-weight: bold; margin-bottom: 20px;">Hệ Thống Thu Gom Phụ Phẩm Nông Nghiệp</div>
 
-<div class="container">
-    <div class="row">
-        @if (Model != null && Model.Any())
-        {
-            foreach (var item in Model)
-            {
-                <div class="col-md-3 mb-4">
-                    <div class="grid-item p-3 border rounded h-100 shadow-sm" style="background: white;">
-                        <img src="@Url.Content(item.AnhSanPham ?? "~/images/no-image.png")" alt="@item.TenSanPham">
-                        <h3 class="mt-3 fs-5">@item.TenSanPham</h3>
-                        <p>
-                            <strong>Giá:</strong>
-                            <span class="text-danger fw-bold">@item.Gia.ToString("N0")đ</span> / @(item.DonViTinh?.TenLoaiTinh ?? "kg")
-                        </p>
-                        <a asp-controller="DS_SP" asp-action="CT_SP" asp-route-id="@item.M_SanPham" class="button w-100 text-center">
-                            Xem chi tiết
-                        </a>
+
+
+            <!-- Indicators/dots -->
+            <div class="carousel-indicators">
+                <button type="button" data-bs-target="#demo" data-bs-slide-to="0" class="active"></button>
+                <button type="button" data-bs-target="#demo" data-bs-slide-to="1"></button>
+                <button type="button" data-bs-target="#demo" data-bs-slide-to="2"></button>
+            </div>
+
+            <!-- The slideshow/carousel -->
+            <div class="carousel-inner">
+
+                <div class="carousel-item active">
+                    <div class="carousel-img">
+                        <img src="~/images//Banner/ba_mia_khoi.png" alt="nguoi dep choi da" class="d-block">
                     </div>
                 </div>
-            }
-        }
-        else
-        {
-            <div class="col-12 text-center">
-                <p>Hiện chưa có sản phẩm nào.</p>
-            </div>
-        }
-    </div>
-</div>
-
-<div class="transaction-process mt-5">
-    <h2>🔄 Quy Trình Giao Dịch</h2>
-    <div class="step"><strong>Bước 1:</strong> Đăng ký tài khoản .</div>
-    <div class="step"><strong>Bước 2:</strong> Gửi yêu cầu thu gom hoặc Đặt hàng.</div>
-    <div class="step"><strong>Bước 3:</strong> Hệ thống tiếp nhận và Điều phối nhân viên.</div>
-    <div class="step"><strong>Bước 4:</strong> Thu gom tận nơi / Giao hàng tận tay.</div>
-    <div class="step"><strong>Bước 5:</strong> Kiểm định chất lượng & Nhập kho .</div>
-    <div class="step"><strong>Bước 6:</strong> Hoàn tất thanh toán & Đánh giá dịch vụ.</div>
-</div>
-
-<div class="container-benefit mt-5 mb-5 container">
-    <div class="section-benefit text-center mb-4">
-        <h2 class="text-success fw-bold text-uppercase" style="letter-spacing: 1px;">
-            🌿 Lợi Ích Kinh Doanh
-        </h2>
-        <p class="text-muted">Giá trị bền vững cho mọi đối tác tham gia hệ thống</p>
-    </div>
-
-    <div class="row g-4">
-        <div class="col-md-4">
-            <div class="benefit-box p-4 bg-white shadow-sm rounded-3 h-100 border-top border-4 border-success">
-                <div class="text-center mb-3">
-                    <span style="font-size: 3rem;">👨‍🌾</span>
-                    <h4 class="mt-2 fw-bold text-dark">Cho Nông Dân</h4>
+                <div class="carousel-item">
+                    <div class="carousel-img">
+                        <img src="~/images/Banner/Banner_2.png" alt="nguoi dep choi da" class="d-block">
+                    </div>
                 </div>
-                <ul class="list-unstyled text-start px-2">
-                    <li class="mb-2 d-flex align-items-start">
-                        <i class="fas fa-check-circle text-success mt-1 me-2"></i>
-                        <span>Tăng thu nhập từ phụ phẩm nông nghiệp.</span>
-                    </li>
-                    <li class="mb-2 d-flex align-items-start">
-                        <i class="fas fa-check-circle text-success mt-1 me-2"></i>
-                        <span>Dễ dàng đăng bán, không lo đầu ra.</span>
-                    </li>
-                    <li class="mb-2 d-flex align-items-start">
-                        <i class="fas fa-check-circle text-success mt-1 me-2"></i>
-                        <span>Kết nối trực tiếp với doanh nghiệp lớn.</span>
-                    </li>
-                </ul>
+                <div class="carousel-item">
+                    <div class="carousel-img">
+                        <img src="~/images/Banner/NongNghiep.png" alt="nguoi dep choi da" class="d-block">
+                    </div>
+                </div>
             </div>
+
+            <!-- Left and right controls/icons -->
+            <button class="carousel-control-prev" type="button" data-bs-target="#demo" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon"></span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#demo" data-bs-slide="next">
+                <span class="carousel-control-next-icon"></span>
+            </button>
+        </div>
+    </section>
+    @* danh sach san pham *@
+    <div class="header-grid">Hệ Thống Thu Gom Phụ Phẩm Nông Nghiệp</div>
+
+    <div class="grid-container">
+        <div class="grid-item">
+            <img src="~/images/Products/rom_kho_bo.png" alt="Rơm rạ">
+            <h3>Rơm Rạ</h3>
+            <p><strong>Giá:</strong> 500đ/kg</p>
+            <a href="#" class="button">Xem chi tiết</a>
+        </div>
+        <div class="grid-item">
+            <img src="~/images/Products/vo_trau_xay.png" alt="Vỏ trấu">
+            <h3>Vỏ Trấu</h3>
+            <p><strong>Giá:</strong> 300đ/kg</p>
+            <a href="#" class="button">Xem chi tiết</a>
+        </div>
+        <div class="grid-item">
+            <img src="~/images/Products/Xo_dua.png" alt="Xơ dừa">
+            <h3>Xơ Dừa</h3>
+            <p><strong>Giá:</strong> 700đ/kg</p>
+            <a href="#" class="button">Xem chi tiết</a>
+        </div>
+        <div class="grid-item">
+            <img src="~/images/Products/Thancayngo.jpg" alt="Thân cây ngô">
+            <h3>Thân Cây Ngô</h3>
+            <p><strong>Giá:</strong> 600đ/kg</p>
+            <a href="#" class="button">Xem chi tiết</a>
+        </div>
+    </div>
+
+
+    <div class="transaction-process">
+        <h2>🔄 Quy Trình Giao Dịch</h2>
+        <div class="step"><strong>Bước 1:</strong> Nông dân đăng bán phụ phẩm lên hệ thống.</div>
+        <div class="step"><strong>Bước 2:</strong> Hệ thống kiểm duyệt sản phẩm và xác nhận thông tin.</div>
+        <div class="step"><strong>Bước 3:</strong> Doanh nghiệp hoặc khách hàng đặt mua sản phẩm.</div>
+        <div class="step"><strong>Bước 4:</strong> Hệ thống điều phối thu gom phụ phẩm từ nông dân.</div>
+        <div class="step"><strong>Bước 5:</strong> Giao hàng đến doanh nghiệp hoặc khách hàng.</div>
+        <div class="step"><strong>Bước 6:</strong> Thanh toán và xác nhận hoàn thành giao dịch.</div>
+    </div>
+
+
+    <div class="container-benefit">
+        <div class="section-benefit">
+            <h2>🌿 Lợi Ích Kinh Doanh</h2>
         </div>
 
-        <div class="col-md-4">
-            <div class="benefit-box p-4 bg-white shadow-sm rounded-3 h-100 border-top border-4 border-primary">
-                <div class="text-center mb-3">
-                    <span style="font-size: 3rem;">🏢</span>
-                    <h4 class="mt-2 fw-bold text-dark">Cho Doanh Nghiệp</h4>
-                </div>
-                <ul class="list-unstyled text-start px-2">
-                    <li class="mb-2 d-flex align-items-start">
-                        <i class="fas fa-check-circle text-primary mt-1 me-2"></i>
-                        <span>Nguồn nguyên liệu ổn định, giá tốt.</span>
-                    </li>
-                    <li class="mb-2 d-flex align-items-start">
-                        <i class="fas fa-check-circle text-primary mt-1 me-2"></i>
-                        <span>Tiết kiệm chi phí vận hành & thu mua.</span>
-                    </li>
-                    <li class="mb-2 d-flex align-items-start">
-                        <i class="fas fa-check-circle text-primary mt-1 me-2"></i>
-                        <span>Hệ thống AI gợi ý nguồn hàng tối ưu.</span>
-                    </li>
-                </ul>
+        <div class="section-benefit flex-container">
+            <div class="box">
+                <h3>👨‍🌾 Cho Nông Dân</h3>
+                <p>✔ Tăng thu nhập từ phụ phẩm nông nghiệp.</p>
+                <p>✔ Dễ dàng đăng bán, không cần tìm khách hàng.</p>
+                <p>✔ Kết nối với doanh nghiệp lớn, bán hàng nhanh hơn.</p>
             </div>
-        </div>
 
-        <div class="col-md-4">
-            <div class="benefit-box p-4 bg-white shadow-sm rounded-3 h-100 border-top border-4 border-warning">
-                <div class="text-center mb-3">
-                    <span style="font-size: 3rem;">🌎</span>
-                    <h4 class="mt-2 fw-bold text-dark">Cho Môi Trường</h4>
-                </div>
-                <ul class="list-unstyled text-start px-2">
-                    <li class="mb-2 d-flex align-items-start">
-                        <i class="fas fa-check-circle text-warning mt-1 me-2"></i>
-                        <span>Giảm lãng phí tài nguyên nông nghiệp.</span>
-                    </li>
-                    <li class="mb-2 d-flex align-items-start">
-                        <i class="fas fa-check-circle text-warning mt-1 me-2"></i>
-                        <span>Hạn chế đốt rơm rạ, giảm khí thải CO2.</span>
-                    </li>
-                    <li class="mb-2 d-flex align-items-start">
-                        <i class="fas fa-check-circle text-warning mt-1 me-2"></i>
-                        <span>Thúc đẩy mô hình kinh tế tuần hoàn.</span>
-                    </li>
-                </ul>
+            <div class="box">
+                <h3>🏢 Cho Doanh Nghiệp</h3>
+                <p>✔ Nguồn nguyên liệu ổn định với giá tốt.</p>
+                <p>✔ Tiết kiệm chi phí nhờ kết nối trực tiếp với nông dân.</p>
+                <p>✔ Hệ thống AI gợi ý nguồn hàng phù hợp.</p>
+            </div>
+
+            <div class="box">
+                <h3>🌎 Cho Môi Trường</h3>
+                <p>✔ Giảm lãng phí nông sản, bảo vệ môi trường.</p>
+                <p>✔ Hạn chế đốt rơm rạ, giảm ô nhiễm không khí.</p>
+                <p>✔ Thúc đẩy kinh tế tuần hoàn bền vững.</p>
             </div>
         </div>
     </div>
-</div>
 
-<div class="preloader" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #fff; display: flex; justify-content: center; align-items: center; z-index: 9999; transition: opacity 0.5s ease;">
-    <svg class="cart" role="img" aria-label="Shopping cart" viewBox="0 0 128 128" width="128px" height="128px" xmlns="http://www.w3.org/2000/svg">
-        <g fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="8">
-            <g class="cart__track" stroke="hsla(0,10%,10%,0.1)">
-                <polyline points="4,4 21,4 26,22 124,22 112,64 35,64 39,80 106,80" />
-                <circle cx="43" cy="111" r="13" />
-                <circle cx="102" cy="111" r="13" />
-            </g>
-            <g class="cart__lines" stroke="currentColor">
-                <polyline class="cart__top" points="4,4 21,4 26,22 124,22 112,64 35,64 39,80 106,80" stroke-dasharray="338 338" stroke-dashoffset="-338" />
-                <g class="cart__wheel1" transform="rotate(-90,43,111)">
-                    <circle class="cart__wheel-stroke" cx="43" cy="111" r="13" stroke-dasharray="81.68 81.68" stroke-dashoffset="81.68" />
+    <div class="preloader">
+        <svg class="cart" role="img" aria-label="Shopping cart line animation" viewBox="0 0 128 128" width="128px" height="128px" xmlns="http://www.w3.org/2000/svg">
+            <g fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="8">
+                <g class="cart__track" stroke="hsla(0,10%,10%,0.1)">
+                    <polyline points="4,4 21,4 26,22 124,22 112,64 35,64 39,80 106,80" />
+                    <circle cx="43" cy="111" r="13" />
+                    <circle cx="102" cy="111" r="13" />
                 </g>
-                <g class="cart__wheel2" transform="rotate(90,102,111)">
-                    <circle class="cart__wheel-stroke" cx="102" cy="111" r="13" stroke-dasharray="81.68 81.68" stroke-dashoffset="81.68" />
+                <g class="cart__lines" stroke="currentColor">
+                    <polyline class="cart__top" points="4,4 21,4 26,22 124,22 112,64 35,64 39,80 106,80" stroke-dasharray="338 338" stroke-dashoffset="-338" />
+                    <g class="cart__wheel1" transform="rotate(-90,43,111)">
+                        <circle class="cart__wheel-stroke" cx="43" cy="111" r="13" stroke-dasharray="81.68 81.68" stroke-dashoffset="81.68" />
+                    </g>
+                    <g class="cart__wheel2" transform="rotate(90,102,111)">
+                        <circle class="cart__wheel-stroke" cx="102" cy="111" r="13" stroke-dasharray="81.68 81.68" stroke-dashoffset="81.68" />
+                    </g>
                 </g>
             </g>
-        </g>
-    </svg>
-</div>
-
-@section Scripts {
+        </svg>
+       
+    </div>
     <script>
+        function delayRedirect() {
+            let preloader = document.querySelector(".preloader");
+
+            // Hiển thị preloader
+            preloader.style.display = "flex";
+            preloader.style.opacity = "1";
+
+            // Vô hiệu hóa nút bấm để tránh bấm nhiều lần
+            document.querySelector(".user-btn").style.pointerEvents = "none";
+            setTimeout(() => {
+                window.location.href = "/home/login";
+            }, 2000);
+
+
+        document.querySelector(".button-Signup").style.pointerEvents = "none";
+            setTimeout(() => {
+                window.location.href = "/home/login";
+            }, 2000);
+        }
+        // Ẩn preloader khi trang tải xong
         window.onload = function () {
             let preloader = document.querySelector(".preloader");
             preloader.style.opacity = "0";
             setTimeout(() => {
                 preloader.style.display = "none";
-            }, 500);
+            }, 500); // Đợi 0.5s để hiệu ứng mượt hơn
         };
     </script>
-}
+    
+    
+    @* giúp dropdown cart và tim hoạt động *@
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+ 
+    <script type="text/javascript" src="js/script.js"></script>
+</body>
+</html>

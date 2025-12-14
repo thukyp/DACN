@@ -307,5 +307,7 @@ namespace DACS.Controllers
             TempData["ReviewMessage"] = "Cảm ơn bạn đã đánh giá!";
             return RedirectToAction("CT_SP", new { id = reviewInput.M_SanPham });
         }
+
+
     }
 }

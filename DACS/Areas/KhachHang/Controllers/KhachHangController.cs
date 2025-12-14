@@ -1676,7 +1676,6 @@ namespace DACS.Areas.KhachHang.Controllers
                 model.WardOptions ??= Enumerable.Empty<SelectListItem>();
             }
         }
-        [HttpGet]
         public async Task<IActionResult> SanPhamChoDanhGia()
         {
             var userId = _userManager.GetUserId(User);

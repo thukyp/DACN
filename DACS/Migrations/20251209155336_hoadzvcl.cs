@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace DACS.Migrations
 {
     /// <inheritdoc />
-    public partial class hoadzvl : Migration
+    public partial class hoadzvcl : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -378,7 +378,11 @@ namespace DACS.Migrations
                     TrangThai = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     NgayTao = table.Column<DateTime>(type: "datetime2", nullable: false),
                     AnhSanPham = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    HanSuDung = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    HanSuDung = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ThangBatDauVu = table.Column<int>(type: "int", nullable: false),
+                    ThangKetThucVu = table.Column<int>(type: "int", nullable: false),
+                    HeSoGiaTrongMua = table.Column<double>(type: "float", nullable: false),
+                    HeSoGiaTraiMua = table.Column<double>(type: "float", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -892,6 +896,11 @@ namespace DACS.Migrations
                     DanhSachHinhAnh = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     MaLoTonKho = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
                     TrangThaiXuLy = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    DoAmThucTe = table.Column<double>(type: "float", nullable: false),
+                    HeSoDoAm = table.Column<double>(type: "float", nullable: false),
+                    HeSoMuaVu = table.Column<double>(type: "float", nullable: false),
+                    PhiVanChuyen = table.Column<double>(type: "float", nullable: false),
+                    DonGiaThuMua = table.Column<double>(type: "float", nullable: false),
                     DonHangM_DonHang = table.Column<string>(type: "nvarchar(10)", nullable: true),
                     QuanLyM_QuanLy = table.Column<string>(type: "nvarchar(10)", nullable: true)
                 },

@@ -443,11 +443,23 @@ namespace DACS.Migrations
                     b.Property<string>("DanhSachHinhAnh")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<double>("DoAmThucTe")
+                        .HasColumnType("float");
+
+                    b.Property<double>("DonGiaThuMua")
+                        .HasColumnType("float");
+
                     b.Property<string>("DonHangM_DonHang")
                         .HasColumnType("nvarchar(10)");
 
                     b.Property<decimal?>("GiaTriMongMuon")
                         .HasColumnType("decimal(18, 2)");
+
+                    b.Property<double>("HeSoDoAm")
+                        .HasColumnType("float");
+
+                    b.Property<double>("HeSoMuaVu")
+                        .HasColumnType("float");
 
                     b.Property<string>("M_DonViTinh")
                         .IsRequired()
@@ -475,6 +487,9 @@ namespace DACS.Migrations
 
                     b.Property<string>("MoTa")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<double>("PhiVanChuyen")
+                        .HasColumnType("float");
 
                     b.Property<string>("QuanLyM_QuanLy")
                         .HasColumnType("nvarchar(10)");
@@ -1002,6 +1017,12 @@ namespace DACS.Migrations
                     b.Property<DateTime>("HanSuDung")
                         .HasColumnType("datetime2");
 
+                    b.Property<double>("HeSoGiaTraiMua")
+                        .HasColumnType("float");
+
+                    b.Property<double>("HeSoGiaTrongMua")
+                        .HasColumnType("float");
+
                     b.Property<string>("M_DonViTinh")
                         .IsRequired()
                         .HasMaxLength(10)
@@ -1023,6 +1044,12 @@ namespace DACS.Migrations
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("ThangBatDauVu")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ThangKetThucVu")
+                        .HasColumnType("int");
 
                     b.Property<string>("TrangThai")
                         .IsRequired()
