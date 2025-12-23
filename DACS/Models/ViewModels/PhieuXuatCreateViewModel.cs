@@ -10,7 +10,6 @@ namespace DACS.Models.ViewModels
         [Required(ErrorMessage = "Vui lòng chọn kho xuất.")]
         [Display(Name = "Xuất từ Kho")]
         public string MaKho { get; set; }
-        public string SanPham { get; set; }
 
         [Required(ErrorMessage = "Ngày xuất là bắt buộc.")]
         [DataType(DataType.DateTime)]

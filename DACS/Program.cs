@@ -34,6 +34,11 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
 .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews()
     .AddJsonOptions(x => x.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles);
+builder.Services.AddCors(options => {
+    options.AddPolicy("AllowAll", builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+});
+// ...
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -74,7 +79,13 @@ builder.Services.Configure<ESmsSettings>(builder.Configuration.GetSection("ESmsS
 builder.Services.AddTransient<ISmsService, ESmsService>();
 builder.Services.AddHttpClient();
 //builder.WebHost.UseUrls("http://0.0.0.0:5001");//chạy ebsite
-
+builder.Services.AddCors(options => {
+    options.AddPolicy("AllowAll", policy => {
+        policy.AllowAnyOrigin()
+              .AllowAnyMethod()
+              .AllowAnyHeader();
+    });
+});
 
 
 var app = builder.Build();
@@ -95,7 +106,7 @@ app.UseRouting();
 app.UseAuthentication(); ;
 app.UseAuthorization();
 app.MapRazorPages();
-
+app.UseCors("AllowAll");
 app.UseEndpoints(endpoints =>
 {
 

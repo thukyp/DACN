@@ -2,6 +2,7 @@
 using DACS.Repositories;
 using DACS.Repository; // Sử dụng Namespace Repository của bạn
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace DACS.Controllers.Api
 {
@@ -56,6 +57,67 @@ namespace DACS.Controllers.Api
             var product = await _context.SanPhams.FindAsync(id);
             if (product == null) return NotFound();
             return Ok(product);
+        }
+        [HttpGet("products/{id}/batches")]
+        public async Task<IActionResult> GetProductBatches(string id)
+        {
+            var batches = await _context.LoTonKhos
+                .Where(l => l.M_SanPham == id && l.KhoiLuongConLai > 0)
+                .Select(l => new {
+                    maLo = l.MaLoTonKho,
+                    ngayNhap = l.NgayNhapKho,
+                    hanSuDung = l.HanSuDung,
+                    tonKho = l.KhoiLuongConLai
+                })
+                .ToListAsync();
+
+            return Ok(batches);
+        }
+        [HttpGet("wishlist/{userId}")]
+        public async Task<IActionResult> GetWishlist(string userId)
+        {
+            var wishlist = await _context.SanPhamYeuThichs
+                .Include(y => y.SanPham)
+                .Where(y => y.UserId == userId)
+                .Select(y => new {
+                    y.M_SanPham,
+                    tenSanPham = y.SanPham.TenSanPham,
+                    gia = y.SanPham.Gia,
+                    anhSanPham = y.SanPham.AnhSanPham
+                })
+                .ToListAsync();
+            return Ok(wishlist);
+        }
+
+        [HttpGet("products/{id}")]
+        public async Task<IActionResult> GetProductDetail(string id)
+        {
+            // 1. Tìm sản phẩm (Trim ID để tránh lỗi khoảng trắng từ Client)
+            var productId = id.Trim();
+            var sp = await _context.SanPhams
+                .Include(s => s.LoaiSanPham)
+                .Include(s => s.DonViTinh)
+                .FirstOrDefaultAsync(s => s.M_SanPham == productId);
+
+            if (sp == null) return NotFound(new { message = "Không tìm thấy sản phẩm" });
+
+            // 2. Tính tổng tồn kho từ bảng LoTonKhos
+            // Chỉ tính những lô có số lượng lớn hơn 0
+            var totalStock = await _context.LoTonKhos
+                .Where(l => l.M_SanPham == productId && l.KhoiLuongConLai > 0)
+                .SumAsync(l => (double?)l.KhoiLuongConLai) ?? 0; // Sử dụng cast nullable để tránh lỗi nếu ko có dòng nào
+
+            return Ok(new
+            {
+                m_SanPham = sp.M_SanPham,
+                tenSanPham = sp.TenSanPham,
+                gia = sp.Gia,
+                anhSanPham = sp.AnhSanPham,
+                tenLoai = sp.LoaiSanPham?.TenLoai,
+                tenDVT = sp.DonViTinh?.TenLoaiTinh,
+                moTa = sp.MoTa,
+                totalStock = totalStock // Trả về số lượng thực tế trong kho
+            });
         }
     }
 }

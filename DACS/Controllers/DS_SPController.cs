@@ -307,6 +307,12 @@ namespace DACS.Controllers
             TempData["ReviewMessage"] = "Cảm ơn bạn đã đánh giá!";
             return RedirectToAction("CT_SP", new { id = reviewInput.M_SanPham });
         }
+        [HttpGet("api/products")]
+        public async Task<IActionResult> GetAllProducts()
+        {
+            var products = await _context.SanPhams.ToListAsync();
+            return Ok(products); // Trả về JSON để Flutter đọc
+        }
 
 
     }

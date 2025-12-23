@@ -221,14 +221,6 @@
                         <div class="col-md-2">
                             <input type="date" id="date-to-filter" name="dateToFilter" class="form-control form-control-sm" title="Đến ngày" value="@Model.DateToFilter?.ToString("yyyy-MM-dd")">
                         </div>
-                        <div class="col-md-2">
-                            <select id="status-filter-select" name="statusFilterSelect" class="form-select form-select-sm" asp-items="@Model.OrderStatusOptions">
-                            </select>
-                        </div>
-                        <div class="col-md-2">
-                            <select id="payment-status-filter" name="paymentStatusFilter" class="form-select form-select-sm" asp-items="@Model.PaymentStatusOptions">
-                            </select>
-                        </div>
                         <div class="col-md-1">
                             <button type="submit" class="btn btn-sm btn-primary w-100"><i class="fas fa-filter"></i> Lọc</button>
                         </div>
@@ -245,9 +237,6 @@
                                 <th scope="col">Khách Hàng</th>
                                 <th scope="col">Ngày Đặt</th>
                                 <th scope="col" class="text-end">Tổng Tiền</th>
-                                <th scope="col">Trạng Thái TT</th>
-                                <th scope="col">Trạng Thái ĐH</th>
-                                <th scope="col" class="text-center">Hành động</th>
                             </tr>
                         </thead>
                         <tbody>

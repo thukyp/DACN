@@ -153,14 +153,6 @@
                             <label for="date-to-filter" class="form-label form-label-sm">Đến ngày</label>
                             <input type="date" id="date-to-filter" name="endDate" class="form-control form-control-sm" value="@Model.DateToFilter?.ToString("yyyy-MM-dd")">
                         </div>
-                        <div class="col-md-2">
-                            <label for="order-status-filter" class="form-label form-label-sm">Trạng thái ĐH</label>
-                            <select id="order-status-filter" name="orderStatus" class="form-select form-select-sm" asp-items="@Model.OrderStatusOptions"></select>
-                        </div>
-                        <div class="col-md-2">
-                            <label for="payment-status-filter" class="form-label form-label-sm">Trạng thái TT</label>
-                            <select id="payment-status-filter" name="paymentStatus" class="form-select form-select-sm" asp-items="@Model.PaymentStatusOptions"></select>
-                        </div>
                         <div class="col-md-1">
                             <button type="submit" class="btn btn-sm btn-primary w-100"><i class="fas fa-filter"></i> Lọc</button>
                         </div>
@@ -178,9 +170,6 @@
                                 <th>Ngày Đặt</th>
                                 <th class="text-end">Tổng Tiền</th>
                                 <th>Phương thức TT</th>
-                                <th>Trạng Thái ĐH</th>
-                                <th>Trạng Thái TT</th>
-                                <th class="text-center">Hành động</th>
                             </tr>
                         </thead>
                         <tbody>
